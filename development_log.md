@@ -18,9 +18,20 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 ### Fixed
 - **Backend Configuration**: Fixed a bug in `backend/src/config/env.js` where `NODE_ENV` was incorrectly mapped to `process.NODE_ENV` instead of `process.env.NODE_ENV`.
 
+## [2026-04-13] - Database Integration and Expanded Configuration
+
+### Added
+- **Database Connection**: Created `backend/src/config/db.js` to handle MongoDB connections using Mongoose.
+- **Environment Variables**: Expanded `backend/src/config/env.js` with keys for:
+  - **Clerk**: `CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`
+  - **Sentry**: `SENTRY_DSN`
+  - **Inngest**: `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`
+- **Server Startup**: Updated `backend/src/server.js` to call `connectDB()` upon server start.
+
 ### Pending Tasks
-- [ ] Implement MongoDB connection logic using Mongoose.
+- [x] Implement MongoDB connection logic using Mongoose.
 - [ ] Add `express.json()` and `cors()` middleware to the backend.
 - [ ] Set up basic API routes and controllers in the backend.
 - [ ] Replace Vite boilerplate with custom frontend components and form validation logic.
 - [ ] Implement form validation on both client and server sides.
+
