@@ -28,10 +28,42 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - **Inngest**: `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`
 - **Server Startup**: Updated `backend/src/server.js` to call `connectDB()` upon server start.
 
+## [2026-04-14] - Authentication Integration and Frontend Refinement
+
+### Added
+- **Authentication (Frontend)**: Integrated Clerk for user authentication.
+  - Configured `ClerkProvider` in `main.jsx` using `VITE_CLERK_PUBLISHABLE_KEY`.
+  - Implemented `SignInButton`, `SignUpButton`, and `UserButton` in `App.jsx`.
+  - Added conditional rendering of authentication components based on user session state.
+- **Backend Middleware**: Added `@clerk/express` middleware to the Express server in `server.js` to handle authentication context.
+- **User Model**: Defined the `User` schema in `backend/src/models/user.model.js` with `clerkId`, `email`, `name`, and `image` fields.
+- **Inngest Webhooks**: Implemented webhook handlers in `backend/src/config/inngest.js` to sync user data from Clerk.
+  - Added `sync-user` function to handle `clerk/user.created` events.
+  - Added `delete-user-from-db` function to handle `clerk/user.deleted` events.
+
+### Changed
+- **Frontend Refinement**: Removed Vite default boilerplate (counter state, logos, and styles) to establish a clean slate for CollabHub development.
+- **Backend Debugging**: Added temporary logging in `backend/src/server.js` to verify `MONGO_URI` connection strings during initialization.
+
+### Fixed
+- **Syntax Errors**: Fixed a syntax error in `inngest.js` where `await connectDB()` was incorrectly followed by a code block.
+- **Clerk Data Mapping**: Fixed an issue where `email_address` was incorrectly accessed as `email_addresses`.
+
+### Refinement
+- **Backend Refinement**: 
+  - Fixed a `ReferenceError` in `backend/src/config/inngest.js` where `id` was undefined.
+  - Corrected a typo in `backend/src/server.js` (`server` -> `serve`).
+  - Updated Inngest functions to v4 syntax.
+  - Verified successful MongoDB connection and server startup on port 5001.
+
 ### Pending Tasks
 - [x] Implement MongoDB connection logic using Mongoose.
-- [ ] Add `express.json()` and `cors()` middleware to the backend.
+- [x] Replace Vite boilerplate with authentication components.
+- [x] Define User model and implement basic CRUD logic for Clerk syncing.
+- [x] Integrate Inngest with Express server for webhook processing.
+- [x] Verify MongoDB Atlas connection and server startup.
+- [ ] Add `cors()` middleware to the backend.
 - [ ] Set up basic API routes and controllers in the backend.
-- [ ] Replace Vite boilerplate with custom frontend components and form validation logic.
 - [ ] Implement form validation on both client and server sides.
+- [ ] Design and implement the primary dashboard layout.
 
