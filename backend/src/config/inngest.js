@@ -1,14 +1,15 @@
 import { Inngest } from "inngest";
 import { connectDB } from "./db.js";
-import { User } from "../models/user.model.js"; // Import the User model
+import { User } from "../models/user.model.js";
+import { addUserToPublicChannels, deleteStreamUser, upsertStreamUser } from "./stream.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "collabhub" });
 
 const syncUser = inngest.createFunction(
-    { 
-        id: "sync-user", 
-        triggers: { event: "clerk/user.created" } 
+    {
+        id: "sync-user",
+        triggers: { event: "clerk/user.created" }
     },
     async ({ event }) => {
         await connectDB();
@@ -20,21 +21,28 @@ const syncUser = inngest.createFunction(
             image: image_url,
         };
         await User.create(newUser);
+
+        await upsertStreamUser({
+            id: newUser.clerkId.toString(),
+            name: newUser.name,
+            image: newUser.image,
+        });
+
+        await addUserToPublicChannels(newUser.clerkId.toString());
     }
 );
 
 const deleteUserFromDB = inngest.createFunction(
-    { 
-        id: "delete-user-from-db", 
-        triggers: { event: "clerk/user.deleted" } 
+    {
+        id: "delete-user-from-db",
+        triggers: { event: "clerk/user.deleted" }
     },
     async ({ event }) => {
         await connectDB(); // Added DB connection call
         const { id } = event.data;
         await User.deleteOne({ clerkId: id });
 
-        // Note: Ensure deleteStreamUser is defined or imported if needed
-        // await deleteStreamUser(id.toString()); 
+        await deleteStreamUser(id.toString());
     }
 );
 
