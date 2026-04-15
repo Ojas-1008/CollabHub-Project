@@ -1,4 +1,7 @@
+import "../instrument.js";
+import * as Sentry from "@sentry/node";
 import express from 'express';
+import cors from 'cors';
 import { ENV } from './config/env.js';
 import { connectDB } from './config/db.js';
 import { clerkMiddleware } from "@clerk/express";
@@ -8,16 +11,22 @@ import chatRoutes from "./routes/chat.route.js";
 
 const app = express();
 
-
 app.use(express.json());
+app.use(cors());
 app.use(clerkMiddleware());
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 
+app.get("/debug-sentry", (req, res) => {
+  throw new Error("My first Sentry error!");
+});
+
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
+
+Sentry.setupExpressErrorHandler(app);
 
 const startServer = async () => {
     try {
@@ -28,7 +37,8 @@ const startServer = async () => {
       });
     } catch (error) {
       console.error("Error starting server:", error);
-      process.exit(1); // Exit the process with a failure code
+      Sentry.captureException(error);
+      process.exit(1); 
     }
   };
 

@@ -56,14 +56,48 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - Updated Inngest functions to v4 syntax.
   - Verified successful MongoDB connection and server startup on port 5001.
 
+## [2026-04-15] - Stream Chat Integration and Real-time Communication
+
+### Added
+- **GetStream Integration (Backend)**:
+  - Created `backend/src/config/stream.js` to initialize the Stream Chat server client.
+  - Implemented utility functions: `upsertStreamUser`, `deleteStreamUser`, `generateStreamToken`, and `addUserToPublicChannels`.
+- **User Sync Enhancement**:
+  - Enhanced Inngest webhooks to automatically sync users with Stream Chat when created or deleted in Clerk.
+  - New users are now automatically added to discoverable public channels upon creation.
+- **Chat API**:
+  - Implemented `/api/chat/token` route to provide secure access tokens for the frontend.
+  - Created `chat.controller.js` and `chat.route.js` to manage chat-related requests.
+- **Middleware**:
+  - Added `protectRoute` middleware in `backend/src/middleware/auth.middleware.js` to secure chat endpoints.
+
+### Fixed
+- **Windows Compatibility**: Fixed an issue where `NODE_OPTIONS` syntax in `package.json` was crashing on Windows. Switched to cross-platform `node --import` flag.
+- **Script Errors**: Corrected the file extension from `.mjs` to `.js` for `instrument.js` in development scripts.
+- **Server Crashes**: Fixed `ReferenceError: Sentry is not defined` in `server.js` by adding the missing import.
+- **Error Handling**: Fixed an issue in `stream.js` where token generation would return `null` on failure; it now correctly throws errors for the controller to handle.
+
+### Refinement
+- **Monitoring**: 
+    - Integrated `Sentry.captureException` across `server.js`, `stream.js`, and `db.js` for better error visibility.
+    - Optimized Sentry middleware positioning in Express to ensure full coverage.
+- **Connectivity**: Added `cors()` middleware to `server.js` to allow communication with the frontend.
+- **Database**: Added Sentry reporting to the MongoDB connection logic.
+
+### Changed
+- **Server Entry Point**: Updated `backend/src/server.js` to include chat routes and simplified server startup logic.
+- **Environment Configuration**: Added `STREAM_API_KEY` and `STREAM_API_SECRET` to `backend/src/config/env.js`.
+
 ### Pending Tasks
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
 - [x] Define User model and implement basic CRUD logic for Clerk syncing.
 - [x] Integrate Inngest with Express server for webhook processing.
 - [x] Verify MongoDB Atlas connection and server startup.
-- [ ] Add `cors()` middleware to the backend.
-- [ ] Set up basic API routes and controllers in the backend.
+- [x] Set up basic API routes and controllers in the backend.
+- [x] Add `cors()` middleware to the backend.
 - [ ] Implement form validation on both client and server sides.
 - [ ] Design and implement the primary dashboard layout.
+- [ ] Integrate Stream Chat React SDK on the frontend.
+
 

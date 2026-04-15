@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import * as Sentry from "@sentry/node";
 import {ENV} from "./env.js";
 
 export const connectDB = async () => {
@@ -7,6 +8,7 @@ export const connectDB = async () => {
         console.log("MongoDB connected successfully: ", conn.connection.host);
     } catch (error) {
         console.log("Error connecting to MongoDB: ", error);
+        Sentry.captureException(error);
         process.exit(1);
     }
 }
