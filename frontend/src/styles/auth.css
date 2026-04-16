@@ -320,3 +320,144 @@
         transform: rotate(360deg) translateX(0px);
     }
 }
+
+/* Footer Styles */
+.auth-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(116, 58, 213, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+}
+
+.auth-footer p {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: white;
+}
+
+/* Loading State Styles */
+.button-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.cta-button.loading {
+    opacity: 0.8;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Error Message Styles */
+.error-message {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: 0.75rem;
+    color: #fca5a5;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+.error-icon {
+    font-size: 1.25rem;
+}
+
+.error-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #fca5a5;
+    cursor: pointer;
+    padding: 0.25rem;
+    font-size: 1rem;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.error-close:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Micro-interactions - Staggered animation for features */
+.feature-item:nth-child(1) {
+    animation: slideInLeft 0.5s ease-out 0.2s both;
+}
+
+.feature-item:nth-child(2) {
+    animation: slideInLeft 0.5s ease-out 0.3s both;
+}
+
+.feature-item:nth-child(3) {
+    animation: slideInLeft 0.5s ease-out 0.4s both;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Pulse effect for CTA button */
+.cta-button:not(.loading) {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 20px 40px rgba(74, 21, 75, 0.3), 0 8px 20px rgba(114, 9, 183, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    50% {
+        box-shadow: 0 20px 50px rgba(74, 21, 75, 0.4), 0 10px 25px rgba(114, 9, 183, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+}
