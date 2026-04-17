@@ -1,81 +1,94 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth, useUser } from "@clerk/react";
+import { axiosInstance } from "../lib/axios";
 import { StreamChat } from "stream-chat";
 import toast from "react-hot-toast";
 
-const ChatContext = createContext(null);
+// Context for sharing chat data
+const AuthContext = createContext({});
 
-export const useChat = () => useContext(ChatContext);
+// Easy-to-use hook
+export const useChat = () => useContext(AuthContext);
 
-const AuthProvider = ({ children }) => {
+export default function AuthProvider({ children }) {
+  // 1. Get auth tools from Clerk
   const { getToken, isLoaded: authLoaded } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
   const [chatClient, setChatClient] = useState(null);
 
+  /**
+   * REASONING: We keep the Interceptor setup separate because it only needs
+   * to be set up ONCE when the app starts. It stays in the background.
+   */
   useEffect(() => {
-    // Wait for Clerk to load
+    const interceptor = axiosInstance.interceptors.request.use(async (config) => {
+      const token = await getToken();
+      if (token) config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    });
+
+    return () => axiosInstance.interceptors.request.eject(interceptor);
+  }, [getToken]);
+
+  /**
+   * REASONING: This is our "Chat Manager". 
+   * It handles joining the chat when you log in, and leaving when you log out.
+   */
+  useEffect(() => {
+    // START: If Clerk is still loading, do nothing yet.
     if (!authLoaded || !userLoaded) return;
 
-    // Handle disconnected state
+    // SCENARIO A: The user is NOT logged in.
     if (!user) {
       if (chatClient) {
         chatClient.disconnectUser();
         setChatClient(null);
+        console.log("User logged out: Disconnected from Chat");
       }
-      return;
+      return; // Stop here
     }
 
-    const initChat = async () => {
-      const client = StreamChat.getInstance(import.meta.env.VITE_STREAM_API_KEY);
+    // SCENARIO B: The user IS logged in, but we haven't connected to Chat yet.
+    if (user && !chatClient) {
+      
+      const startChat = async () => {
+        try {
+          const client = StreamChat.getInstance(import.meta.env.VITE_STREAM_API_KEY);
+          
+          // Get the secret token for Stream from our backend
+          const response = await axiosInstance.get("/chat/token");
+          const { token } = response.data;
 
-      try {
-        // 1. Get Clerk session token
-        const clerkToken = await getToken();
-        
-        // 2. Fetch Stream token from our backend (secures the connection)
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/chat/token`, {
-          headers: {
-            Authorization: `Bearer ${clerkToken}`,
-          },
-        });
+          // Connect the user
+          await client.connectUser(
+            {
+              id: user.id,
+              name: user.fullName || user.username || user.id,
+              image: user.imageUrl,
+            },
+            token
+          );
 
-        if (!response.ok) throw new Error("Failed to fetch stream token");
-        
-        const { token } = await response.json();
+          setChatClient(client);
+          console.log("User logged in: Connected to Chat");
+        } catch (error) {
+          console.error("Failed to start chat:", error);
+          toast.error("Could not connect to chat.");
+        }
+      };
 
-        // 3. Connect to Stream
-        await client.connectUser(
-          {
-            id: user.id,
-            name: user.fullName || user.username || user.id,
-            image: user.imageUrl,
-          },
-          token
-        );
+      startChat();
+    }
 
-        setChatClient(client);
-        console.log("Successfully connected to Stream Chat");
-      } catch (error) {
-        console.error("Stream connection error:", error);
-        toast.error("Failed to connect to chat service.");
-      }
-    };
-
-    initChat();
-
-    // Cleanup on unmount or user change
+    // CLEANUP: If the component ever unmounts, disconnect.
     return () => {
-      if (chatClient) {
-        chatClient.disconnectUser();
-      }
+      if (chatClient) chatClient.disconnectUser();
     };
-  }, [authLoaded, userLoaded, user]);
+  }, [authLoaded, userLoaded, user, chatClient, getToken]);
 
   return (
-    <ChatContext.Provider value={{ chatClient }}>
+    <AuthContext.Provider value={{ chatClient }}>
       {children}
-    </ChatContext.Provider>
+    </AuthContext.Provider>
   );
-};
-
-export default AuthProvider;
+}
