@@ -125,6 +125,32 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - **Asset Management**: Initialized `frontend/public/` directory for application-wide static assets (logos, hero images).
 - **Error Handling**: Enhanced the Auth flow with visual error states and interactive "Close" triggers for failure notifications.
 
+## [2026-04-17] - Infrastructure Stabilization and Logic Refactoring
+
+### Fixed
+- **Sentry Initialization (Backend)**: Resolved `ReferenceError: Sentry is not defined` in `server.js` by refactoring the initialization sequence and adding null-guards to cleanup the startup logic.
+- **Import Synchronization (Frontend)**: 
+  - Corrected `@clerk/clerk-react` imports to `@clerk/react` across `main.jsx` and `AuthProvider.jsx` to align with `package.json`.
+  - Fixed `BrowserRouter` import in `main.jsx` to target `react-router-dom` for proper web-browser compatibility in React Router v7.
+
+### Added
+- **API Client (Axios)**: 
+  - Created `frontend/lib/axios.js` to centralize backend communication settings and environment variables.
+  - Implemented automatic JWT token injection via Axios request interceptors in `AuthProvider.jsx`, ensuring all backend requests are securely authenticated without manual prop-drilling of tokens.
+
+### Changed
+- **Logic Refactoring (Beginner Friendly)**:
+  - **AuthProvider.jsx**: Completely refactored the underlying logic from deeply nested effects into a linear "Scenario Manager" pattern. 
+  - **App.jsx**: Refactored the main routing structure to prioritize readability.
+  - **inngest.js**: Refactored background task logic to include step-by-step instructions and explicit error handling (Step 1-5 markers).
+  - **stream.js**: Overhauled Stream configuration to include a "Service Overview" and enforced string-safety for all user IDs.
+
+### Refinement
+- **Observability**: Integrated consistent, emoji-coded terminal logs (✅, 🗑️, 🔑, 📢) across all core backend integration files to make background processes visible and easy to debug.
+- **Git Workflow**: Consolidated all structural fixes and refactors into a single migration commit and pushed to the remote repository.
+
+
+
 
 ### Pending Tasks
 - [x] Implement MongoDB connection logic using Mongoose.
