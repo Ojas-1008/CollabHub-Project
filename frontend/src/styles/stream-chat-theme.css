@@ -455,167 +455,389 @@ button.str-chat__load-more-button,
 /* Message list */
 .str-chat__list,
 .str-chat__message-list-scroll {
-  background: #fafafa !important;
+  background: #f8f9fc !important;
+  padding: 1rem 0 !important;
 }
 
-/* --- Premium Message Bubbles --- */
+/* =====================================================
+   MESSAGE ROWS — controls overall alignment per message
+   ===================================================== */
+
+/* Every message row is a flex row */
+.str-chat__li {
+  padding: 2px 1.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Other people's messages: left-aligned row */
+.str-chat__message {
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 0.5rem !important;
+  max-width: 100% !important;
+}
+
+/* My messages: right-aligned row */
+.str-chat__message--me {
+  justify-content: flex-end !important;
+  align-items: flex-end !important;
+}
+
+/* =====================================================
+   MESSAGE INNER WRAPPER — constrains the bubble width
+   ===================================================== */
+
+.str-chat__message-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  max-width: 70% !important;
+  min-width: 0 !important;
+}
+
+/* My messages inner — align contents right */
+.str-chat__message--me .str-chat__message-inner {
+  align-items: flex-end !important;
+}
+
+/* =====================================================
+   BUBBLE — the coloured pill around message text
+   ===================================================== */
+
 .str-chat__message-bubble {
-  background: white !important;
+  /* Layout: block so it fills the inner width, not collapses to inline */
+  display: block !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  min-width: 48px !important;
+
+  /* Bubble appearance */
+  background: #ffffff !important;
   color: #1e293b !important;
   border-radius: 18px !important;
-  border-bottom-left-radius: 4px !important;
-  padding: 0.7rem 1.1rem !important;
-  border: 1px solid #f1f5f9 !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
-  font-size: 0.95rem !important;
-  line-height: 1.5 !important;
-  max-width: 85% !important;
-  
-  /* Safe text layout overrides */
-  display: inline-block !important; /* Prevents flex-squishing */
-  width: auto !important;
-  min-width: 60px !important; /* Always give it a bit of width */
+  border-bottom-left-radius: 5px !important;
+  padding: 0.65rem 1rem !important;
+  border: 1px solid #e8edf5 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04) !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.55 !important;
   text-align: left !important;
 }
 
-/* Ensure inner text doesn't collapse */
+/* Text inside bubble — handle both short and very long unbroken strings */
+.str-chat__message-text,
 .str-chat__message-text-inner {
-  display: inline-block !important;
+  display: block !important;
   width: auto !important;
-  word-break: normal !important;
-  overflow-wrap: break-word !important;
+  /* break-word handles long normal strings; anywhere handles URLs/gibberish */
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  white-space: pre-wrap !important;       /* Preserve intentional line breaks */
+  hyphens: none !important;              /* No auto-hyphenation splitting words */
 }
 
+/* Strip inner <p> margin so text fits flush */
+.str-chat__message-text-inner p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
 
-/* My own messages */
+/* =====================================================
+   MY OWN MESSAGE BUBBLE (purple gradient)
+   ===================================================== */
+
 .str-chat__message--me .str-chat__message-bubble {
-  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important;
-  color: white !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%) !important;
+  color: #ffffff !important;
   border: none !important;
   border-radius: 18px !important;
-  border-bottom-right-radius: 4px !important;
-  box-shadow: 0 8px 16px -4px rgba(124, 58, 237, 0.3) !important;
+  border-bottom-right-radius: 5px !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35), 0 1px 3px rgba(0,0,0,0.1) !important;
 }
 
-/* Deleted messages (Ghostly/Clean) */
+.str-chat__message--me .str-chat__message-text-inner p {
+  color: #ffffff !important;
+}
+
+/* =====================================================
+   AVATAR (other people's messages)
+   ===================================================== */
+
+.str-chat__message .str-chat__avatar {
+  width: 30px !important;
+  height: 30px !important;
+  flex-shrink: 0 !important;
+  margin-bottom: 2px !important;
+}
+
+/* =====================================================
+   META row: name + timestamp below bubble
+   ===================================================== */
+
+.str-chat__message-data {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.3rem !important;
+  margin-top: 3px !important;
+  padding: 0 2px !important;
+}
+
+.str-chat__message--me .str-chat__message-data {
+  justify-content: flex-end !important;
+}
+
+/* Name */
+.str-chat__message-simple-name {
+  font-weight: 600 !important;
+  color: #475569 !important;
+  font-size: 0.75rem !important;
+}
+
+/* Timestamp */
+.str-chat__message-simple-timestamp {
+  color: #94a3b8 !important;
+  font-size: 0.72rem !important;
+  font-weight: 400 !important;
+}
+
+/* =====================================================
+   DELETED MESSAGES
+   ===================================================== */
+
 .str-chat__message--deleted-inner {
   color: #94a3b8 !important;
   font-style: italic !important;
   background: #f8fafc !important;
   border: 1px dashed #cbd5e1 !important;
   border-radius: 14px !important;
-  padding: 0.6rem 1.25rem !important;
+  padding: 0.5rem 1rem !important;
   opacity: 0.8 !important;
+  font-size: 0.875rem !important;
 }
 
-/* Timestamp and Name below messages */
-.str-chat__message-simple-name {
-  font-weight: 700 !important;
-  color: #475569 !important;
-  font-size: 0.8rem !important;
-  margin-right: 8px !important;
-}
-.str-chat__message-simple-timestamp {
-  color: #94a3b8 !important;
-  font-size: 0.75rem !important;
-  font-weight: 500 !important;
-}
+/* =====================================================
+   READ RECEIPT
+   ===================================================== */
 
-/* Read receipt symbols */
 .str-chat__message-simple-status {
   margin-right: 4px !important;
 }
 .str-chat__message-simple-status svg {
   fill: #94a3b8 !important;
-  width: 14px !important;
-  height: 14px !important;
+  width: 13px !important;
+  height: 13px !important;
+}
+
+/* =====================================================
+   DATE SEPARATOR
+   ===================================================== */
+
+.str-chat__date-separator {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  padding: 0.5rem 1.5rem !important;
+  margin: 0.5rem 0 !important;
+}
+
+.str-chat__date-separator-line {
+  flex: 1 !important;
+  height: 1px !important;
+  background: #e2e8f0 !important;
+}
+
+.str-chat__date-separator-date {
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  background: #f8f9fc !important;
+  padding: 2px 10px !important;
+  border-radius: 99px !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* =====================================================
+   MESSAGE HOVER ACTIONS (react, reply, etc.)
+   ===================================================== */
+
+.str-chat__message-actions-box {
+  background: white !important;
+  border: 1px solid #e8edf5 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+.str-chat__message-simple__actions__action svg {
+  color: #64748b !important;
+  width: 16px !important;
+  height: 16px !important;
+  transition: color 0.15s ease !important;
+}
+
+.str-chat__message-simple__actions__action:hover svg {
+  color: #7c3aed !important;
 }
 
 
-/* --- Message Input Area --- */
+/* =====================================================
+   MESSAGE INPUT AREA
+   ===================================================== */
+
 .str-chat__message-input {
   background: white !important;
-  border-top: 1px solid #f0f0f0 !important;
-  padding: 1rem 1.5rem !important;
+  border-top: 1px solid #eef0f5 !important;
+  padding: 0.875rem 1.25rem !important;
+  /* Subtle top shadow to lift it above the message list */
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.04) !important;
 }
 
+/* The pill-shaped container holding everything */
 .str-chat__message-input-inner {
-  border: 1.5px solid #e2e8f0 !important;
-  border-radius: 28px !important;
-  background: #f8fafc !important;
-  padding: 0.5rem 0.6rem 0.5rem 1.25rem !important;
-  align-items: center !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
   display: flex !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  background: #f8fafc !important;
+  padding: 0.4rem 0.5rem 0.4rem 1rem !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
+  min-height: 52px !important;
 }
 
 .str-chat__message-input-inner:focus-within {
   border-color: #7c3aed !important;
-  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15) !important;
-  background: white !important;
-  transform: translateY(-1px) !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12), 0 2px 8px rgba(0,0,0,0.05) !important;
+  background: #ffffff !important;
 }
 
-/* Attachment / Plus Button */
+/* Attachment / Plus Button — circular icon button on the left */
 .str-chat__attachment-button {
-  margin-right: 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: background 0.2s ease !important;
+  margin-right: 0.25rem !important;
 }
+
+.str-chat__attachment-button:hover {
+  background: rgba(124, 58, 237, 0.1) !important;
+}
+
 .str-chat__attachment-button svg {
   fill: #94a3b8 !important;
-  width: 24px !important;
-  height: 24px !important;
-  transition: all 0.2s ease !important;
+  width: 20px !important;
+  height: 20px !important;
+  transition: fill 0.2s ease, transform 0.25s ease !important;
 }
+
 .str-chat__attachment-button:hover svg {
   fill: #7c3aed !important;
   transform: rotate(90deg) !important;
 }
 
-/* Text Area */
+/* Textarea — auto-grows, no scrollbar, max 5 lines */
+.str-chat__textarea {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
 .str-chat__textarea textarea {
+  display: block !important;
+  width: 100% !important;
   border: none !important;
   background: transparent !important;
-  padding: 0.6rem 0 !important;
+  padding: 0.45rem 0 !important;
   font-family: 'Inter', sans-serif !important;
-  font-size: 1rem !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.5 !important;
   color: #1e293b !important;
   resize: none !important;
-  font-weight: 500 !important;
+  font-weight: 400 !important;
+  outline: none !important;
+  /* Limit growth to ~5 lines */
+  max-height: 130px !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #e2e8f0 transparent !important;
 }
 
 .str-chat__textarea textarea::placeholder {
-  color: #94a3b8 !important;
+  color: #a1afc6 !important;
   font-weight: 400 !important;
 }
 
-/* Send button */
-.str-chat__send-button {
-  background: transparent !important;
-  border: none !important;
-  cursor: pointer !important;
-  padding: 4px !important;
-  margin-left: 0.75rem !important;
+/* Emoji picker button */
+.str-chat__emoji-picker-button {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  flex-shrink: 0 !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: background 0.2s ease !important;
+}
+
+.str-chat__emoji-picker-button:hover {
+  background: rgba(124, 58, 237, 0.1) !important;
+}
+
+.str-chat__emoji-picker-button svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: #94a3b8 !important;
+  transition: color 0.2s ease !important;
+}
+
+.str-chat__emoji-picker-button:hover svg {
+  color: #7c3aed !important;
+}
+
+/* Send button — solid purple circle */
+.str-chat__send-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%) !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.4) !important;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease !important;
+  margin-left: 0.25rem !important;
 }
 
 .str-chat__send-button:hover {
-  transform: scale(1.1) translateX(2px) !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.55) !important;
+}
+
+.str-chat__send-button:active {
+  transform: scale(0.95) !important;
 }
 
 .str-chat__send-button svg {
-  fill: #7c3aed !important;
-  width: 36px !important;
-  height: 36px !important;
-  filter: drop-shadow(0 4px 6px rgba(124, 58, 237, 0.3)) !important;
-}
-
-
-.str-chat__send-button:hover svg {
-  fill: #6d28d9 !important;
+  fill: #ffffff !important;
+  width: 18px !important;
+  height: 18px !important;
+  /* Shift icon slightly right to look optically centered */
+  transform: translateX(1px) !important;
 }
 
 /* ===================================================
