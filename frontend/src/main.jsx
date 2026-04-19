@@ -1,7 +1,12 @@
 import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+
+// Stream Chat SDK needs its own base CSS to render properly
+import "stream-chat-react/dist/css/v2/index.css";
+
 import "./index.css";
 import App from "./App.jsx";
+
 import { ClerkProvider } from "@clerk/react";
 import {
   BrowserRouter,

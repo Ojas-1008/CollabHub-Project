@@ -70,68 +70,40 @@ const UsersList = ({ activeChannel }) => {
     return (
         <div className="team-channel-list__users">
             {users.map((user) => {
-                // Calculate the channel ID to check status
                 const channelId = [client.user.id, user.id].sort().join("-").slice(0, 64);
                 const isActive = activeChannel && activeChannel.id === channelId;
 
-                // Handle conditional button styling
-                let buttonStyle = "str-chat__channel-preview-messenger";
-                if (isActive) {
-                    buttonStyle += " !bg-black/20 !hover:bg-black/20 border-l-8 border-purple-500 shadow-lg";
-                }
+                // We use our own ch-item class names (not Stream's) to avoid layout conflicts
+                const buttonStyle = `ch-item ${isActive ? 'ch-item--active' : ''}`;
 
-                // Get unread count for this specific user's DM
                 const tempChannel = client.channel("messaging", channelId);
                 const unreadCount = tempChannel.countUnread();
 
                 return (
-                    <button
-                        key={user.id}
-                        onClick={() => startDirectMessage(user)}
-                        className={buttonStyle}
-                    >
-                        <div className="flex items-center gap-2 w-full">
-                            {/* Avatar section */}
-                            <div className="relative">
-                                {user.image ? (
-                                    <img
-                                        src={user.image}
-                                        alt={user.name || user.id}
-                                        className="w-4 h-4 rounded-full"
-                                    />
-                                ) : (
-                                    <div className="w-4 h-4 rounded-full bg-gray-400 flex items-center justify-center">
-                                        <span className="text-xs text-white">
-                                            {(user.name || user.id).charAt(0).toUpperCase()}
-                                        </span>
-                                    </div>
-                                )}
-
-                                {/* Online/Offline Dot */}
-                                <CircleIcon
-                                    className={`w-2 h-2 absolute -bottom-0.5 -right-0.5 ${
-                                        user.online ? "text-green-500 fill-green-500" : "text-gray-400 fill-gray-400"
-                                    }`}
-                                />
-                            </div>
-
-                            {/* Name section */}
-                            <span className="str-chat__channel-preview-messenger-name truncate">
-                                {user.name || user.id}
-                            </span>
-
-                            {/* Unread count badge */}
-                            {unreadCount > 0 && (
-                                <span className="flex items-center justify-center ml-2 size-4 text-xs rounded-full bg-red-500 text-white">
-                                    {unreadCount}
-                                </span>
+                    <button key={user.id} onClick={() => startDirectMessage(user)} className={buttonStyle}>
+                        {/* User avatar with online status dot */}
+                        <div className="ch-item__avatar">
+                            {user.image ? (
+                                <img src={user.image} alt={user.name || user.id} className="ch-item__avatar-img" />
+                            ) : (
+                                <div className="ch-item__avatar-fallback">
+                                    {(user.name || user.id).charAt(0).toUpperCase()}
+                                </div>
                             )}
+                            <div className={`ch-item__status-dot ${user.online ? 'ch-item__status-dot--online' : ''}`} />
                         </div>
+
+                        {/* Name */}
+                        <span className="ch-item__name">{user.name || user.id}</span>
+
+                        {/* Unread dot */}
+                        {unreadCount > 0 && <div className="ch-item__badge" />}
                     </button>
                 );
             })}
         </div>
     );
+
 };
 
 export default UsersList;

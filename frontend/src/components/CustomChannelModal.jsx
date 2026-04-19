@@ -121,15 +121,15 @@ const CreateChannelModal = ({ onClose }) => {
       <div className="create-channel-modal">
         {/* HEADER SECTION */}
         <header className="create-channel-modal__header">
-          <h2 className="text-xl font-bold">Create New Channel</h2>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
-            <XIcon className="size-5 text-gray-400" />
+          <h2 className="text-xl font-bold text-white">Create New Channel</h2>
+          <button onClick={onClose} className="p-1 hover:bg-purple-800/40 rounded-full transition-colors">
+            <XIcon className="size-5 text-purple-400" />
           </button>
         </header>
 
         <form onSubmit={handleSubmit} className="create-channel-modal__form">
           {errorNote && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg flex items-center gap-2 mb-4 border border-red-100 text-sm">
+            <div className="bg-red-900/40 text-red-300 p-3 rounded-lg flex items-center gap-2 mb-4 border border-red-700/50 text-sm">
               <AlertCircleIcon className="size-4" />
               <span>{errorNote}</span>
             </div>
@@ -137,45 +137,45 @@ const CreateChannelModal = ({ onClose }) => {
 
           {/* INPUT: CHANNEL NAME */}
           <div className="form-group mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Channel Name</label>
+            <label className="block text-sm font-semibold text-purple-200 mb-1">Channel Name</label>
             <div className="relative">
-              <HashIcon className="absolute left-3 top-2.5 size-4 text-gray-400" />
+              <HashIcon className="absolute left-3 top-2.5 size-4 text-purple-400" />
               <input 
                 type="text" 
                 value={channelName} 
                 onChange={(e) => { setChannelName(e.target.value); setErrorNote(""); }}
                 placeholder="e.g. project-x"
-                className="w-full pl-9 pr-4 py-2 border rounded-lg focus:border-blue-500 outline-none transition-all"
+                className="w-full pl-9 pr-4 py-2 bg-purple-950/50 border border-purple-700/40 rounded-lg text-white placeholder-purple-400/50 focus:border-purple-500 outline-none transition-all"
                 autoFocus
               />
             </div>
             {channelName && (
-              <p className="text-[10px] text-blue-500 mt-1">ID will be: #{formatChannelId(channelName)}</p>
+              <p className="text-[10px] text-purple-400 mt-1">ID will be: #{formatChannelId(channelName)}</p>
             )}
           </div>
 
           {/* INPUT: TYPE SELECTION */}
           <div className="form-group mb-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Channel Type</label>
-            <div className="flex gap-4">
-              <label className={`flex-1 p-3 border rounded-xl cursor-pointer transition-all ${channelType === "public" ? "border-blue-500 bg-blue-50" : "bg-white"}`}>
+            <label className="block text-sm font-semibold text-purple-200 mb-2">Channel Type</label>
+            <div className="flex gap-3">
+              <label className={`flex-1 p-3 border rounded-xl cursor-pointer transition-all ${channelType === "public" ? "border-purple-500 bg-purple-900/40" : "border-purple-800/30 bg-purple-950/30"}`}>
                 <input type="radio" className="hidden" checked={channelType === "public"} onChange={() => setChannelType("public")} />
                 <div className="flex items-center gap-3">
-                  <HashIcon className="size-5 text-blue-500" />
+                  <HashIcon className="size-5 text-purple-400" />
                   <div>
-                    <p className="font-bold text-sm">Public</p>
-                    <p className="text-[10px] text-gray-500">Open to everyone</p>
+                    <p className="font-bold text-sm text-white">Public</p>
+                    <p className="text-[10px] text-purple-400">Open to everyone</p>
                   </div>
                 </div>
               </label>
 
-              <label className={`flex-1 p-3 border rounded-xl cursor-pointer transition-all ${channelType === "private" ? "border-purple-500 bg-purple-50" : "bg-white"}`}>
+              <label className={`flex-1 p-3 border rounded-xl cursor-pointer transition-all ${channelType === "private" ? "border-violet-500 bg-violet-900/40" : "border-purple-800/30 bg-purple-950/30"}`}>
                 <input type="radio" className="hidden" checked={channelType === "private"} onChange={() => setChannelType("private")} />
                 <div className="flex items-center gap-3">
-                  <LockIcon className="size-5 text-purple-600" />
+                  <LockIcon className="size-5 text-violet-400" />
                   <div>
-                    <p className="font-bold text-sm">Private</p>
-                    <p className="text-[10px] text-gray-500">Only invited users</p>
+                    <p className="font-bold text-sm text-white">Private</p>
+                    <p className="text-[10px] text-purple-400">Only invited users</p>
                   </div>
                 </div>
               </label>
@@ -186,35 +186,35 @@ const CreateChannelModal = ({ onClose }) => {
           {channelType === "private" && (
             <div className="form-group mb-4">
               <div className="flex justify-between items-center mb-2">
-                <label className="text-sm font-semibold text-gray-700">Add Team Members</label>
+                <label className="text-sm font-semibold text-purple-200">Add Team Members</label>
                 <button 
                   type="button" 
                   onClick={() => setSelectedUsers(availableUsers.map(u => u.id))} 
-                  className="text-xs text-blue-600 font-bold hover:underline"
+                  className="text-xs text-purple-400 font-bold hover:text-purple-200"
                 >
                   Select All
                 </button>
               </div>
-              <div className="max-h-32 overflow-y-auto border rounded-lg bg-gray-50 divide-y">
+              <div className="max-h-32 overflow-y-auto border border-purple-800/30 rounded-lg bg-purple-950/30 divide-y divide-purple-800/20">
                 {loadingUsers ? (
-                   <p className="p-4 text-center text-xs text-gray-400">Loading users...</p> 
+                   <p className="p-4 text-center text-xs text-purple-400">Loading users...</p> 
                 ) : availableUsers.length === 0 ? (
-                   <p className="p-4 text-center text-xs text-gray-400">No other users found</p>
+                   <p className="p-4 text-center text-xs text-purple-400">No other users found</p>
                 ) : (
                   availableUsers.map(user => (
-                    <label key={user.id} className="flex items-center gap-3 p-2 hover:bg-white cursor-pointer">
+                    <label key={user.id} className="flex items-center gap-3 p-2 hover:bg-purple-900/30 cursor-pointer">
                       <input 
                         type="checkbox" 
-                        className="rounded border-gray-300"
+                        className="rounded border-purple-600 accent-purple-500"
                         checked={selectedUsers.includes(user.id)} 
                         onChange={() => toggleUser(user.id)} 
                       />
                       {user.image ? (
                         <img src={user.image} className="size-6 rounded-full" alt="" />
                       ) : (
-                        <UsersIcon className="size-6 p-1 bg-gray-200 rounded-full" />
+                        <UsersIcon className="size-6 p-1 bg-purple-800 rounded-full text-purple-300" />
                       )}
-                      <span className="text-sm text-gray-700">{user.name || user.id}</span>
+                      <span className="text-sm text-purple-100">{user.name || user.id}</span>
                     </label>
                   ))
                 )}
@@ -224,22 +224,22 @@ const CreateChannelModal = ({ onClose }) => {
 
           {/* INPUT: DESCRIPTION */}
           <div className="form-group mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Description (Optional)</label>
+            <label className="block text-sm font-semibold text-purple-200 mb-1">Description (Optional)</label>
             <textarea 
               value={description} 
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What's this group about?"
-              className="w-full p-2 border rounded-lg h-16 resize-none outline-none text-sm transition-all focus:border-blue-400"
+              className="w-full p-2 bg-purple-950/50 border border-purple-700/40 rounded-lg h-16 resize-none outline-none text-sm text-white placeholder-purple-400/50 transition-all focus:border-purple-500"
             />
           </div>
 
           {/* BOTTOM BUTTONS */}
           <footer className="flex gap-4">
-            <button type="button" onClick={onClose} className="flex-1 py-2 text-sm font-bold text-gray-400">Cancel</button>
+            <button type="button" onClick={onClose} className="flex-1 py-2 text-sm font-bold text-purple-400 hover:text-purple-200 transition-colors">Cancel</button>
             <button 
               type="submit" 
               disabled={!channelName.trim() || isSaving} 
-              className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 transition-all shadow-md"
+              className="flex-1 py-2 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-lg font-bold hover:opacity-90 disabled:opacity-40 transition-all shadow-lg shadow-purple-900/40"
             >
               {isSaving ? "Saving..." : "Create Channel"}
             </button>

@@ -1,21 +1,24 @@
+/* =====================================================
+   COLLABHUB CHAT THEME - v3
+   Uses our own class names (ch-item, etc.) instead of
+   Stream SDK classes to avoid layout conflicts.
+   ===================================================== */
 
-/* COLLABHUB - STREAM CHAT THEME */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* Root variables for our custom theme */
-:root {
-  --str-chat__primary-color: #3b82f6; /* Modern Blue */
-  --str-chat__active-channel-background: rgba(59, 130, 246, 0.1);
-  --str-chat__message-bubble-background: #f3f4f6;
-  --str-chat__message-bubble-text: #1f2937;
-  --str-chat__own-message-bubble-background: #3b82f6;
-  --str-chat__own-message-bubble-text: #ffffff;
+/* --- Global font --- */
+* {
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
 }
 
-/* 1. LAYOUT WRAPPERS */
+/* ===================================================
+   1. TOP-LEVEL LAYOUT
+   =================================================== */
+
 .chat-wrapper {
   height: 100vh;
   width: 100vw;
-  background-color: #030712; /* Very dark blue-gray */
   display: flex;
   overflow: hidden;
 }
@@ -23,103 +26,333 @@
 .chat-container {
   display: flex;
   flex: 1;
-  width: 100%;
+  overflow: hidden;
 }
 
-/* 2. SIDEBAR - CHANNELS LIST */
+/* ===================================================
+   2. SIDEBAR
+   =================================================== */
+
+/* We use this class as the sidebar container */
 .str-chat__channel-list {
-  width: 320px;
-  background-color: #ffffff;
-  border-right: 1px solid #e5e7eb;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  background: linear-gradient(180deg, #3d106d 0%, #1e0633 100%) !important;
+  border: none !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
 }
 
+/*
+  The Stream SDK renders these internal wrappers with white backgrounds.
+  We must forcefully make them transparent so our sidebar gradient shows through.
+*/
+.team-channel-list__content .str-chat,
+.team-channel-list__content .str-chat-channel-list,
+.team-channel-list__content [class*="str-chat"],
+.str-chat__channel-list-messenger,
+.str-chat__channel-list-messenger__main,
+.str-chat__channel-list-messenger__wrapper,
+.str-chat__channel-list-react {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+/* Ensure these inner wrappers still behave like flex containers but without backgrounds */
+.str-chat__channel-list-messenger,
+.str-chat__channel-list-messenger__main,
+.str-chat__channel-list-messenger__wrapper {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.str-chat__channel-list-messenger::-webkit-scrollbar,
+.str-chat__channel-list-messenger__main::-webkit-scrollbar,
+.team-channel-list__content [class*="str-chat"]::-webkit-scrollbar {
+  display: none !important;
+}
+
+
+/* Inner wrapper that we control */
 .team-channel-list {
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding: 1.5rem 1rem;
+  overflow: hidden;
 }
 
+/* App header: logo + user button */
 .team-channel-list__header {
-  padding: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 1.75rem;
+  flex-shrink: 0;         /* Never shrink the header */
 }
 
 .brand-container {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .brand-logo {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
 }
 
 .brand-name {
   font-size: 1.25rem;
   font-weight: 800;
-  color: #111827;
-  letter-spacing: -0.025em;
+  color: white;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-/* 3. CHANNELS & ACTIONS */
+/* The scrollable content area */
 .team-channel-list__content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  /* Hide scrollbar visually but keep it functional */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.team-channel-list__content::-webkit-scrollbar {
+  display: none;
 }
 
+/* ===================================================
+   3. CREATE CHANNEL BUTTON
+   =================================================== */
+
 .create-channel-section {
-  padding: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .create-channel-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   width: 100%;
-  padding: 0.75rem;
-  background-color: #f9fafb;
-  border: 1px dashed #d1d5db;
-  border-radius: 0.75rem;
-  color: #4b5563;
-  font-weight: 600;
-  transition: all 0.2s;
+  height: 46px;
+  padding: 0;
+  background: linear-gradient(90deg, #6d28d9 0%, #4c1d95 100%);
+  border-radius: 23px;  /* Half of height = perfect pill */
+  color: white;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .create-channel-btn:hover {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
-  color: #111827;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.5);
 }
 
-.section-header {
-  padding: 1.5rem 1rem 0.5rem 1.5rem;
+/* ===================================================
+   4. CHANNELS / DM SECTION HEADERS
+   =================================================== */
+
+.section-header-pill {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #9ca3af;
-  letter-spacing: 0.05em;
+  gap: 0.6rem;
+  height: 38px;
+  padding: 0 0.85rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin: 0.5rem 0;
+  color: rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
 }
 
-/* 4. MAIN CHAT CONTENT */
+.section-header-pill svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.section-header-pill span {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: white;
+}
+
+/* ===================================================
+   5. CHANNEL / DM LIST ITEMS (our own class: ch-item)
+   =================================================== */
+
+/* The outer button for each channel or DM */
+.ch-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  height: 40px;                     /* Fixed height — no stretching */
+  padding: 0 0.85rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 3px;
+  text-align: left;
+}
+
+.ch-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Active / selected state */
+.ch-item--active {
+  background: rgba(124, 58, 237, 0.3);
+  border-color: rgba(124, 58, 237, 0.6);
+  color: white;
+}
+
+/* The hash icon inside a channel item */
+.ch-item__icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.ch-item--active .ch-item__icon {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* The channel or user name text */
+.ch-item__name {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* Unread notification red dot */
+.ch-item__badge {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+/* ===================================================
+   6. DM ITEM AVATAR
+   =================================================== */
+
+.ch-item__avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ch-item__avatar-img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ch-item__avatar-fallback {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(124, 58, 237, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+}
+
+/* Online/offline status dot */
+.ch-item__status-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6b7280;  /* Gray = offline */
+  border: 1.5px solid #2d0845;
+}
+
+.ch-item__status-dot--online {
+  background: #22c55e;  /* Green = online */
+}
+
+/* ===================================================
+   7. EMPTY / LOADING STATES IN SIDEBAR
+   =================================================== */
+
+.team-channel-list__message {
+  padding: 0.75rem 0.85rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-style: italic;
+}
+
+/* ===================================================
+   8. HIDE STREAM SDK'S DEFAULT ELEMENTS WE DON'T WANT
+   =================================================== */
+
+/* "Load more" button that appears at the bottom of the channel list */
+.str-chat__load-more-button,
+button.str-chat__load-more-button,
+.str-chat__channel-list-messenger__load-more {
+  display: none !important;
+}
+
+/* Stream's default channel list inner wrapper */
+.str-chat__channel-list-messenger {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* ===================================================
+   9. MAIN CHAT AREA (RIGHT PANEL)
+   =================================================== */
+
 .chat-main {
   flex: 1;
-  background-color: #ffffff;
-  display: flex;
+  display: flex;           /* Required so empty-chat-state can center */
   flex-direction: column;
   height: 100%;
+  background: white;
+  overflow: hidden;
 }
 
+/* Empty state when no channel is selected */
 .empty-chat-state {
   flex: 1;
   display: flex;
@@ -127,31 +360,290 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  gap: 0.5rem;
+  background: white;
   padding: 2rem;
-  background-color: #f9fafb;
 }
 
-/* 5. MODAL STYLES */
+/* ===================================================
+   10. MAIN CHAT AREA (RIGHT PANEL) overrides
+   =================================================== */
+
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  overflow: hidden;
+  /* Use Stream's native CSS variables for clean coloring */
+  --str-chat__primary-color: #7c3aed;
+  --str-chat__active-primary-color: #6d28d9;
+}
+
+/* Empty state when no channel is selected */
+.empty-chat-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.5rem;
+  background: white;
+  padding: 2rem;
+}
+
+/* Make Stream's channel fill its parent .chat-main */
+.str-chat,
+.str-chat__channel,
+.str-chat__container,
+.str-chat__main-panel {
+  height: 100% !important;
+  background: white !important;
+}
+
+/* Channel header bar */
+.str-chat__channel-header {
+  background: white !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  padding: 0.75rem 1.75rem !important;
+  height: 72px !important; /* Slightly taller for more breathing room */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.str-chat__channel-header-title {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  font-size: 1.15rem !important;
+  margin-bottom: 2px !important;
+}
+
+.str-chat__channel-header-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  margin-left: 1rem !important;
+}
+
+/* Header Avatar */
+.str-chat__channel-header .str-chat__avatar {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+.str-chat__avatar-fallback {
+  background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2) !important;
+}
+
+/* Header Subtitle (members count) */
+.str-chat__header-livestream-left-status {
+  color: #64748b !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  gap: 0.5rem !important;
+}
+
+
+/* Message list */
+.str-chat__list,
+.str-chat__message-list-scroll {
+  background: #fafafa !important;
+}
+
+/* --- Premium Message Bubbles --- */
+.str-chat__message-bubble {
+  background: white !important;
+  color: #1e293b !important;
+  border-radius: 18px !important;
+  border-bottom-left-radius: 4px !important;
+  padding: 0.7rem 1.1rem !important;
+  border: 1px solid #f1f5f9 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+  max-width: 85% !important;
+  
+  /* Safe text layout overrides */
+  display: inline-block !important; /* Prevents flex-squishing */
+  width: auto !important;
+  min-width: 60px !important; /* Always give it a bit of width */
+  text-align: left !important;
+}
+
+/* Ensure inner text doesn't collapse */
+.str-chat__message-text-inner {
+  display: inline-block !important;
+  width: auto !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+
+/* My own messages */
+.str-chat__message--me .str-chat__message-bubble {
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 18px !important;
+  border-bottom-right-radius: 4px !important;
+  box-shadow: 0 8px 16px -4px rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Deleted messages (Ghostly/Clean) */
+.str-chat__message--deleted-inner {
+  color: #94a3b8 !important;
+  font-style: italic !important;
+  background: #f8fafc !important;
+  border: 1px dashed #cbd5e1 !important;
+  border-radius: 14px !important;
+  padding: 0.6rem 1.25rem !important;
+  opacity: 0.8 !important;
+}
+
+/* Timestamp and Name below messages */
+.str-chat__message-simple-name {
+  font-weight: 700 !important;
+  color: #475569 !important;
+  font-size: 0.8rem !important;
+  margin-right: 8px !important;
+}
+.str-chat__message-simple-timestamp {
+  color: #94a3b8 !important;
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+}
+
+/* Read receipt symbols */
+.str-chat__message-simple-status {
+  margin-right: 4px !important;
+}
+.str-chat__message-simple-status svg {
+  fill: #94a3b8 !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+
+/* --- Message Input Area --- */
+.str-chat__message-input {
+  background: white !important;
+  border-top: 1px solid #f0f0f0 !important;
+  padding: 1rem 1.5rem !important;
+}
+
+.str-chat__message-input-inner {
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 28px !important;
+  background: #f8fafc !important;
+  padding: 0.5rem 0.6rem 0.5rem 1.25rem !important;
+  align-items: center !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+  display: flex !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.str-chat__message-input-inner:focus-within {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15) !important;
+  background: white !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Attachment / Plus Button */
+.str-chat__attachment-button {
+  margin-right: 0.75rem !important;
+}
+.str-chat__attachment-button svg {
+  fill: #94a3b8 !important;
+  width: 24px !important;
+  height: 24px !important;
+  transition: all 0.2s ease !important;
+}
+.str-chat__attachment-button:hover svg {
+  fill: #7c3aed !important;
+  transform: rotate(90deg) !important;
+}
+
+/* Text Area */
+.str-chat__textarea textarea {
+  border: none !important;
+  background: transparent !important;
+  padding: 0.6rem 0 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 1rem !important;
+  color: #1e293b !important;
+  resize: none !important;
+  font-weight: 500 !important;
+}
+
+.str-chat__textarea textarea::placeholder {
+  color: #94a3b8 !important;
+  font-weight: 400 !important;
+}
+
+/* Send button */
+.str-chat__send-button {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 4px !important;
+  margin-left: 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.str-chat__send-button:hover {
+  transform: scale(1.1) translateX(2px) !important;
+}
+
+.str-chat__send-button svg {
+  fill: #7c3aed !important;
+  width: 36px !important;
+  height: 36px !important;
+  filter: drop-shadow(0 4px 6px rgba(124, 58, 237, 0.3)) !important;
+}
+
+
+.str-chat__send-button:hover svg {
+  fill: #6d28d9 !important;
+}
+
+/* ===================================================
+   11. MODAL
+   =================================================== */
+
 .create-channel-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.2s ease;
 }
 
 .create-channel-modal {
-  background-color: white;
+  background: #1e0b38;
+  border: 1px solid rgba(124, 58, 237, 0.3);
   width: 100%;
-  max-width: 480px;
+  max-width: 460px;
   border-radius: 1.25rem;
-  padding: 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 1.75rem;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: white;
 }
 
 .create-channel-modal__header {
@@ -161,28 +653,12 @@
   margin-bottom: 1.5rem;
 }
 
-/* Simple Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
+  from { transform: translateY(16px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
-}
-
-/* 6. STREAM COMPONENT OVERRIDES */
-.str-chat__channel-list-messenger {
-  background-color: transparent !important;
-}
-
-.str-chat__channel-preview-messenger {
-  border-radius: 0.75rem !important;
-  margin: 0.25rem 0.75rem !important;
-  transition: background-color 0.2s !important;
-}
-
-.str-chat__channel-preview-messenger--active {
-  background-color: var(--str-chat__active-channel-background) !important;
 }

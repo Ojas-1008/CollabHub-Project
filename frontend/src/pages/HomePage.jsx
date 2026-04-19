@@ -45,7 +45,7 @@ const HomePage = () => {
   }, [chatClient, searchParams]);
 
   // Handle global loading or error states
-  if (error) return <div className="p-8 text-red-500 text-center">Connection error. Please refresh.</div>;
+  if (error) return <div className="h-screen w-screen flex items-center justify-center text-red-400 bg-[#2d094b]">Connection error. Please refresh.</div>;
   if (isLoading || !chatClient) return <PageLoader />;
 
   // Helper function to handle switching channels
@@ -93,12 +93,12 @@ const HomePage = () => {
                   )}
                   List={({ children, loading, error: listError }) => (
                     <div className="channel-sections">
-                      <div className="section-header">
+                      <div className="section-header-pill">
                         <HashIcon className="size-4" />
                         <span>Channels</span>
                       </div>
 
-                      {loading && <p className="px-4 text-xs opacity-50">Loading channels...</p>}
+                      {loading && <p className="px-4 text-xs opacity-50 text-white/50">Loading channels...</p>}
                       {listError && <p className="px-4 text-xs text-red-400">Failed to load channels.</p>}
                       
                       <div className="channels-list">{children}</div>
@@ -108,7 +108,7 @@ const HomePage = () => {
 
                 {/* DIRECT MESSAGES LIST */}
                 <div className="channel-sections mt-4">
-                  <div className="section-header">
+                  <div className="section-header-pill">
                     <UsersIcon className="size-4" />
                     <span>Direct Messages</span>
                   </div>
@@ -133,7 +133,8 @@ const HomePage = () => {
               // Empty selection state
               <div className="empty-chat-state">
                 <img src="/logo.png" alt="Logo" className="w-16 h-16 opacity-10 mb-4 grayscale" />
-                <p className="text-gray-400">Select a channel to start messaging</p>
+                <p className="text-gray-800 font-bold text-lg">Select a channel to start messaging</p>
+                <p className="text-gray-500 text-sm mt-1">Pick a channel from the sidebar</p>
               </div>
             )}
           </main>
