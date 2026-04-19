@@ -7,57 +7,61 @@ import * as Sentry from "@sentry/react";
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
+// This custom hook handles connecting a user to the Stream Chat service
 export const useStreamChat = () => {
     const { user } = useUser();
     const [chatClient, setChatClient] = useState(null);
 
-    // 1. Use React Query to fetch our chat token from the backend
+    // 1. Fetch the secure chat token from our backend API
     const { data: tokenData, isLoading, error } = useQuery({
         queryKey: ["streamToken"],
         queryFn: getStreamToken,
-        enabled: !!user?.id,
+        enabled: !!user?.id, // Only run if we have a user logged in
     });
 
-    // 2. Connect to the Stream service once we have both a user and a token
+    // 2. Connect the user to the chat client
     useEffect(() => {
-        // If anything is missing, we can't start yet
-        if (!user?.id || !tokenData?.token || !STREAM_API_KEY) return;
+        // We need a user ID, a token, and an API key to proceed
+        if (!user?.id || !tokenData?.token || !STREAM_API_KEY) {
+            return;
+        }
 
+        // Initialize the chat client
         const client = StreamChat.getInstance(STREAM_API_KEY);
-        let isCancelled = false;
+        
+        // This flag helps prevent memory leaks or settings state if page changes
+        let isStopped = false;
 
         const connectUser = async () => {
             try {
-                // Decide which name to display (FullName -> Username -> Email -> ID)
-                const name = user.fullName || user.username || user.primaryEmailAddress?.emailAddress || user.id;
+                // Pick a name to display: Full Name > Username > ID
+                const displayName = user.fullName || user.username || user.id;
 
+                // Attempt to connect the user
                 await client.connectUser(
                     {
                         id: user.id,
-                        name: name,
+                        name: displayName,
                         image: user.imageUrl || undefined,
                     },
                     tokenData.token
                 );
 
-                // If the user hasn't left the page, save the connected client
-                if (!isCancelled) {
+                // If the connection is still valid, update our state
+                if (!isStopped) {
                     setChatClient(client);
                 }
             } catch (err) {
-                console.error("Stream Chat connection error:", err);
-                Sentry.captureException(err, {
-                    tags: { component: "useStreamChat" },
-                    extra: { context: "stream_chat_connection", userId: user.id },
-                });
+                console.error("Failed to connect to chat:", err);
+                Sentry.captureException(err);
             }
         };
 
         connectUser();
 
-        // Cleanup: Disconnect when the user leaves or logs out
+        // CLEANUP: Disconnect user when they log out or leave the page
         return () => {
-            isCancelled = true;
+            isStopped = true;
             client.disconnectUser();
         };
     }, [user?.id, tokenData?.token]);

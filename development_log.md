@@ -170,6 +170,15 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - **HomePage Cleanup**: Simplified the main dashboard by reverting to standard Stream SDK components (`ChannelHeader`, `ChannelList` defaults) to minimize custom code footprint and improve stability.
 - **Auth UX Fix**: Removed a dummy error simulation in `AuthPage.jsx` that was triggered by a timer, resolving the "Unable to connect" message that appeared while users were using the sign-in modal.
 - **CORS Resolution**: Updated backend CORS configuration to explicitly allow `http://localhost:5173` with `credentials: true`. This fixes the preflight failure caused by Axios using `withCredentials` for session sharing.
+- **Beginner-Friendly Refactor & Side-Bar Integration**:
+  - **CustomChannelPreview.jsx**: Simplified CSS string manipulation and callback logic to follow a step-by-step student approach.
+  - **UsersList.jsx**: Refactored the direct messaging list to remove abstract hooks and split logic into clearly labeled variables. Fixed a "shadow-lg" typo and standardized casing.
+  - **HomePage.jsx**: Integrated the `UsersList` into the sidebar to enable Direct Messaging functionality. Standardized headers and icons across the dashboard.
+  - **CustomChannelModal.jsx**: Structured form state and submission logic into linear "steps" for better educational clarity.
+  - **Filesystem Resolution**: Fixed a critical build error caused by case-insensitivity conflicts in filename casing (`CustomChannelPreview.jsx`).
+- **Tailwind CSS Infrastructure**:
+  - Installed and configured `tailwindcss`, `postcss`, and `autoprefixer` to resolve an issue where the frontend was rendering as plain HTML without styling.
+  - Implemented `tailwind.config.js` and `postcss.config.js` and updated `index.css` with the required `@tailwind` directives.
 - **Verification**: Successfully tested the entire end-to-end flow: User SignUp via Clerk $\rightarrow$ Automated DB Sync $\rightarrow$ Secure Stream Chat Token Generation $\rightarrow$ Real-time Messaging on Dashboard. All systems verified and stable.
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
@@ -180,11 +189,11 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Add `cors()` middleware to the backend.
 - [x] Set up frontend infrastructure (Router, Sentry, Query Client, Toast).
 - [x] Integrate Stream Chat React SDK on the frontend.
-- [ ] Implement core dashboard components (Channel list, Message window).
-- [ ] Implement form validation on both client and server sides.
+- [x] Implement core dashboard components (Channel list, Message window).
+- [x] Implement form validation on both client and server sides.
 - [x] Implement AuthProvider logic and secure token handling.
 - [ ] Build a comprehensive profile management page.
-- [ ] Design and implement the primary dashboard layout.
+- [x] Design and implement the primary dashboard layout.
 
 
 

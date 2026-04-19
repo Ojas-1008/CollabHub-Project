@@ -16,9 +16,11 @@ import {
 
 import PageLoader from "../components/PageLoader";
 import CreateChannelModal from "../components/CustomChannelModal";
+import CustomChannelPreview from "../components/CustomChannelPreview";
+import UsersList from "../components/UsersList";
 
 // Icons and Styles
-import { HashIcon, PlusIcon } from "lucide-react";
+import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
 import "../styles/stream-chat-theme.css";
 
 const HomePage = () => {
@@ -64,7 +66,7 @@ const HomePage = () => {
               <div className="team-channel-list__header">
                 <div className="brand-container">
                   <img src="/logo.png" alt="Logo" className="brand-logo" />
-                  <span className="brand-name">Slap</span>
+                  <span className="brand-name">CollabHub</span>
                 </div>
                 <UserButton />
               </div>
@@ -81,8 +83,14 @@ const HomePage = () => {
                 {/* THE MAIN CHANNELS LIST */}
                 <ChannelList
                   filters={{ members: { $in: [chatClient.user.id] } }}
-                  onSelect={(channel) => setSearchParams({ channel: channel.id })}
                   options={{ state: true, watch: true }}
+                  Preview={(previewProps) => (
+                    <CustomChannelPreview
+                      {...previewProps}
+                      setActiveChannel={handleSelectChannel}
+                      activeChannel={activeChannel}
+                    />
+                  )}
                   List={({ children, loading, error: listError }) => (
                     <div className="channel-sections">
                       <div className="section-header">
@@ -97,6 +105,15 @@ const HomePage = () => {
                     </div>
                   )}
                 />
+
+                {/* DIRECT MESSAGES LIST */}
+                <div className="channel-sections mt-4">
+                  <div className="section-header">
+                    <UsersIcon className="size-4" />
+                    <span>Direct Messages</span>
+                  </div>
+                  <UsersList activeChannel={activeChannel} />
+                </div>
               </div>
             </div>
           </aside>
