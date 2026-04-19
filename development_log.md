@@ -157,7 +157,9 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 ### Changed
 - **Logic Refactoring (Beginner Friendly)**:
   - **useStreamChat.js**: Completely refactored the hook logic to follow a linear, step-by-step "Connect User" flow. This makes the complex process of initializing real-time services easier to follow for students while still using pro-level tools like TanStack Query.
-  - **Code Simplification**: Replaced complex nullish coalescing chains with straightforward logical fallbacks for user display names and simplified dependency arrays.
+  - **HomePage.jsx**: Refactored to use semantic HTML (`aside`, `main`) and a cleaner state-to-URL synchronization. Added a friendly "empty state" for better user experience when no channel is selected.
+  - **CustomChannelModal.jsx**: Overhauled the channel creation flow. Simplified member selection, added a live "Channel ID" preview, and improved form validation logic to be more linear and readable.
+  - **Code Simplification**: Replaced complex nullish coalescing chains with straightforward logical fallbacks across all active components.
 
 ### Fixed
 - **Import Path Synchronization**: Resolved multiple path mismatches in internal imports between `frontend/src` and `frontend/lib`, ensuring the hook correctly references core API utilities.

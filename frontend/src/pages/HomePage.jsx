@@ -1,29 +1,146 @@
-import { UserButton } from "@clerk/react";
-import { useChat } from "../providers/AuthProvider";
+import { useState, useEffect } from "react";
+import { UserButton } from "@clerk/clerk-react";
+import { useSearchParams } from "react-router-dom";
+import { useStreamChat } from "../hooks/useStreamChat";
+
+// Stream Chat Library Components
+import {
+  Chat,
+  Channel,
+  ChannelList,
+  MessageList,
+  MessageInput,
+  Thread,
+  Window,
+} from "stream-chat-react";
+
+// Custom UI Components
+import PageLoader from "../components/PageLoader";
+import CreateChannelModal from "../components/CreateChannelModal";
+import CustomChannelPreview from "../components/CustomChannelPreview";
+import CustomChannelHeader from "../components/CustomChannelHeader";
+import UsersList from "../components/UsersList";
+
+// Icons and Styles
+import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
+import "../styles/stream-chat-theme.css";
 
 const HomePage = () => {
-  const { chatClient } = useChat();
+  // 1. Get our custom chat client and status from our hook
+  const { chatClient, isLoading, error } = useStreamChat();
+  
+  // 2. Set up local state for UI management
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeChannel, setActiveChannel] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // 3. Sync the active channel based on the URL (?channel=...)
+  useEffect(() => {
+    if (!chatClient) return;
+
+    const channelId = searchParams.get("channel");
+    if (channelId) {
+      // Look up the channel data using its ID
+      const channel = chatClient.channel("messaging", channelId);
+      setActiveChannel(channel);
+    }
+  }, [chatClient, searchParams]);
+
+  // Handle global loading or error states
+  if (error) return <div className="p-8 text-red-500 text-center">Connection error. Please refresh.</div>;
+  if (isLoading || !chatClient) return <PageLoader />;
+
+  // Helper function to handle switching channels
+  const handleSelectChannel = (channel) => {
+    setSearchParams({ channel: channel.id });
+  };
 
   return (
-    <div className="p-8">
-      <header className="flex justify-between items-center mb-8">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold">CollabHub Dashboard</h1>
-          {chatClient ? (
-            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium animate-pulse">
-              ● Connected to Chat
-            </span>
-          ) : (
-            <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-sm font-medium">
-              Connecting to Chat...
-            </span>
-          )}
+    <div className="chat-wrapper">
+      <Chat client={chatClient}>
+        <div className="chat-container">
+          
+          {/* LEFT SIDEBAR: Branding and Channel Lists */}
+          <aside className="str-chat__channel-list">
+            <div className="team-channel-list">
+              
+              {/* APP HEADER */}
+              <div className="team-channel-list__header">
+                <div className="brand-container">
+                  <img src="/logo.png" alt="Logo" className="brand-logo" />
+                  <span className="brand-name">Slap</span>
+                </div>
+                <UserButton />
+              </div>
+
+              <div className="team-channel-list__content">
+                {/* BUTTON: CREATE CHANNEL */}
+                <div className="create-channel-section">
+                  <button onClick={() => setIsModalOpen(true)} className="create-channel-btn">
+                    <PlusIcon className="size-4" />
+                    <span>Create Channel</span>
+                  </button>
+                </div>
+
+                {/* THE MAIN CHANNELS LIST */}
+                <ChannelList
+                  filters={{ members: { $in: [chatClient.user.id] } }}
+                  options={{ state: true, watch: true }}
+                  Preview={(props) => (
+                    <CustomChannelPreview 
+                      {...props} 
+                      activeChannel={activeChannel} 
+                      setActiveChannel={handleSelectChannel} 
+                    />
+                  )}
+                  List={({ children, loading, error: listError }) => (
+                    <div className="channel-sections">
+                      <div className="section-header">
+                        <HashIcon className="size-4" />
+                        <span>Channels</span>
+                      </div>
+
+                      {loading && <p className="px-4 text-xs opacity-50">Loading channels...</p>}
+                      {listError && <p className="px-4 text-xs text-red-400">Failed to load channels.</p>}
+                      
+                      <div className="channels-list">{children}</div>
+
+                      <div className="section-header direct-messages">
+                        <UsersIcon className="size-4" />
+                        <span>Direct Messages</span>
+                      </div>
+                      <UsersList activeChannel={activeChannel} />
+                    </div>
+                  )}
+                />
+              </div>
+            </div>
+          </aside>
+
+          {/* RIGHT VIEW: The actual chat conversation */}
+          <main className="chat-main">
+            {activeChannel ? (
+              <Channel channel={activeChannel}>
+                <Window>
+                  <CustomChannelHeader />
+                  <MessageList />
+                  <MessageInput />
+                </Window>
+                <Thread />
+              </Channel>
+            ) : (
+              // Empty selection state
+              <div className="empty-chat-state">
+                <img src="/logo.png" alt="Logo" className="w-16 h-16 opacity-10 mb-4 grayscale" />
+                <p className="text-gray-400">Select a channel to start messaging</p>
+              </div>
+            )}
+          </main>
         </div>
-        <UserButton />
-      </header>
-      <main>
-        <p className="text-gray-600">Welcome to your collaborative workspace!</p>
-      </main>
+
+        {/* MODAL: Creation popups */}
+        {isModalOpen && <CreateChannelModal onClose={() => setIsModalOpen(false)} />}
+      </Chat>
     </div>
   );
 };
