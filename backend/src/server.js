@@ -14,7 +14,10 @@ import chatRoutes from "./routes/chat.route.js";
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ENV.FRONTEND_URL,
+  credentials: true
+}));
 app.use(clerkMiddleware());
 
 // --- Routes ---

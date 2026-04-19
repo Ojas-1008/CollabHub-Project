@@ -1,28 +1,24 @@
 import { useState, useEffect } from "react";
-import { UserButton } from "@clerk/clerk-react";
+import { UserButton } from "@clerk/react";
 import { useSearchParams } from "react-router-dom";
 import { useStreamChat } from "../hooks/useStreamChat";
 
-// Stream Chat Library Components
 import {
   Chat,
   Channel,
   ChannelList,
+  ChannelHeader,
   MessageList,
   MessageInput,
   Thread,
   Window,
 } from "stream-chat-react";
 
-// Custom UI Components
 import PageLoader from "../components/PageLoader";
-import CreateChannelModal from "../components/CreateChannelModal";
-import CustomChannelPreview from "../components/CustomChannelPreview";
-import CustomChannelHeader from "../components/CustomChannelHeader";
-import UsersList from "../components/UsersList";
+import CreateChannelModal from "../components/CustomChannelModal";
 
 // Icons and Styles
-import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
+import { HashIcon, PlusIcon } from "lucide-react";
 import "../styles/stream-chat-theme.css";
 
 const HomePage = () => {
@@ -85,14 +81,8 @@ const HomePage = () => {
                 {/* THE MAIN CHANNELS LIST */}
                 <ChannelList
                   filters={{ members: { $in: [chatClient.user.id] } }}
+                  onSelect={(channel) => setSearchParams({ channel: channel.id })}
                   options={{ state: true, watch: true }}
-                  Preview={(props) => (
-                    <CustomChannelPreview 
-                      {...props} 
-                      activeChannel={activeChannel} 
-                      setActiveChannel={handleSelectChannel} 
-                    />
-                  )}
                   List={({ children, loading, error: listError }) => (
                     <div className="channel-sections">
                       <div className="section-header">
@@ -104,12 +94,6 @@ const HomePage = () => {
                       {listError && <p className="px-4 text-xs text-red-400">Failed to load channels.</p>}
                       
                       <div className="channels-list">{children}</div>
-
-                      <div className="section-header direct-messages">
-                        <UsersIcon className="size-4" />
-                        <span>Direct Messages</span>
-                      </div>
-                      <UsersList activeChannel={activeChannel} />
                     </div>
                   )}
                 />
@@ -122,7 +106,7 @@ const HomePage = () => {
             {activeChannel ? (
               <Channel channel={activeChannel}>
                 <Window>
-                  <CustomChannelHeader />
+                  <ChannelHeader />
                   <MessageList />
                   <MessageInput />
                 </Window>

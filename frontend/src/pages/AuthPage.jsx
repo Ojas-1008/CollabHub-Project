@@ -5,25 +5,12 @@ import { useState, useEffect } from "react";
 const AuthPage = () => {
   // State for loading and error handling
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // Simulate initial page load
+  // Use effect to clear the initial page loading state
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
+    const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
-
-  // Handle button click with loading state
-  const handleSignIn = () => {
-    setIsLoading(true);
-    // Simulate authentication process
-    setTimeout(() => {
-      setIsLoading(false);
-      setError("Unable to connect. Please try again.");
-    }, 2000);
-  };
 
   return (
     <div className="auth-container">
@@ -59,39 +46,13 @@ const AuthPage = () => {
           </div>
 
           <SignInButton mode="modal" forceRedirectUrl="/">
-            <button 
-              className={`cta-button ${isLoading ? "loading" : ""}`} 
-              onClick={handleSignIn}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <span className="button-content">
-                  <span className="spinner"></span>
-                  <span>Signing in...</span>
-                </span>
-              ) : (
-                <span className="button-content">
-                  Get Started with collabhub
-                  <span className="button-arrow">→</span>
-                </span>
-              )}
+            <button className="cta-button" disabled={isLoading}>
+              <span className="button-content">
+                Get Started with collabhub
+                <span className="button-arrow">→</span>
+              </span>
             </button>
           </SignInButton>
-
-          {/* Error message component */}
-          {error && (
-            <div className="error-message">
-              <span className="error-icon">⚠️</span>
-              <span>{error}</span>
-              <button 
-                className="error-close" 
-                onClick={() => setError(null)}
-                aria-label="Close error message"
-              >
-                ✕
-              </button>
-            </div>
-          )}
 
           <footer className="auth-footer">
             <p>© 2026 collabhub. All rights reserved.</p>

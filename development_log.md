@@ -163,6 +163,14 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 
 ### Fixed
 - **Import Path Synchronization**: Resolved multiple path mismatches in internal imports between `frontend/src` and `frontend/lib`, ensuring the hook correctly references core API utilities.
+- **Dependency Missing**: Fixed a startup error by installing `lucide-react` for frontend icons.
+- **Clerk Package Alignment**: Corrected `@clerk/clerk-react` imports to `@clerk/react` project-wide to match legacy dependency mappings.
+- **Missing Styles**: Created `stream-chat-theme.css` to provide a consistent modern look for the chat dashboard and resolve Vite import errors.
+- **Provider Simplification**: Refactored `AuthProvider.jsx` to focus exclusively on the Axios request interceptor, removing redundant and conflicting chat connection logic. Fixed incorrect relative paths for global library imports.
+- **HomePage Cleanup**: Simplified the main dashboard by reverting to standard Stream SDK components (`ChannelHeader`, `ChannelList` defaults) to minimize custom code footprint and improve stability.
+- **Auth UX Fix**: Removed a dummy error simulation in `AuthPage.jsx` that was triggered by a timer, resolving the "Unable to connect" message that appeared while users were using the sign-in modal.
+- **CORS Resolution**: Updated backend CORS configuration to explicitly allow `http://localhost:5173` with `credentials: true`. This fixes the preflight failure caused by Axios using `withCredentials` for session sharing.
+- **Verification**: Successfully tested the entire end-to-end flow: User SignUp via Clerk $\rightarrow$ Automated DB Sync $\rightarrow$ Secure Stream Chat Token Generation $\rightarrow$ Real-time Messaging on Dashboard. All systems verified and stable.
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
 - [x] Define User model and implement basic CRUD logic for Clerk syncing.
