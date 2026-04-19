@@ -148,11 +148,19 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 ### Refinement
 - **Observability**: Integrated consistent, emoji-coded terminal logs (✅, 🗑️, 🔑, 📢) across all core backend integration files to make background processes visible and easy to debug.
 - **Git Workflow**: Consolidated all structural fixes and refactors into a single migration commit and pushed to the remote repository.
+## [2026-04-19] - Frontend Hook Refactoring and API Centralization
 
+### Added
+- **Frontend API Library**: Created `frontend/lib/api.js` to centralize chat-related API calls, starting with the `getStreamToken` function for fetching chat access tokens.
+- **Custom Hook (`useStreamChat`)**: Implemented a custom hook to manage the lifecycle of the Stream Chat client. This hook integrates `@tanstack/react-query` for efficient token management and handles real-time connection/disconnection logic.
 
+### Changed
+- **Logic Refactoring (Beginner Friendly)**:
+  - **useStreamChat.js**: Completely refactored the hook logic to follow a linear, step-by-step "Connect User" flow. This makes the complex process of initializing real-time services easier to follow for students while still using pro-level tools like TanStack Query.
+  - **Code Simplification**: Replaced complex nullish coalescing chains with straightforward logical fallbacks for user display names and simplified dependency arrays.
 
-
-### Pending Tasks
+### Fixed
+- **Import Path Synchronization**: Resolved multiple path mismatches in internal imports between `frontend/src` and `frontend/lib`, ensuring the hook correctly references core API utilities.
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
 - [x] Define User model and implement basic CRUD logic for Clerk syncing.
