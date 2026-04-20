@@ -227,8 +227,30 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Implement AuthProvider logic and secure token handling.
 - [x] Design and implement the primary dashboard layout with custom "SLAP" aesthetic.
 - [ ] Build a comprehensive profile management page.
+- [x] Define Task model for message-to-task integration.
+- [x] Implement Backend API routes and controllers for Task management.
+- [x] Build the TaskModal UI components.
+- [x] Connect the "Create Task" button to the Stream Chat message list.
+- [x] Build the Channel Task List drawer in the dashboard.
 
+## [2026-04-20] - Task Integration Feature ("The Action Gap Solver")
 
+### Added
+- **Task Model** (`backend/src/models/task.model.js`): Defined a Mongoose schema for tasks linked to specific Stream channels and messages. Fields include `title`, `description`, `assignee`, `creator`, `channelId`, `messageId`, `dueDate`, and a status enum (`todo`, `in-progress`, `done`).
+- **Task Backend API**:
+  - Created `task.controller.js` with `createTask`, `getTasksByChannel`, and `updateTaskStatus` handlers.
+  - Created `task.route.js` with protected REST endpoints (`POST /`, `GET /channel/:channelId`, `PATCH /:taskId`), all secured with `protectRoute` middleware.
+  - Registered `/api/tasks` in `server.js`.
+- **Frontend API Library** (`frontend/lib/api.js`): Added `createTask`, `getTasks`, and `updateTaskStatus` functions for communicating with the new backend endpoints.
+- **`useTasks` Custom Hook**: Built a TanStack Query-powered hook to fetch and cache tasks per channel, and handle status-update mutations with automatic cache invalidation.
+- **`TaskModal.jsx`**: A premium glassmorphic modal component that converts a chat message into a task. Features auto-filled description from message text, assignee dropdown from channel members, and an optional due date picker.
+- **`TaskListDrawer.jsx`**: A slide-in panel that displays all tasks for the active channel, categorized into "To Do" and "Completed" sections. Each Task Card shows the assignee, due date, and a click-to-toggle status checkbox.
 
+### Changed
+- **`HomePage.jsx`**: Integrated `customMessageActions` prop on `MessageList` to inject a "Create Task" option into the Stream message dropdown menu. Moved `TaskModal` inside the `<Channel>` component tree to provide required Stream SDK context. Swapped default `ChannelHeader` for `CustomChannelHeader` to surface the Task List Drawer toggle.
+- **`CustomChannelHeader.jsx`**: Added a `ListTodoIcon` button that toggles the `TaskListDrawer` open/closed, with an active highlight state when the drawer is open.
 
-
+### Fixed
+- **Stream SDK v13 Compatibility** (`customMessageActions`): The original `customMessageActions` prop on `<Channel>` was silently ignored in v13. Moved it to `<MessageList>` where it is correctly processed. Also removed a broken attempt to use the `experimental/MessageActions` bundle (`defaultMessageActionSet`) which caused a Vite `SyntaxError` and then an empty actions menu.
+- **React Context Crash**: Resolved a blank-page crash caused by `TaskModal` using `useChannelStateContext()` while being rendered outside the `<Channel>` component. Fixed by moving the modal's render position to inside `<Channel>`.
+- **Clerk Import Mismatch** (`CustomChannelHeader.jsx`): Corrected `@clerk/clerk-react` to `@clerk/react` to match the package installed in `package.json`, resolving a Vite import-analysis error.

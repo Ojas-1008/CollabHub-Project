@@ -13,7 +13,7 @@
 // ─── IMPORTS ──────────────────────────────────────────────────────────────────
 
 // Lucide-react gives us clean SVG icons as React components
-import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon } from "lucide-react";
+import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon } from "lucide-react";
 
 // useChannelStateContext is a Stream SDK hook.
 // It gives us live access to the currently active channel's data and state
@@ -25,12 +25,13 @@ import { useState } from "react";
 
 // useUser gives us the currently signed-in Clerk user object.
 // We need it to figure out which member in a DM is "the other person".
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/react";
 
 // Our three modal components, each opened by a button in this header
 import MembersModal from "./MembersModal";
 import PinnedMessagesModal from "./PinnedMessagesModal";
 import InviteModal from "./InviteModal";
+import TaskListDrawer from "./TaskListDrawer"; // Import Task Drawer
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 
@@ -53,6 +54,7 @@ const CustomChannelHeader = () => {
     const [showInvite, setShowInvite] = useState(false);
     const [showMembers, setShowMembers] = useState(false);
     const [showPinnedMessages, setShowPinnedMessages] = useState(false);
+    const [showTasks, setShowTasks] = useState(false); // Toggle for tasks
 
     // Step 5 — Store the fetched pinned messages array.
     // We fetch them lazily (only when the user clicks the pin button).
@@ -161,6 +163,14 @@ const CustomChannelHeader = () => {
                 <button className="hover:bg-[#F8F8F8] p-1 rounded" onClick={handleShowPinned}>
                     <PinIcon className="size-4 text-[#616061]" />
                 </button>
+
+                {/* TASK BUTTON: Opens the task list drawer */}
+                <button 
+                    className={`p-1 rounded transition-colors ${showTasks ? 'bg-purple-100 text-purple-600' : 'hover:bg-[#F8F8F8] text-[#616061]'}`}
+                    onClick={() => setShowTasks(!showTasks)}
+                >
+                    <ListTodoIcon className="size-5" />
+                </button>
             </div>
 
             {/* ── MODALS (rendered at the bottom so JSX stays readable) ───────── */}
@@ -183,6 +193,9 @@ const CustomChannelHeader = () => {
 
             {/* InviteModal: pass the full channel object so it can call channel.addMembers() */}
             {showInvite && <InviteModal channel={channel} onClose={() => setShowInvite(false)} />}
+
+            {/* TaskListDrawer: Slides in from the right to show channel tasks */}
+            {showTasks && <TaskListDrawer onClose={() => setShowTasks(false)} />}
         </div>
     );
 };

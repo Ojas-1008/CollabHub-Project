@@ -10,6 +10,7 @@ import { clerkMiddleware } from "@clerk/express";
 import { functions, inngest } from "./config/inngest.js";
 import { serve } from "inngest/express";
 import chatRoutes from "./routes/chat.route.js";
+import taskRoutes from "./routes/task.route.js";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(clerkMiddleware());
 // --- Routes ---
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
+app.use("/api/tasks", taskRoutes);
 
 app.get("/debug-sentry", (req, res) => {
   throw new Error("My first Sentry error!");

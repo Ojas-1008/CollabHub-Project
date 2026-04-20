@@ -7,16 +7,18 @@ import {
   Chat,
   Channel,
   ChannelList,
-  ChannelHeader,
   MessageList,
   MessageInput,
   Thread,
   Window,
 } from "stream-chat-react";
 
+
 import PageLoader from "../components/PageLoader";
 import CreateChannelModal from "../components/CustomChannelModal";
+import TaskModal from "../components/TaskModal";
 import CustomChannelPreview from "../components/CustomChannelPreview";
+import CustomChannelHeader from "../components/CustomChannelHeader";
 import UsersList from "../components/UsersList";
 
 // Icons and Styles
@@ -31,6 +33,10 @@ const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeChannel, setActiveChannel] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // Task Integration State
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [selectedTaskMessage, setSelectedTaskMessage] = useState(null);
 
   // 3. Sync the active channel based on the URL (?channel=...)
   useEffect(() => {
@@ -51,6 +57,16 @@ const HomePage = () => {
   // Helper function to handle switching channels
   const handleSelectChannel = (channel) => {
     setSearchParams({ channel: channel.id });
+  };
+
+  // --- CUSTOM MESSAGE ACTIONS ---
+  // customMessageActions is a { 'Label': handlerFn } map still supported by MessageList.
+  // The handler receives the (message, event) when the user clicks the action.
+  const customMessageActions = {
+    "Create Task": (message) => {
+      setSelectedTaskMessage(message);
+      setIsTaskModalOpen(true);
+    },
   };
 
   return (
@@ -123,11 +139,21 @@ const HomePage = () => {
             {activeChannel ? (
               <Channel channel={activeChannel}>
                 <Window>
-                  <ChannelHeader />
-                  <MessageList />
+                  <CustomChannelHeader />
+                  <MessageList customMessageActions={customMessageActions} />
                   <MessageInput />
                 </Window>
                 <Thread />
+                {/* TaskModal must be inside Channel so it can access Stream's channel context */}
+                {isTaskModalOpen && (
+                  <TaskModal
+                    message={selectedTaskMessage}
+                    onClose={() => {
+                      setIsTaskModalOpen(false);
+                      setSelectedTaskMessage(null);
+                    }}
+                  />
+                )}
               </Channel>
             ) : (
               // Empty selection state
@@ -140,7 +166,7 @@ const HomePage = () => {
           </main>
         </div>
 
-        {/* MODAL: Creation popups */}
+        {/* MODAL: Channel creation popup */}
         {isModalOpen && <CreateChannelModal onClose={() => setIsModalOpen(false)} />}
       </Chat>
     </div>
