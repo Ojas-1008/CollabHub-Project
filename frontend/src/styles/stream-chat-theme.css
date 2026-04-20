@@ -491,7 +491,8 @@ button.str-chat__load-more-button,
 .str-chat__message-inner {
   display: flex !important;
   flex-direction: column !important;
-  max-width: 70% !important;
+  width: fit-content !important;
+  max-width: min(72%, 42rem) !important;
   min-width: 0 !important;
 }
 
@@ -507,9 +508,9 @@ button.str-chat__load-more-button,
 .str-chat__message-bubble {
   /* Layout: block so it fills the inner width, not collapses to inline */
   display: block !important;
-  width: fit-content !important;
+  width: auto !important;
   max-width: 100% !important;
-  min-width: 48px !important;
+  min-width: 0 !important;
 
   /* Bubble appearance */
   background: #ffffff !important;
@@ -873,6 +874,50 @@ button.str-chat__load-more-button,
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .str-chat__li {
+    padding: 2px 1rem !important;
+  }
+
+  .str-chat__message-inner {
+    max-width: min(80%, 34rem) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .str-chat__li {
+    padding: 2px 0.85rem !important;
+  }
+
+  .str-chat__message {
+    gap: 0.4rem !important;
+  }
+
+  .str-chat__message-inner {
+    max-width: 88% !important;
+  }
+
+  .str-chat__message-bubble {
+    padding: 0.55rem 0.85rem !important;
+    border-radius: 15px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .str-chat__li {
+    padding: 2px 0.65rem !important;
+  }
+
+  .str-chat__message-inner {
+    max-width: 92% !important;
+  }
+
+  .str-chat__message .str-chat__avatar {
+    width: 26px !important;
+    height: 26px !important;
+  }
 }
 
 @keyframes fadeIn {
