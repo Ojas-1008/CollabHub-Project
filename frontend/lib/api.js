@@ -24,3 +24,11 @@ export async function updateTaskStatus(taskId, status) {
   const response = await axiosInstance.patch(`/tasks/${taskId}`, { status });
   return response.data;
 }
+
+/**
+ * 👤 USER APIs
+ */
+export async function updateUserStatus(status) {
+  const response = await axiosInstance.patch("/users/status", { status });
+  return response.data;
+}

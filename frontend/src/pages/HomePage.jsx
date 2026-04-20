@@ -20,6 +20,7 @@ import TaskModal from "../components/TaskModal";
 import CustomChannelPreview from "../components/CustomChannelPreview";
 import CustomChannelHeader from "../components/CustomChannelHeader";
 import UsersList from "../components/UsersList";
+import StatusInputPopover from "../components/StatusInputPopover";
 
 // Icons and Styles
 import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
@@ -60,12 +61,37 @@ const HomePage = () => {
   };
 
   // --- CUSTOM MESSAGE ACTIONS ---
-  // customMessageActions is a { 'Label': handlerFn } map still supported by MessageList.
-  // The handler receives the (message, event) when the user clicks the action.
+  // customMessageActions is an object where each key is a label shown in the
+  // right-click (three-dot ⋯) menu, and the value is a function that runs
+  // when the user clicks that option. The function receives the message object.
   const customMessageActions = {
+
+    // Create Task: converts a message into a tracked task (existing feature)
     "Create Task": (message) => {
       setSelectedTaskMessage(message);
       setIsTaskModalOpen(true);
+    },
+
+    // Pin Message: pins the message so it appears in the Pinned Messages sidebar.
+    // chatClient.pinMessage() calls the Stream API and marks that message as pinned.
+    // A pinned: true flag is stored on the message object inside Stream.
+    "Pin Message": async (message) => {
+      try {
+        await chatClient.pinMessage(message);
+      } catch (err) {
+        console.error("Failed to pin message:", err);
+      }
+    },
+
+    // Unpin Message: removes the pin from a message.
+    // chatClient.unpinMessage() sets pinned: false on that message in Stream.
+    // Useful if someone pinned the wrong message.
+    "Unpin Message": async (message) => {
+      try {
+        await chatClient.unpinMessage(message);
+      } catch (err) {
+        console.error("Failed to unpin message:", err);
+      }
     },
   };
 
@@ -79,12 +105,18 @@ const HomePage = () => {
             <div className="team-channel-list">
               
               {/* APP HEADER */}
-              <div className="team-channel-list__header">
-                <div className="brand-container">
-                  <img src="/logo.png" alt="Logo" className="brand-logo" />
-                  <span className="brand-name">CollabHub</span>
+              <div className="team-channel-list__header flex-col items-start gap-4">
+                <div className="flex items-center justify-between w-full">
+                  <div className="brand-container">
+                    <img src="/logo.png" alt="Logo" className="brand-logo" />
+                    <span className="brand-name">CollabHub</span>
+                  </div>
+                  <UserButton />
                 </div>
-                <UserButton />
+                {/* STATUS INPUT POPOVER */}
+                <div className="w-full border-t border-purple-500/20 pt-2 relative z-50">
+                  <StatusInputPopover />
+                </div>
               </div>
 
               <div className="team-channel-list__content">

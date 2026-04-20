@@ -7,7 +7,7 @@
  *   - A members count button that opens MembersModal
  *   - A video call button (sends a call-link message to the channel)
  *   - An "Invite" button (only for private channels, opens InviteModal)
- *   - A pin button that opens PinnedMessagesModal
+ *   - A pin button that toggles the PinnedMessages sidebar
  */
 
 // ─── IMPORTS ──────────────────────────────────────────────────────────────────
@@ -18,7 +18,10 @@ import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon } from 
 // useChannelStateContext is a Stream SDK hook.
 // It gives us live access to the currently active channel's data and state
 // (members, messages, settings, etc.) without having to pass props manually.
-import { useChannelStateContext } from "stream-chat-react";
+import { useChannelStateContext, useChatContext } from "stream-chat-react";
+//                                ^^^^^^^^^^^^^^^
+// useChatContext gives us the Stream `client` object so we can call
+// client.unpinMessage() to unpin messages from the sidebar.
 
 // useState lets us create simple boolean toggles to show/hide modals
 import { useState } from "react";
@@ -27,7 +30,7 @@ import { useState } from "react";
 // We need it to figure out which member in a DM is "the other person".
 import { useUser } from "@clerk/react";
 
-// Our three modal components, each opened by a button in this header
+// Our modal/drawer components, each opened by a button in this header
 import MembersModal from "./MembersModal";
 import PinnedMessagesModal from "./PinnedMessagesModal";
 import InviteModal from "./InviteModal";
@@ -39,6 +42,9 @@ const CustomChannelHeader = () => {
     // Step 1 — Pull the active channel from Stream's context.
     // `channel` is a Stream Channel object with methods like .query(), .sendMessage(), etc.
     const { channel } = useChannelStateContext();
+
+    // Pull the Stream chat client. We need it to call client.unpinMessage().
+    const { client } = useChatContext();
 
     // Step 2 — Get the currently logged-in Clerk user.
     // We use `user.id` to filter out ourselves when identifying the "other" DM participant.
@@ -74,13 +80,37 @@ const CustomChannelHeader = () => {
 
     // ── HANDLERS ──────────────────────────────────────────────────────────────
 
-    // Handler: Fetch pinned messages from the Stream API and open the modal.
-    // channel.query() returns the full channel state, including pinned_messages.
-    // We store those in state so PinnedMessagesModal can display them.
+    // Handler: Toggle the pinned messages sidebar.
+    // If the sidebar is already open, close it.
+    // If it's closed, fetch the latest pinned messages and open it.
     const handleShowPinned = async () => {
+        // If sidebar is already open, just close it (toggle behavior)
+        if (showPinnedMessages) {
+            setShowPinnedMessages(false);
+            return;
+        }
+        // Otherwise: ask Stream for the full channel state.
+        // channel.query() returns an object that includes pinned_messages.
         const channelState = await channel.query();
         setPinnedMessages(channelState.pinned_messages);
         setShowPinnedMessages(true);
+    };
+
+    // Handler: Unpin a message.
+    // Called when the user clicks the "Unpin" button inside the sidebar.
+    // client.unpinMessage(message) talks to the Stream API to remove the pin.
+    // After unpinning, we remove that message from our local state immediately
+    // so the sidebar updates without needing a full refresh.
+    const handleUnpin = async (message) => {
+        try {
+            await client.unpinMessage(message);
+
+            // Remove the unpinned message from the local list so the sidebar updates instantly.
+            // .filter() creates a NEW array that keeps every message EXCEPT the one we just unpinned.
+            setPinnedMessages((prev) => prev.filter((m) => m.id !== message.id));
+        } catch (err) {
+            console.error("Failed to unpin message:", err);
+        }
     };
 
     // Handler: Start a video call.
@@ -125,9 +155,16 @@ const CustomChannelHeader = () => {
                     )}
 
                     {/* Display name: for DMs use the other person's name; for channels use channel ID */}
-                    <span className="font-medium text-[#1D1C1D]">
-                        {isDM ? otherUser?.user?.name || otherUser?.user?.id : channel.data?.id}
-                    </span>
+                    <div className="flex flex-col justify-center">
+                        <span className="font-medium text-[#1D1C1D] leading-tight">
+                            {isDM ? otherUser?.user?.name || otherUser?.user?.id : channel.data?.id}
+                        </span>
+                        {isDM && otherUser?.user?.status && (
+                            <span className="text-[11px] text-gray-500 mt-0.5 truncate max-w-[200px]">
+                                {otherUser.user.status}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -159,9 +196,15 @@ const CustomChannelHeader = () => {
                     </button>
                 )}
 
-                {/* PIN BUTTON: fetches and displays pinned messages */}
-                <button className="hover:bg-[#F8F8F8] p-1 rounded" onClick={handleShowPinned}>
-                    <PinIcon className="size-4 text-[#616061]" />
+                {/* PIN BUTTON: toggles the pinned messages sidebar
+                    When the sidebar is open, the button background turns purple (active state)
+                    — same visual pattern as the task drawer button below. */}
+                <button
+                    className={`p-1 rounded transition-colors ${showPinnedMessages ? 'bg-purple-100 text-purple-600' : 'hover:bg-[#F8F8F8] text-[#616061]'}`}
+                    onClick={handleShowPinned}
+                    title={showPinnedMessages ? "Close pinned messages" : "View pinned messages"}
+                >
+                    <PinIcon className="size-4" />
                 </button>
 
                 {/* TASK BUTTON: Opens the task list drawer */}
@@ -183,11 +226,13 @@ const CustomChannelHeader = () => {
                 />
             )}
 
-            {/* PinnedMessagesModal: pass the fetched array of pinned messages */}
+            {/* PinnedMessagesModal: pass the fetched array + the unpin handler.
+                This now renders as a sidebar, not a center modal. */}
             {showPinnedMessages && (
                 <PinnedMessagesModal
                     pinnedMessages={pinnedMessages}
                     onClose={() => setShowPinnedMessages(false)}
+                    onUnpin={handleUnpin}
                 />
             )}
 

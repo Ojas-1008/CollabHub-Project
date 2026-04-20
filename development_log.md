@@ -254,3 +254,46 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - **Stream SDK v13 Compatibility** (`customMessageActions`): The original `customMessageActions` prop on `<Channel>` was silently ignored in v13. Moved it to `<MessageList>` where it is correctly processed. Also removed a broken attempt to use the `experimental/MessageActions` bundle (`defaultMessageActionSet`) which caused a Vite `SyntaxError` and then an empty actions menu.
 - **React Context Crash**: Resolved a blank-page crash caused by `TaskModal` using `useChannelStateContext()` while being rendered outside the `<Channel>` component. Fixed by moving the modal's render position to inside `<Channel>`.
 - **Clerk Import Mismatch** (`CustomChannelHeader.jsx`): Corrected `@clerk/clerk-react` to `@clerk/react` to match the package installed in `package.json`, resolving a Vite import-analysis error.
+
+## [2026-04-20] - Pinned Messages Sidebar and CORS Stabilization
+
+### Added
+- **Pinned Messages Sidebar** (`frontend/src/components/PinnedMessagesModal.jsx`):
+  - Refactored the existing `PinnedMessagesModal` from a center-screen dialog into a premium, right-side slide-in sidebar (drawer).
+  - Implemented a glassmorphic design system using `bg-purple-950/40` and `backdrop-blur-2xl` to match the "SLAP" aesthetic of the Task List Drawer.
+  - Added a dynamic message counter badge and styled message cards that display sender avatars, names, and a 4-line text preview.
+  - Integrated an interactive "Unpin" button on hover for each message card, allowing users to manage pins directly from the sidebar.
+- **Pinning Message Actions**:
+  - Expanded `customMessageActions` in `HomePage.jsx` to include "Pin Message" and "Unpin Message" options in the message settings menu (three-dot hover menu).
+  - Wired these actions to the Stream Chat SDK's `pinMessage` and `unpinMessage` methods.
+
+### Changed
+- **`CustomChannelHeader.jsx`**:
+  - Enhanced the pin button with toggle logic (clicking closes the sidebar if already open).
+  - Added a purple active state highlight to the pin icon to provide clear visual feedback when the sidebar is active.
+  - Integrated `useChatContext` to allow unpinning messages directly via the Stream client.
+  - Implemented a `handleUnpin` function that updates the local sidebar state immediately after a successful API call for a snappier user experience.
+
+### Fixed
+- **CORS Connectivity**: Resolved a "preflight request blocked" error by updating `backend/src/server.js` to allow `http://localhost:5174` as a valid origin. This ensures the app remains stable when Vite shifts ports due to local environment conflicts.
+
+## [2026-04-20] - Custom Profile Status Integration
+
+### Added
+- **User Model Update** (`backend/src/models/user.model.js`): Added a `status` field with a maximum length of 50 characters to store custom user statuses.
+- **User Backend API**:
+  - Created `user.controller.js` with `updateUserStatus` to handle secure status updates. Integrates `User.findOneAndUpdate` for MongoDB and `upsertStreamUser` to sync the status to the Stream Chat client.
+  - Created `user.route.js` with a protected `PATCH /status` endpoint.
+  - Registered `/api/users` route in `server.js`.
+- **Frontend API Library** (`frontend/lib/api.js`): Added `updateUserStatus` method to facilitate PATCH requests to the backend endpoint.
+- **Status Input UI** (`frontend/src/components/StatusInputPopover.jsx`):
+  - Created a popover component that allows users to set a custom text and emoji status.
+  - Includes a set of quick-select presets (e.g., "In a meeting", "Focus mode").
+  - Optimistically updates `client.user.status` for the local Stream chat instance to ensure instantaneous UI feedback.
+- **UI Integration**:
+  - `HomePage.jsx`: Integrated the `StatusInputPopover` seamlessly into the dashboard sidebar header.
+  - `UsersList.jsx`: Updated the direct messages sidebar logic to display a user's custom status immediately below their name.
+
+### Changed
+- **CORS Configuration**: Explicitly appended `http://localhost:5174` to the backend CORS allowed origins list array in `server.js` (in addition to `http://localhost:5173`) to maintain development stability when multiple Vite instances conflict on ports.
+

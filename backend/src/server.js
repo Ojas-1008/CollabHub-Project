@@ -11,12 +11,13 @@ import { functions, inngest } from "./config/inngest.js";
 import { serve } from "inngest/express";
 import chatRoutes from "./routes/chat.route.js";
 import taskRoutes from "./routes/task.route.js";
+import userRoutes from "./routes/user.route.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(cors({
-  origin: ENV.FRONTEND_URL,
+  origin: [ENV.FRONTEND_URL, 'http://localhost:5174'],
   credentials: true
 }));
 app.use(clerkMiddleware());
@@ -25,6 +26,7 @@ app.use(clerkMiddleware());
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/debug-sentry", (req, res) => {
   throw new Error("My first Sentry error!");

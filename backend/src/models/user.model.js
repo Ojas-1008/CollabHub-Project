@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+    },
+    status: {
+        type: String,
+        default: "",
+        maxLength: 50
     }
 }, {timestamps: true});
 
