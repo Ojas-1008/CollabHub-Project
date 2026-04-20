@@ -322,7 +322,10 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - Registered `/api/webhooks` in `server.js`.
 
 ### Fixed
+- **Production Dependency Resolution**: Moved `inngest` from `devDependencies` to `dependencies` in `backend/package.json` and synchronized `pnpm-lock.yaml` to ensure successful deployment and runtime execution on Vercel.
+- **Startup Stability (Lazy Loading)**: Refactored `backend/src/utils/email.js` to implement lazy initialization for the Resend client. This prevents server-side crashes during startup when environment variables are being configured or missing.
 - **Stream Client Export**: Updated `backend/src/config/stream.js` to export the `streamClient` instance, enabling its use for webhook verification in other routes.
+- **Inngest Discovery**: Resolved an issue where new functions weren't triggering by forcing a synchronization in the Inngest Cloud Dashboard to refresh the application's function registry.
 
 ### Task List
 - [x] Implement MongoDB connection logic using Mongoose.
