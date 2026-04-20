@@ -40,6 +40,12 @@ const HomePage = () => {
   const [selectedTaskMessage, setSelectedTaskMessage] = useState(null);
 
   // 3. Sync the active channel based on the URL (?channel=...)
+  // We also read ?message= to support the "Jump to Message" feature in FileExplorer.
+  // When a user clicks "Jump" on a file card, we navigate to /?channel=X&message=Y.
+  // MessageList accepts a `highlightedMessageId` prop that scrolls to and highlights
+  // the specified message automatically.
+  const messageId = searchParams.get("message") || undefined;
+
   useEffect(() => {
     if (!chatClient) return;
 
@@ -172,7 +178,13 @@ const HomePage = () => {
               <Channel channel={activeChannel}>
                 <Window>
                   <CustomChannelHeader />
-                  <MessageList customMessageActions={customMessageActions} />
+                  {/* Pass highlightedMessageId so the chat auto-scrolls to the message
+                      that was linked from the File Explorer "Jump to Message" button.
+                      Stream's MessageList handles the scrolling automatically. */}
+                  <MessageList
+                    customMessageActions={customMessageActions}
+                    highlightedMessageId={messageId}
+                  />
                   <MessageInput />
                 </Window>
                 <Thread />

@@ -212,6 +212,21 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - **UI Stability**: Strengthened the flexbox architecture of message rows to ensure they remain responsive even with extremely large batches of text or oddly shaped media.
 - **Educational Documentation**: Integrated numbered step comments across all core header and modal components, making the complex Stream SDK interactions transparent for developers.
 
+## [2026-04-20] - Shared File Explorer Implementation
+
+### Added
+- **Shared File Explorer Feature**:
+  - **`useChannelFiles` Hook**: A custom hook that queries Stream Chat for messages containing attachments. Implements pagination and flattens data into a clean, UI-ready file list.
+  - **`FileCard` Component**: Individual file cards with smart icons (PDF, Image, Code), size formatting, and download/jump actions.
+  - **`FileExplorer` Drawer**: A premium glassmorphic sidebar that serves as a centralized dashboard for all channel attachments. Includes filter tabs (All, Images, Docs, Links) and infinite-scroll pagination.
+- **Enhanced Navigation**:
+  - **Jump to Message**: Integrated URL-based message highlighting. When a user clicks "Jump" in the File Explorer, the chat automatically scrolls to and highlights that specific message using `highlightedMessageId`.
+- **Header Integration**: Added a dedicated "Files" button to `CustomChannelHeader` with active-state highlighting.
+
+### Refinement
+- **UI/UX**: Maintained the "SLAP" aesthetic with `backdrop-blur-2xl` and consistent purple-tinted glass surfaces.
+- **Documentation**: Added comprehensive, beginner-friendly inline comments to all new files (`useChannelFiles.js`, `FileCard.jsx`, `FileExplorer.jsx`).
+
 ### Task List
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
@@ -232,6 +247,7 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Build the TaskModal UI components.
 - [x] Connect the "Create Task" button to the Stream Chat message list.
 - [x] Build the Channel Task List drawer in the dashboard.
+- [x] Build the Shared File Explorer sidebar with filtering and pagination.
 
 ## [2026-04-20] - Task Integration Feature ("The Action Gap Solver")
 

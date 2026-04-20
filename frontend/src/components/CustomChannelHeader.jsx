@@ -13,7 +13,7 @@
 // ─── IMPORTS ──────────────────────────────────────────────────────────────────
 
 // Lucide-react gives us clean SVG icons as React components
-import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon } from "lucide-react";
+import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon, FolderOpenIcon } from "lucide-react";
 
 // useChannelStateContext is a Stream SDK hook.
 // It gives us live access to the currently active channel's data and state
@@ -35,6 +35,7 @@ import MembersModal from "./MembersModal";
 import PinnedMessagesModal from "./PinnedMessagesModal";
 import InviteModal from "./InviteModal";
 import TaskListDrawer from "./TaskListDrawer"; // Import Task Drawer
+import FileExplorer from "./FileExplorer"; // Import File Explorer
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 
@@ -61,6 +62,7 @@ const CustomChannelHeader = () => {
     const [showMembers, setShowMembers] = useState(false);
     const [showPinnedMessages, setShowPinnedMessages] = useState(false);
     const [showTasks, setShowTasks] = useState(false); // Toggle for tasks
+    const [showFiles, setShowFiles] = useState(false); // Toggle for file explorer
 
     // Step 5 — Store the fetched pinned messages array.
     // We fetch them lazily (only when the user clicks the pin button).
@@ -211,8 +213,21 @@ const CustomChannelHeader = () => {
                 <button 
                     className={`p-1 rounded transition-colors ${showTasks ? 'bg-purple-100 text-purple-600' : 'hover:bg-[#F8F8F8] text-[#616061]'}`}
                     onClick={() => setShowTasks(!showTasks)}
+                    title={showTasks ? "Close tasks" : "View channel tasks"}
                 >
                     <ListTodoIcon className="size-5" />
+                </button>
+
+                {/* FILES BUTTON: Opens the shared file explorer sidebar.
+                    Follows the same active-state pattern as Pin and Tasks buttons.
+                    When active: purple tint background + purple icon.
+                    When inactive: grey icon + subtle hover highlight. */}
+                <button
+                    className={`p-1 rounded transition-colors ${showFiles ? 'bg-purple-100 text-purple-600' : 'hover:bg-[#F8F8F8] text-[#616061]'}`}
+                    onClick={() => setShowFiles(!showFiles)}
+                    title={showFiles ? "Close file explorer" : "Browse shared files"}
+                >
+                    <FolderOpenIcon className="size-5" />
                 </button>
             </div>
 
@@ -241,6 +256,10 @@ const CustomChannelHeader = () => {
 
             {/* TaskListDrawer: Slides in from the right to show channel tasks */}
             {showTasks && <TaskListDrawer onClose={() => setShowTasks(false)} />}
+
+            {/* FileExplorer: Slides in from the right to show all shared files.
+                onClose sets showFiles back to false, hiding the panel. */}
+            {showFiles && <FileExplorer onClose={() => setShowFiles(false)} />}
         </div>
     );
 };
