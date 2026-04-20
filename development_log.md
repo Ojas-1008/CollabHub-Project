@@ -190,6 +190,28 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
     - Fixed vertical "text-squishing" in message bubbles by implementing a safer `inline-block` layout strategy.
 - **Verification**: Successfully tested the entire end-to-end flow: User SignUp via Clerk → Automated DB Sync → Secure Stream Chat Token Generation → Real-time Messaging on Dashboard. All systems verified and stable with high-fidelity UI.
 
+## [2026-04-20] - Messaging UI Polishing and Git Sync
+
+### Fixed
+- **Messaging UI Artifacts**: 
+  - Hidden the default black error icon (`.str-chat__message-error-icon`) that incorrectly appeared inside sent message bubbles.
+  - Fixed text "bleeding" and overflow issues for long unbroken strings by implementing `overflow: hidden` and `word-break: break-all` on message bubbles.
+  - Resolved unstyled timestamp and read receipt alignment by targeting the correct Stream SDK metadata classes.
+  - Collapsed the empty reactions container to prevent unnecessary vertical spacing in message rows.
+  - **InviteModal Fix**: Corrected a state synchronization issue by making member selection checkboxes fully controlled components.
+  - **Avatar Fallbacks**: Implemented initial-based fallback avatars in `MembersModal` and `PinnedMessagesModal` to prevent missing images from breaking the UI layout.
+
+### Changed
+- **UX Optimization**: Refactored message action buttons (react, reply, options) to be hidden by default and fade in only on hover, significantly reducing visual noise in the chat history.
+- **Code Refactoring (Contextual)**: Overhauled `CustomChannelHeader.jsx`, `InviteModal.jsx`, `MembersModal.jsx`, and `PinnedMessagesModal.jsx` to follow a linear, beginner-friendly architecture with extensive inline documentation.
+- **Git Workflow**: 
+  - Successfully synchronized local UI fixes with the remote repository.
+  - Manually resolved code conflicts in `stream-chat-theme.css` during a rebase-push cycle.
+
+### Refinement
+- **UI Stability**: Strengthened the flexbox architecture of message rows to ensure they remain responsive even with extremely large batches of text or oddly shaped media.
+- **Educational Documentation**: Integrated numbered step comments across all core header and modal components, making the complex Stream SDK interactions transparent for developers.
+
 ### Task List
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
