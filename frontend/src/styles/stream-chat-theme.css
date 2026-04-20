@@ -94,7 +94,8 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.75rem;
-  flex-shrink: 0;         /* Never shrink the header */
+  flex-shrink: 0;
+  /* Never shrink the header */
 }
 
 .brand-container {
@@ -125,6 +126,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
 .team-channel-list__content::-webkit-scrollbar {
   display: none;
 }
@@ -146,7 +148,8 @@
   height: 46px;
   padding: 0;
   background: linear-gradient(90deg, #6d28d9 0%, #4c1d95 100%);
-  border-radius: 23px;  /* Half of height = perfect pill */
+  border-radius: 23px;
+  /* Half of height = perfect pill */
   color: white;
   font-weight: 700;
   font-size: 0.82rem;
@@ -205,7 +208,8 @@
   align-items: center;
   gap: 0.6rem;
   width: 100%;
-  height: 40px;                     /* Fixed height — no stretching */
+  height: 40px;
+  /* Fixed height — no stretching */
   padding: 0 0.85rem;
   border-radius: 10px;
   border: 1px solid transparent;
@@ -303,12 +307,14 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #6b7280;  /* Gray = offline */
+  background: #6b7280;
+  /* Gray = offline */
   border: 1.5px solid #2d0845;
 }
 
 .ch-item__status-dot--online {
-  background: #22c55e;  /* Green = online */
+  background: #22c55e;
+  /* Green = online */
 }
 
 /* ===================================================
@@ -345,7 +351,8 @@ button.str-chat__load-more-button,
 
 .chat-main {
   flex: 1;
-  display: flex;           /* Required so empty-chat-state can center */
+  display: flex;
+  /* Required so empty-chat-state can center */
   flex-direction: column;
   height: 100%;
   background: white;
@@ -408,8 +415,9 @@ button.str-chat__load-more-button,
   background: white !important;
   border-bottom: 1px solid #f0f0f0 !important;
   padding: 0.75rem 1.75rem !important;
-  height: 72px !important; /* Slightly taller for more breathing room */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  height: 72px !important;
+  /* Slightly taller for more breathing room */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02) !important;
   display: flex !important;
   align-items: center !important;
 }
@@ -491,9 +499,11 @@ button.str-chat__load-more-button,
 .str-chat__message-inner {
   display: flex !important;
   flex-direction: column !important;
+  position: relative !important;
   width: fit-content !important;
   max-width: min(72%, 42rem) !important;
   min-width: 0 !important;
+  overflow: hidden !important;
 }
 
 /* My messages inner — align contents right */
@@ -511,6 +521,7 @@ button.str-chat__load-more-button,
   width: auto !important;
   max-width: 100% !important;
   min-width: 0 !important;
+  overflow: hidden !important;
 
   /* Bubble appearance */
   background: #ffffff !important;
@@ -519,7 +530,7 @@ button.str-chat__load-more-button,
   border-bottom-left-radius: 5px !important;
   padding: 0.65rem 1rem !important;
   border: 1px solid #e8edf5 !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.04) !important;
   font-size: 0.9375rem !important;
   line-height: 1.55 !important;
   text-align: left !important;
@@ -530,11 +541,15 @@ button.str-chat__load-more-button,
 .str-chat__message-text-inner {
   display: block !important;
   width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
   /* break-word handles long normal strings; anywhere handles URLs/gibberish */
   overflow-wrap: anywhere !important;
-  word-break: break-word !important;
-  white-space: pre-wrap !important;       /* Preserve intentional line breaks */
-  hyphens: none !important;              /* No auto-hyphenation splitting words */
+  word-break: break-all !important;
+  white-space: pre-wrap !important;
+  /* Preserve intentional line breaks */
+  hyphens: none !important;
+  /* No auto-hyphenation splitting words */
 }
 
 /* Strip inner <p> margin so text fits flush */
@@ -553,7 +568,7 @@ button.str-chat__load-more-button,
   border: none !important;
   border-radius: 18px !important;
   border-bottom-right-radius: 5px !important;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35), 0 1px 3px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
 .str-chat__message--me .str-chat__message-text-inner p {
@@ -617,12 +632,77 @@ button.str-chat__load-more-button,
 }
 
 /* =====================================================
+   ERROR ICON — hide the delivery-error dot on sent msgs
+   ===================================================== */
+
+.str-chat__message-error-icon {
+  display: none !important;
+}
+
+/* =====================================================
+   MESSAGE ACTIONS — show only on hover
+   ===================================================== */
+
+.str-chat__message-simple__actions,
+.str-chat__message-options {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.15s ease, visibility 0.15s ease !important;
+  position: absolute !important;
+  top: -2px !important;
+  right: 0 !important;
+  z-index: 10 !important;
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  padding: 2px !important;
+}
+
+/* For own messages, flip to the left side */
+.str-chat__message--me .str-chat__message-simple__actions,
+.str-chat__message--me .str-chat__message-options {
+  right: auto !important;
+  left: 0 !important;
+}
+
+.str-chat__message:hover .str-chat__message-simple__actions,
+.str-chat__message:hover .str-chat__message-options {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* Empty reactions host — collapse it */
+.str-chat__message-reactions-host:empty {
+  display: none !important;
+}
+
+/* =====================================================
+   MESSAGE METADATA (timestamp / status below bubble)
+   Stream uses .str-chat__message-metadata in the DOM
+   ===================================================== */
+
+.str-chat__message-metadata {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  margin-top: 4px !important;
+  padding: 0 2px !important;
+}
+
+.str-chat__message--me .str-chat__message-metadata {
+  justify-content: flex-end !important;
+}
+
+/* =====================================================
    READ RECEIPT
    ===================================================== */
 
 .str-chat__message-simple-status {
   margin-right: 4px !important;
 }
+
 .str-chat__message-simple-status svg {
   fill: #94a3b8 !important;
   width: 13px !important;
@@ -667,7 +747,7 @@ button.str-chat__load-more-button,
   background: white !important;
   border: 1px solid #e8edf5 !important;
   border-radius: 12px !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
 }
 
 .str-chat__message-simple__actions__action svg {
@@ -691,7 +771,7 @@ button.str-chat__load-more-button,
   border-top: 1px solid #eef0f5 !important;
   padding: 0.875rem 1.25rem !important;
   /* Subtle top shadow to lift it above the message list */
-  box-shadow: 0 -2px 12px rgba(0,0,0,0.04) !important;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.04) !important;
 }
 
 /* The pill-shaped container holding everything */
@@ -703,14 +783,14 @@ button.str-chat__load-more-button,
   border-radius: 16px !important;
   background: #f8fafc !important;
   padding: 0.4rem 0.5rem 0.4rem 1rem !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
   transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
   min-height: 52px !important;
 }
 
 .str-chat__message-input-inner:focus-within {
   border-color: #7c3aed !important;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12), 0 2px 8px rgba(0,0,0,0.05) !important;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05) !important;
   background: #ffffff !important;
 }
 
@@ -864,7 +944,7 @@ button.str-chat__load-more-button,
   max-width: 460px;
   border-radius: 1.25rem;
   padding: 1.75rem;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   color: white;
 }
@@ -921,11 +1001,23 @@ button.str-chat__load-more-button,
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { transform: translateY(16px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
