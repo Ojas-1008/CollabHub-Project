@@ -12,4 +12,5 @@ export const ENV = {
     FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
     STREAM_API_KEY: process.env.STREAM_API_KEY,
     STREAM_API_SECRET: process.env.STREAM_API_SECRET,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
 };

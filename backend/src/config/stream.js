@@ -8,7 +8,7 @@ import { ENV } from "../config/env.js";
  * Because we use the API_SECRET here, this client has full power to 
  * create users, delete users, and generate secure login tokens.
  */
-const streamClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
+export const streamClient = StreamChat.getInstance(ENV.STREAM_API_KEY, ENV.STREAM_API_SECRET);
 
 // ==========================================
 // SECTION 1: IDENTITY SYNC

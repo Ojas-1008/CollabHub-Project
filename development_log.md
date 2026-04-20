@@ -310,6 +310,40 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - `HomePage.jsx`: Integrated the `StatusInputPopover` seamlessly into the dashboard sidebar header.
   - `UsersList.jsx`: Updated the direct messages sidebar logic to display a user's custom status immediately below their name.
 
-### Changed
-- **CORS Configuration**: Explicitly appended `http://localhost:5174` to the backend CORS allowed origins list array in `server.js` (in addition to `http://localhost:5173`) to maintain development stability when multiple Vite instances conflict on ports.
+## [2026-04-20] - Offline Email Notifications Implementation
+
+### Added
+- **Offline Email Notifications**:
+  - **Webhook Route** (`backend/src/routes/webhook.route.js`): Established a secure endpoint to listen for Stream Chat `message.new` events. Uses header signature verification to ensure data integrity.
+  - **Resend Integration** (`backend/src/utils/email.js`): Configured the Resend SDK to handle transactional email delivery. Designed a premium, responsive HTML template for unread message notifications.
+  - **Inngest Workflow** (`backend/src/config/inngest.js`): Developed an event-driven function `handleOfflineNotification` that utilizes "smart debouncing" (2-minute sleep) to prevent spam. It verifies a recipient's offline status via the Stream SDK before fetching their email from MongoDB and triggering the notification.
+- **Backend Configuration**:
+  - Updated `env.js` and `.env` with `RESEND_API_KEY` mapping.
+  - Registered `/api/webhooks` in `server.js`.
+
+### Fixed
+- **Stream Client Export**: Updated `backend/src/config/stream.js` to export the `streamClient` instance, enabling its use for webhook verification in other routes.
+
+### Task List
+- [x] Implement MongoDB connection logic using Mongoose.
+- [x] Replace Vite boilerplate with authentication components.
+- [x] Define User model and implement basic CRUD logic for Clerk syncing.
+- [x] Integrate Inngest with Express server for webhook processing.
+- [x] Verify MongoDB Atlas connection and server startup.
+- [x] Set up basic API routes and controllers in the backend.
+- [x] Add `cors()` middleware to the backend.
+- [x] Set up frontend infrastructure (Router, Sentry, Query Client, Toast).
+- [x] Integrate Stream Chat React SDK on the frontend.
+- [x] Implement core dashboard components (Channel list, Message window).
+- [x] Implement form validation on both client and server sides.
+- [x] Implement AuthProvider logic and secure token handling.
+- [x] Design and implement the primary dashboard layout with custom "SLAP" aesthetic.
+- [ ] Build a comprehensive profile management page.
+- [x] Define Task model for message-to-task integration.
+- [x] Implement Backend API routes and controllers for Task management.
+- [x] Build the TaskModal UI components.
+- [x] Connect the "Create Task" button to the Stream Chat message list.
+- [x] Build the Channel Task List drawer in the dashboard.
+- [x] Build the Shared File Explorer sidebar with filtering and pagination.
+- [x] Implement offline email notifications using Stream Webhooks, Inngest, and Resend.
 

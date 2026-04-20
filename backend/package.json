@@ -19,6 +19,7 @@
     "dotenv": "17.2.1",
     "express": "5.1.0",
     "mongoose": "8.16.5",
+    "resend": "^6.12.2",
     "stream-chat": "^9.41.0"
   },
   "devDependencies": {
