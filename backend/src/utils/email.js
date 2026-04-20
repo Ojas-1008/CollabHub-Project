@@ -1,7 +1,11 @@
 import { Resend } from 'resend';
 import { ENV } from '../config/env.js';
 
-const resend = new Resend(ENV.RESEND_API_KEY);
+// NOTE: We create the Resend client INSIDE the function (not here at the top).
+// This is called "lazy initialization". If we created it here and RESEND_API_KEY
+// was missing, the entire server would crash immediately on startup.
+// By creating it inside the function, a missing key only causes email sending to
+// fail gracefully — not the whole server.
 
 export const sendOfflineNotificationEmail = async ({
     email,
@@ -11,6 +15,15 @@ export const sendOfflineNotificationEmail = async ({
     channelName
 }) => {
     try {
+        // Create the client here, inside the function. This is "lazy initialization".
+        // If RESEND_API_KEY is missing, it only fails when an email is sent — 
+        // not when the server starts up.
+        if (!ENV.RESEND_API_KEY) {
+            console.warn("⚠️ [Email] RESEND_API_KEY is not set. Skipping email.");
+            return { success: false, error: "RESEND_API_KEY not configured" };
+        }
+        const resend = new Resend(ENV.RESEND_API_KEY);
+
         const { data, error } = await resend.emails.send({
             from: 'CollabHub <onboarding@resend.dev>',
             to: email,
