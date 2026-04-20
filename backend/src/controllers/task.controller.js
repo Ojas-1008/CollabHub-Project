@@ -1,5 +1,42 @@
+import { clerkClient } from "@clerk/express";
 import { Task } from "../models/task.model.js";
 import { User } from "../models/user.model.js";
+
+/**
+ * 🛠️ HELPER: ENSURE USER EXISTS
+ * Checks if a user is in our MongoDB. If not, fetches from Clerk and creates them.
+ */
+const ensureUserExists = async (clerkId) => {
+    // 1. Try to find in our DB first
+    let user = await User.findOne({ clerkId });
+    if (user) return user;
+
+    // 2. If missing, fetch from Clerk
+    try {
+        console.log(`🔍 [Lazy Sync] User ${clerkId} not in DB. Fetching from Clerk...`);
+        const clerkUser = await clerkClient.users.getUser(clerkId);
+        
+        if (!clerkUser) return null;
+
+        const primaryEmail = clerkUser.emailAddresses[0]?.emailAddress;
+        const fullName = `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim();
+
+        // 3. Create in MongoDB on the fly
+        user = await User.create({
+            clerkId: clerkUser.id,
+            email: primaryEmail,
+            name: fullName || "User",
+            image: clerkUser.imageUrl,
+            status: "" // Default status
+        });
+
+        console.log(`✅ [Lazy Sync] Created missing user ${clerkId} in MongoDB.`);
+        return user;
+    } catch (error) {
+        console.error(`❌ [Lazy Sync Error] Failed to sync user ${clerkId}:`, error);
+        return null;
+    }
+};
 
 /**
  * 🚀 CREATE A NEW TASK
@@ -10,13 +47,16 @@ export const createTask = async (req, res) => {
         const { title, description, assigneeClerkId, channelId, messageId, dueDate } = req.body;
         const creatorClerkId = req.auth().userId;
 
-        // Step 1: Find the users in our MongoDB (using their Clerk IDs)
-        const creator = await User.findOne({ clerkId: creatorClerkId });
-        const assignee = await User.findOne({ clerkId: assigneeClerkId });
+        // Step 1: Ensure both users exist in our DB (Sync from Clerk if needed)
+        const creator = await ensureUserExists(creatorClerkId);
+        const assignee = await ensureUserExists(assigneeClerkId);
 
-        // Guard: If we can't find the users, we can't make the task
-        if (!creator || !assignee) {
-            return res.status(404).json({ message: "User not found in database" });
+        // Guard: If we can't find or sync the users, we can't make the task
+        if (!creator) {
+            return res.status(400).json({ message: "Creator (you) not found. Please refresh." });
+        }
+        if (!assignee) {
+            return res.status(400).json({ message: "Assignee not found. They may need to log in first." });
         }
 
         // Step 2: Create a new Task instance

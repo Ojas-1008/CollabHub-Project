@@ -327,6 +327,24 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - **Stream Client Export**: Updated `backend/src/config/stream.js` to export the `streamClient` instance, enabling its use for webhook verification in other routes.
 - **Inngest Discovery**: Resolved an issue where new functions weren't triggering by forcing a synchronization in the Inngest Cloud Dashboard to refresh the application's function registry.
 
+## [2026-04-21] - Channel Management and Task System Resilience
+
+### Added
+- **Leave Channel Functionality**:
+  - **Premium UI**: Added a sleek, hover-to-reveal "Leave" button (LogOut icon) to the channel list items in `CustomChannelPreview.jsx`.
+  - **Graceful State Handling**: Implemented logic to automatically clear the active chat view back to the "Empty State" if the user leaves the channel they are currently viewing.
+  - **Confirmation Dialog**: Added a standard confirmation prompt to prevent accidental channel exits.
+  - **Styling**: Updated `stream-chat-theme.css` with dedicated styles for the leave button, featuring subtle transitions and a red-tinted hover state.
+- **Lazy User Sync**:
+  - **On-the-Fly DB Sync**: Implemented a "Lazy Sync" mechanism in `task.controller.js`. When a task is assigned to a user missing from MongoDB, the system now automatically fetches their profile from Clerk and creates the database record on-demand.
+  - **Identity resilience**: This ensures the Task system always works correctly even if users haven't triggered a standard login-sync recently.
+
+### Fixed
+- **Task Creation 404 Resolution**:
+  - Resolved a deceptive 404 error that occurred when assigning tasks to users not yet in the database.
+  - **API Clarity**: Updated the backend to return `400 Bad Request` instead of `404` for validation failures, distinguishing between missing endpoints and missing data.
+  - **Improved Feedback**: Enhanced `TaskModal.jsx` to extract and display detailed backend error messages in frontend toasts, providing better guidance to users.
+
 ### Task List
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
@@ -349,4 +367,6 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Build the Channel Task List drawer in the dashboard.
 - [x] Build the Shared File Explorer sidebar with filtering and pagination.
 - [x] Implement offline email notifications using Stream Webhooks, Inngest, and Resend.
+- [x] Implement "Leave Channel" functionality for public and private channels.
+- [x] Implement "Lazy User Sync" for robust task assignment.
 

@@ -54,7 +54,9 @@ const TaskModal = ({ message, onClose }) => {
             onClose(); // Close the modal on success
         } catch (error) {
             console.error("Error creating task:", error);
-            toast.error("Failed to create task. Please try again.");
+            // Extract descriptive error from backend if available
+            const errorMessage = error.response?.data?.message || "Failed to create task. Please try again.";
+            toast.error(errorMessage);
         } finally {
             setIsSubmitting(false);
         }
