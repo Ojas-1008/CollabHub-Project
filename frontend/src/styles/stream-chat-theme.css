@@ -201,6 +201,7 @@
 }
 
 .create-channel-section {
+  margin-top: 4px; /* Room for the hover translateY lift */
   margin-bottom: 1.5rem;
 }
 
