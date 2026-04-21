@@ -235,6 +235,7 @@ const CustomChannelHeader = () => {
                     <FolderOpenIcon className="size-4.5" />
                 </button>
             </div>
+        </div>
 
             {/* ── MODALS (rendered OUTSIDE the header div to fix clipping) ─── */}
 
