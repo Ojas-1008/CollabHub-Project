@@ -27,36 +27,22 @@ import { XIcon, PinIcon, PinOffIcon } from "lucide-react";
 
 function PinnedMessagesSidebar({ pinnedMessages, onClose, onUnpin }) {
     return (
-        /*
-         * SIDEBAR CONTAINER
-         * -----------------
-         * fixed         → stays in place even when the page scrolls
-         * inset-y-0     → stretches from top to bottom of the screen
-         * right-0       → anchored to the RIGHT edge of the screen
-         * w-[380px]     → fixed width (same as TaskListDrawer)
-         * z-[100]       → appears above the chat content but not above modals
-         *
-         * The glassmorphic style uses:
-         *   bg-purple-950/40   → dark purple with 40% opacity (see-through)
-         *   backdrop-blur-2xl  → blurs everything behind it
-         *   border-l           → thin left border to separate from the chat
-         */
-        <div className="fixed inset-y-0 right-0 w-[380px] z-[100] bg-purple-950/40 backdrop-blur-2xl border-l border-purple-500/20 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+        <div className="fixed inset-y-0 right-0 w-[400px] z-[100] bg-white/85 backdrop-blur-[24px] border-l border-white/60 shadow-[-10px_0_40px_rgba(0,0,0,0.05)] flex flex-col animate-in slide-in-from-right duration-300">
 
             {/* ── HEADER ── */}
-            <div className="p-6 border-b border-purple-500/20 flex items-center justify-between bg-gradient-to-l from-purple-900/40 to-transparent">
+            <div className="p-6 border-b border-purple-500/10 flex items-center justify-between">
                 
                 {/* Left side: icon + title + count */}
                 <div className="flex items-center gap-3">
                     {/* Icon badge */}
-                    <div className="p-2 bg-purple-500/20 rounded-lg">
-                        <PinIcon className="size-5 text-purple-400" />
+                    <div className="size-10 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl flex items-center justify-center border border-purple-200/50 shadow-sm">
+                        <PinIcon className="size-4.5 text-purple-600" />
                     </div>
 
                     <div>
-                        <h2 className="text-xl font-bold text-white tracking-tight">Pinned Messages</h2>
+                        <h2 className="text-xl font-black text-gray-900 tracking-tight">Pinned Messages</h2>
                         {/* Shows how many messages are pinned */}
-                        <p className="text-[10px] text-purple-400 font-bold uppercase tracking-widest">
+                        <p className="text-[10px] text-purple-600/70 font-bold uppercase tracking-widest">
                             {pinnedMessages.length} {pinnedMessages.length === 1 ? "message" : "messages"} pinned
                         </p>
                     </div>
@@ -65,29 +51,26 @@ function PinnedMessagesSidebar({ pinnedMessages, onClose, onUnpin }) {
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-purple-300"
+                    className="size-8 rounded-xl bg-gray-100/50 flex items-center justify-center text-gray-500 hover:bg-white hover:text-purple-600 hover:shadow-sm transition-all"
                     title="Close sidebar"
                 >
-                    <XIcon className="size-5" />
+                    <XIcon className="size-4" />
                 </button>
             </div>
 
             {/* ── MESSAGE LIST ── */}
-            {/*
-             * flex-1          → takes up all remaining vertical space
-             * overflow-y-auto → scrollable if there are many pinned messages
-             * p-6 space-y-4   → padding + spacing between message cards
-             */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 ch-scrollbar">
 
                 {/* EMPTY STATE: shown when no messages are pinned yet */}
                 {pinnedMessages.length === 0 && (
-                    <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-40 mt-12">
-                        <PinIcon className="size-12 text-purple-400" />
+                    <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="size-16 rounded-3xl bg-purple-50 border border-dashed border-purple-200 flex items-center justify-center">
+                            <PinIcon className="size-8 text-purple-300" />
+                        </div>
                         <div>
-                            <p className="text-lg font-bold text-white">No pinned messages</p>
-                            <p className="text-xs text-purple-200 mt-1">
-                                Hover a message and click ⋯ then "Pin Message" to pin it here.
+                            <p className="text-lg font-bold text-gray-800">No pinned messages</p>
+                            <p className="text-sm font-medium text-gray-500 mt-1 max-w-[250px] mx-auto leading-relaxed">
+                                Hover a message and click <strong className="text-purple-600">⋯</strong> then "Pin Message" to keep it here.
                             </p>
                         </div>
                     </div>
@@ -95,43 +78,32 @@ function PinnedMessagesSidebar({ pinnedMessages, onClose, onUnpin }) {
 
                 {/* PINNED MESSAGE CARDS */}
                 {pinnedMessages.map((msg) => (
-                    /*
-                     * Each card is a small self-contained box showing:
-                     *   - The sender's avatar (photo or initial letter as fallback)
-                     *   - Sender's name
-                     *   - The message text
-                     *   - An "Unpin" button
-                     *
-                     * key={msg.id} → React uses this to track which card is which
-                     *                when the list updates (required for .map())
-                     */
                     <div
                         key={msg.id}
-                        className="group p-4 bg-purple-900/20 border border-purple-500/10 rounded-2xl transition-all hover:bg-purple-900/30 hover:border-purple-500/30 shadow-sm"
+                        className="group p-4 bg-white/40 border border-white/60 rounded-2xl transition-all hover:bg-white hover:shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-purple-200/50 relative overflow-hidden"
                     >
                         {/* TOP ROW: avatar + sender name + unpin button */}
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center justify-between mb-3">
 
                             {/* Avatar + name */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2.5">
                                 {/* If user has a profile picture, show it. Otherwise show their initial letter. */}
                                 {msg.user?.image ? (
                                     <img
                                         src={msg.user.image}
                                         alt={msg.user.name}
-                                        className="w-7 h-7 rounded-full object-cover border border-purple-500/30 flex-shrink-0"
+                                        className="size-8 rounded-xl object-cover border border-white/80 shadow-sm flex-shrink-0"
                                     />
                                 ) : (
-                                    <div className="w-7 h-7 rounded-full bg-purple-500/40 border border-purple-500/30 flex items-center justify-center flex-shrink-0">
+                                    <div className="size-8 rounded-xl bg-gradient-to-br from-purple-400 to-violet-500 border border-white/80 shadow-sm flex items-center justify-center flex-shrink-0">
                                         <span className="text-white text-xs font-bold">
-                                            {/* .charAt(0) gets the first letter; .toUpperCase() makes it CAPITAL */}
                                             {(msg.user?.name || "?").charAt(0).toUpperCase()}
                                         </span>
                                     </div>
                                 )}
 
                                 {/* Sender name */}
-                                <span className="text-sm font-semibold text-purple-100">
+                                <span className="text-sm font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
                                     {msg.user?.name || msg.user?.id || "Unknown"}
                                 </span>
                             </div>
@@ -140,7 +112,7 @@ function PinnedMessagesSidebar({ pinnedMessages, onClose, onUnpin }) {
                             {onUnpin && (
                                 <button
                                     onClick={() => onUnpin(msg)}
-                                    className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[10px] font-bold text-purple-400 hover:text-red-400 uppercase tracking-widest transition-all px-2 py-1 rounded-full hover:bg-red-400/10"
+                                    className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[10px] font-bold text-gray-500 hover:text-red-500 uppercase tracking-widest transition-all px-2.5 py-1.5 rounded-lg hover:bg-red-50"
                                     title="Unpin this message"
                                 >
                                     <PinOffIcon className="size-3" />
@@ -150,24 +122,16 @@ function PinnedMessagesSidebar({ pinnedMessages, onClose, onUnpin }) {
                         </div>
 
                         {/* MESSAGE TEXT */}
-                        {/*
-                         * whitespace-pre-line: preserves intentional line breaks the user typed
-                         * break-words: stops very long words from overflowing the card
-                         * line-clamp-4: limits display to 4 lines (no infinitely tall cards)
-                         */}
-                        <p className="text-sm text-purple-100/80 whitespace-pre-line break-words line-clamp-4 leading-relaxed">
-                            {msg.text || <span className="italic opacity-50">(No text content)</span>}
+                        <p className="text-[14.5px] text-gray-600 whitespace-pre-line break-words line-clamp-4 leading-relaxed font-medium">
+                            {msg.text || <span className="italic opacity-50 text-gray-400">(No text content)</span>}
                         </p>
+
+                        {/* Subtle left border accent on hover */}
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                 ))}
             </div>
-
-            {/* ── FOOTER ── */}
-            <div className="p-4 bg-purple-950/20 border-t border-purple-500/10">
-                <p className="text-[9px] text-center text-purple-400/60 uppercase font-bold tracking-tighter">
-                    CollabHub Pinned Messages • Pin important info for your team
-                </p>
-            </div>
+            {/* Footer removed per user request */}
         </div>
     );
 }
