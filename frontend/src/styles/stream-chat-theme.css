@@ -728,28 +728,50 @@ button.str-chat__load-more-button,
 }
 
 
-/* Message list */
+/* Message list — premium subtle gradient background */
 .str-chat__list,
 .str-chat__message-list-scroll {
-  background: #f8f9fc !important;
+  background: linear-gradient(
+    180deg,
+    #f8f9fc 0%,
+    #f3f0ff 40%,
+    #f8f9fc 100%
+  ) !important;
   padding: 1rem 0 !important;
+  overflow-x: hidden !important;
+}
+
+.str-chat__ul {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  overflow-x: hidden !important;
 }
 
 /* =====================================================
    MESSAGE ROWS — controls overall alignment per message
    ===================================================== */
 
-/* Every message row is a flex row */
+/* Every message row is a flex column */
 .str-chat__li {
-  padding: 3px 1.5rem !important;
+  padding: 4px 1.5rem !important;
   display: flex !important;
   flex-direction: column !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  transition: background 0.2s ease !important;
+}
+
+/* Subtle highlight on the entire message row when hovered */
+.str-chat__li:hover {
+  background: rgba(124, 58, 237, 0.015) !important;
 }
 
 /* Add a little extra spacing between message groups */
 .str-chat__li--single,
 .str-chat__li--top {
-  margin-top: 0.5rem !important;
+  margin-top: 0.6rem !important;
 }
 
 /* Other people's messages: left-aligned row */
@@ -757,13 +779,18 @@ button.str-chat__load-more-button,
   display: flex !important;
   align-items: flex-end !important;
   gap: 0.5rem !important;
+  width: fit-content !important;
   max-width: 100% !important;
+  min-width: 0 !important; /* Prevents flex blowout from long text */
+  align-self: flex-start !important;
+  position: relative !important;
 }
 
 /* My messages: right-aligned row */
 .str-chat__message--me {
   justify-content: flex-end !important;
   align-items: flex-end !important;
+  align-self: flex-end !important;
 }
 
 /* =====================================================
@@ -775,8 +802,11 @@ button.str-chat__load-more-button,
   flex-direction: column !important;
   position: relative !important;
   width: fit-content !important;
-  max-width: min(72%, 42rem) !important;
-  min-width: 0 !important;
+  max-width: min(70%, 38rem) !important;
+  min-width: 4rem !important; /* Minimum width so very short messages still look good */
+  /* Allow vertical overflow so the hover action menu can render above
+     the bubble. Horizontal containment is handled by the bubble itself
+     (overflow:hidden) and the ul (overflow-x:hidden). */
   overflow: visible !important;
 }
 
@@ -791,22 +821,36 @@ button.str-chat__load-more-button,
 
 .str-chat__message-bubble {
   display: block !important;
-  width: auto !important;
+  width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
   overflow: hidden !important;
+  overflow-wrap: anywhere !important;
 
-  /* Bubble appearance */
-  background: #ffffff !important;
+  /* Premium glassmorphism bubble */
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
   color: #1e293b !important;
-  border-radius: 20px !important;
-  border-bottom-left-radius: 6px !important;
+  border-radius: 18px !important;
+  border-top-left-radius: 4px !important;
   padding: 0 !important;
-  border: 1px solid #e8edf5 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
   font-size: 0.9375rem !important;
   line-height: 1.55 !important;
   text-align: left !important;
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Subtle lift on hover */
+.str-chat__message-bubble:hover {
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    0 8px 24px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
 }
 
 /* =====================================================
@@ -815,25 +859,32 @@ button.str-chat__load-more-button,
 
 .str-chat__message-text {
   display: block !important;
-  width: auto !important;
+  width: 100% !important;
   min-width: 0 !important;
   max-width: 100% !important;
-  padding: 0.7rem 1rem !important;
+  padding: 0.5rem 0.75rem !important;
+  box-sizing: border-box !important;
 }
 
 .str-chat__message-text-inner {
   display: block !important;
-  width: auto !important;
+  width: 100% !important;
   min-width: 0 !important;
   max-width: 100% !important;
-  /* break-word for normal words; anywhere for URLs/gibberish */
-  overflow-wrap: break-word !important;
-  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important; /* break-word is more natural than break-all for regular text */
   white-space: pre-wrap !important;
-  hyphens: none !important;
+  hyphens: auto !important;
+  box-sizing: border-box !important;
 }
 
-/* Strip inner <p> margin so text fits flush */
+/*
+  Removed the ::after pseudo-element spacer hack.
+  Metadata (timestamp + checkmark) is now placed below the bubble
+  in the normal document flow — no absolute positioning needed.
+*/
+
+/* Strip inner <p> margins for flush text */
 .str-chat__message-text-inner p {
   margin: 0 !important;
   padding: 0 !important;
@@ -844,17 +895,35 @@ button.str-chat__load-more-button,
    ===================================================== */
 
 .str-chat__message--me .str-chat__message-bubble {
-  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%) !important;
+  background: linear-gradient(
+    135deg,
+    #7c3aed 0%,
+    #6025b5 30%,
+    #4c1d95 70%,
+    #350d36 100%
+  ) !important;
   color: #ffffff !important;
-  border: none !important;
-  border-radius: 20px !important;
-  border-bottom-right-radius: 6px !important;
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(114, 9, 183, 0.3) !important;
+  border-radius: 18px !important;
+  border-top-right-radius: 4px !important;
+  border-top-left-radius: 18px !important;
+  box-shadow:
+    0 4px 16px rgba(124, 58, 237, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.str-chat__message--me .str-chat__message-bubble:hover {
+  box-shadow:
+    0 8px 28px rgba(124, 58, 237, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 .str-chat__message--me .str-chat__message-text-inner,
 .str-chat__message--me .str-chat__message-text-inner p {
   color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* =====================================================
@@ -1033,7 +1102,10 @@ button.str-chat__load-more-button,
    ===================================================== */
 
 .str-chat__message--pinned .str-chat__message-bubble {
-  border-color: rgba(124, 58, 237, 0.2) !important;
+  border-color: rgba(124, 58, 237, 0.25) !important;
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.15),
+    0 2px 8px rgba(124, 58, 237, 0.1) !important;
 }
 
 .str-chat__message--me.str-chat__message--pinned .str-chat__message-bubble {
@@ -1047,15 +1119,28 @@ button.str-chat__load-more-button,
    ===================================================== */
 
 .str-chat__message .str-chat__avatar {
-  width: 30px !important;
-  height: 30px !important;
+  width: 32px !important;
+  height: 32px !important;
   flex-shrink: 0 !important;
   margin-bottom: 2px !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.str-chat__message:hover .str-chat__avatar {
+  transform: scale(1.05) !important;
 }
 
 .str-chat__avatar-image {
   border-radius: 10px !important;
   object-fit: cover !important;
+  border: 2px solid rgba(124, 58, 237, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.str-chat__message:hover .str-chat__avatar-image {
+  border-color: rgba(124, 58, 237, 0.35) !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15) !important;
 }
 
 /* Hide avatar on non-bottom messages in a group (only show on the last one) */
@@ -1087,37 +1172,43 @@ button.str-chat__load-more-button,
   font-size: 0.75rem !important;
 }
 
-/* Timestamp */
-.str-chat__message-simple-timestamp {
-  color: #94a3b8 !important;
-  font-size: 0.7rem !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.01em !important;
-}
+/* Timestamp — see MESSAGE METADATA section below */
 
 /* =====================================================
-   DELETED MESSAGES — ghostly, premium
+   DELETED MESSAGES — subtle, ghostly
    ===================================================== */
 
 .str-chat__message--deleted {
-  /* Reset the message row so the deleted box stands alone */
   display: flex !important;
-  justify-content: center !important;
-  padding: 0.25rem 0 !important;
+  justify-content: flex-start !important;
+  padding: 0 !important;
+}
+
+.str-chat__message--me.str-chat__message--deleted {
+  justify-content: flex-end !important;
 }
 
 .str-chat__message--deleted-inner {
   color: #94a3b8 !important;
   font-style: italic !important;
-  background: rgba(241, 245, 249, 0.6) !important;
-  backdrop-filter: blur(8px) !important;
-  border: 1px dashed #cbd5e1 !important;
-  border-radius: 16px !important;
-  padding: 0.5rem 1.15rem !important;
+  background: rgba(241, 245, 249, 0.8) !important;
+  border-radius: 14px !important;
+  border-top-left-radius: 4px !important;
+  padding: 0.5rem 0.85rem !important;
   font-size: 0.8125rem !important;
-  font-weight: 500 !important;
-  text-align: center !important;
+  font-weight: 400 !important;
   max-width: fit-content !important;
+  box-shadow: none !important;
+  border: 1px dashed rgba(148, 163, 184, 0.3) !important;
+}
+
+.str-chat__message--me .str-chat__message--deleted-inner {
+  border-top-left-radius: 14px !important;
+  border-top-right-radius: 4px !important;
+  background: rgba(124, 58, 237, 0.04) !important;
+  border: 1px dashed rgba(124, 58, 237, 0.2) !important;
+  color: rgba(124, 58, 237, 0.5) !important;
+  box-shadow: none !important;
 }
 
 /* =====================================================
@@ -1129,7 +1220,7 @@ button.str-chat__load-more-button,
 }
 
 /* =====================================================
-   MESSAGE ACTIONS — show only on hover
+   MESSAGE ACTIONS — premium glassmorphism toolbar
    ===================================================== */
 
 .str-chat__message-simple__actions,
@@ -1137,23 +1228,37 @@ button.str-chat__load-more-button,
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
-  transition: opacity 0.15s ease, visibility 0.15s ease !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: absolute !important;
-  top: -2px !important;
+  top: 0 !important;
+  transform: translateY(calc(-100% - 6px)) scale(0.95) !important;
   right: 0 !important;
   z-index: 10 !important;
-  background: white !important;
-  border-radius: 10px !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
-  padding: 3px !important;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+
+  /* Glassmorphism toolbar */
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px) saturate(150%) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  padding: 4px !important;
+  border: 1px solid rgba(124, 58, 237, 0.12) !important;
+
+  /* Force horizontal layout */
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 2px !important;
+  width: max-content !important;
 }
 
-/* For own messages, flip to the left side */
+/* For own messages, keep right-aligned */
 .str-chat__message--me .str-chat__message-simple__actions,
 .str-chat__message--me .str-chat__message-options {
-  right: auto !important;
-  left: 0 !important;
+  right: 0 !important;
+  left: auto !important;
 }
 
 .str-chat__message:hover .str-chat__message-simple__actions,
@@ -1161,6 +1266,30 @@ button.str-chat__load-more-button,
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
+  transform: translateY(calc(-100% - 6px)) scale(1) !important;
+}
+
+/* Individual action buttons */
+.str-chat__message-simple__actions__action {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 8px !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.str-chat__message-simple__actions__action:hover {
+  background: rgba(124, 58, 237, 0.1) !important;
+  transform: scale(1.1) !important;
+}
+
+.str-chat__message-simple__actions__action:active {
+  transform: scale(0.95) !important;
 }
 
 /* Empty reactions host — collapse it */
@@ -1169,17 +1298,34 @@ button.str-chat__load-more-button,
 }
 
 /* =====================================================
-   MESSAGE METADATA (timestamp / status below bubble)
+   MESSAGE METADATA (timestamp / status BELOW the bubble)
+   Moved from absolute to normal flow — eliminates
+   clipping, overflow, and the ::after spacer hack.
    ===================================================== */
 
 .str-chat__message-metadata {
+  position: static !important;
   display: flex !important;
   align-items: center !important;
   gap: 0.35rem !important;
   margin-top: 4px !important;
-  padding: 0 4px !important;
+  padding: 0 6px !important;
+  white-space: nowrap !important;
+  opacity: 0.7 !important;
+  transition: opacity 0.2s ease !important;
 }
 
+/* Show metadata more clearly on hover */
+.str-chat__li:hover .str-chat__message-metadata {
+  opacity: 1 !important;
+}
+
+/* Received messages: metadata aligns left */
+.str-chat__message-metadata {
+  justify-content: flex-start !important;
+}
+
+/* My messages: metadata aligns right */
 .str-chat__message--me .str-chat__message-metadata {
   justify-content: flex-end !important;
 }
@@ -1191,19 +1337,35 @@ button.str-chat__load-more-button,
 }
 
 /* =====================================================
+   TIMESTAMP
+   ===================================================== */
+
+.str-chat__message-simple-timestamp {
+  color: #94a3b8 !important;
+  font-size: 0.6875rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+  font-variant-numeric: tabular-nums !important; /* Monospaced digits for clean alignment */
+}
+
+/* =====================================================
    READ RECEIPT
    ===================================================== */
 
 .str-chat__message-simple-status {
-  margin-right: 4px !important;
+  margin-right: 0 !important;
   display: flex !important;
   align-items: center !important;
 }
 
 .str-chat__message-simple-status svg {
-  fill: #94a3b8 !important;
-  width: 13px !important;
-  height: 13px !important;
+  fill: #7c3aed !important; /* Purple checkmarks to match theme */
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.str-chat__message--me .str-chat__message-simple-status svg {
+  fill: #7c3aed !important;
 }
 
 /* =====================================================
@@ -1213,30 +1375,33 @@ button.str-chat__load-more-button,
 .str-chat__date-separator {
   display: flex !important;
   align-items: center !important;
+  justify-content: center !important;
   gap: 0.75rem !important;
-  padding: 0.75rem 1.5rem !important;
-  margin: 0.35rem 0 !important;
+  padding: 0.5rem 1.5rem !important;
+  margin: 0.75rem 0 !important;
 }
 
 .str-chat__date-separator-line {
-  flex: 1 !important;
-  height: 1px !important;
-  background: #e2e8f0 !important;
-  border: none !important;
+  display: none !important;
 }
 
+/* Premium glassmorphism date pill */
 .str-chat__date-separator-date {
   font-size: 0.7rem !important;
   font-weight: 600 !important;
-  color: #94a3b8 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  background: #f1f5f9 !important;
-  padding: 4px 12px !important;
-  border-radius: 99px !important;
-  border: 1px solid #e2e8f0 !important;
+  color: #475569 !important;
+  text-transform: capitalize !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  padding: 5px 14px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(124, 58, 237, 0.08) !important;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
+  letter-spacing: 0.01em !important;
 }
 
 /* =====================================================
@@ -1244,17 +1409,34 @@ button.str-chat__load-more-button,
    ===================================================== */
 
 .str-chat__message-actions-box {
-  background: white !important;
-  border: 1px solid #e8edf5 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(150%) !important;
+  border: 1px solid rgba(124, 58, 237, 0.1) !important;
+  border-radius: 14px !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  padding: 4px !important;
+  animation: actionBoxEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes actionBoxEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .str-chat__message-simple__actions__action svg {
   color: #64748b !important;
-  width: 16px !important;
-  height: 16px !important;
-  transition: color 0.15s ease !important;
+  width: 15px !important;
+  height: 15px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .str-chat__message-simple__actions__action:hover svg {
@@ -1499,7 +1681,7 @@ button.str-chat__load-more-button,
   }
 
   .str-chat__message-inner {
-    max-width: min(80%, 34rem) !important;
+    max-width: min(78%, 34rem) !important;
   }
 }
 
@@ -1509,28 +1691,26 @@ button.str-chat__load-more-button,
   }
 
   .str-chat__message {
-    gap: 0.4rem !important;
+    gap: 0.35rem !important;
   }
 
   .str-chat__message-inner {
-    max-width: 88% !important;
+    max-width: 85% !important;
   }
 
   .str-chat__message-bubble {
-    border-radius: 16px !important;
+    border-radius: 14px !important;
+    border-top-left-radius: 4px !important;
   }
 
   .str-chat__message--me .str-chat__message-bubble {
-    border-radius: 16px !important;
-    border-bottom-right-radius: 5px !important;
-  }
-
-  .str-chat__message-bubble {
-    border-bottom-left-radius: 5px !important;
+    border-radius: 14px !important;
+    border-top-right-radius: 4px !important;
+    border-top-left-radius: 14px !important;
   }
 
   .str-chat__message-text {
-    padding: 0.55rem 0.85rem !important;
+    padding: 0.5rem 0.75rem !important;
   }
 }
 
@@ -1540,16 +1720,16 @@ button.str-chat__load-more-button,
   }
 
   .str-chat__message-inner {
-    max-width: 92% !important;
+    max-width: 90% !important;
   }
 
   .str-chat__message .str-chat__avatar {
-    width: 26px !important;
-    height: 26px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
 
   .str-chat__message-text {
-    padding: 0.5rem 0.75rem !important;
+    padding: 0.4rem 0.65rem !important;
   }
 }
 

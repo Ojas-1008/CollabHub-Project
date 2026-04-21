@@ -345,6 +345,31 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - **API Clarity**: Updated the backend to return `400 Bad Request` instead of `404` for validation failures, distinguishing between missing endpoints and missing data.
   - **Improved Feedback**: Enhanced `TaskModal.jsx` to extract and display detailed backend error messages in frontend toasts, providing better guidance to users.
 
+## [2026-04-22] - Chat Message UI Redesign and Overhaul
+
+### Added
+- **Premium Message Section Design**:
+  - Implemented a "Liquid Glass" theme overhaul for the entire message list area.
+  - **Glassmorphic Bubbles**: Added `backdrop-filter: blur(12px)`, layered shadows, and inset highlights for a highly professional feel.
+  - **Dynamic Background**: Replaced the flat background with a subtle purple-tinted vertical gradient for better depth.
+  - **Premium Action Toolbar**: Redesigned the hover action menu with glassmorphism, scale-up entrance animations, and individual button hover states.
+- **Improved Metadata Flow**:
+  - Moved timestamps and read receipts from absolute positioning (inside the bubble) to normal document flow (below the bubble). This permanently fixed the "timestamp clipping" issue and improved readability for short messages.
+
+### Fixed
+- **Horizontal Overflow & Clipping**:
+  - Resolved long-standing issues where very long messages or unbroken strings would expand the chat viewport or get clipped at the edges.
+  - Strictly enforced `overflow-x: hidden` at the container level and `overflow-wrap: anywhere` at the text level.
+- **Action Menu Positioning**:
+  - Fixed a bug where the hover action menu (⋯, thread, reactions) was being clipped by the message container.
+  - Changed positioning to `top: 0` + `translateY(-100% - 6px)` to ensure the menu always floats clearly above the bubble without overlapping text.
+  - Forced horizontal layout for menu buttons to prevent vertical stacking on narrow bubbles.
+- **Avatar & Hover States**:
+  - Refined avatar styling with animated purple borders and scale-up effects on message hover.
+  - Added subtle background highlights to the entire message row on hover for better focus.
+- **Date Separator**:
+  - Upgraded the date separator to a premium glassmorphism pill with blur and a subtle border.
+
 ### Task List
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
@@ -378,86 +403,6 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Redesign Sidebar with Glassmorphic Design, Micro-animations, and Numeric Badges.
 - [x] Implement Custom Empty State Indicator.
 - [x] Fix Sidebar Clipping and Structural Layout Conflicts.
+- [x] Redesign Chat Message UI for better responsiveness and aesthetics (Liquid Glass).
+- [x] Fix horizontal overflow and message clipping issues.
 
-## [2026-04-21] - UI/UX Premium Overhaul ("SLAP" Aesthetic)
-
-### Added
-- **Glassmorphic Header**:
-  - Replaced the standard header with a floating capsule design featuring `backdrop-blur-xl`, `bg-white/5`, and a high-fidelity shadow system.
-  - Implemented **Gradient Typography** for the brand name using a white-to-purple-400 color mask.
-- **Status System 2.0**:
-  - **Frosted Glass Badge**: Developed a smart status trigger that extracts emojis from strings and displays them as icons within a glowing glass pill.
-  - **Quick Presets Popover**: Built a premium selection grid (2x3) inside a `backdrop-blur-3xl` container. Each card features unique hover states and shadows.
-  - **Live Pulse Indicator**: Added an animated "Live" dot that switches to an 'X' (Clear) button on hover for intuitive status management.
-
-### Changed
-- **Header Structure**: Moved branding and user controls into a unified, floating UI component for a more modern, centered feel.
-- **Interaction Model**: Standardized the use of glass textures and soft purple glows across all dashboard touchpoints.
-
-### Fixed
-- **Missing Imports Bug**: Resolved a critical issue in `useTasks.js` where the `deleteTask` and `updateTask` API functions were not imported, preventing the new UI actions from communicating with the backend.
-
-## [2026-04-21] - Backend Performance and Startup Optimization
-
-### Changed
-- **Parallel Server Startup**:
-  - Refactored `backend/src/server.js` to decouple the database connection from the server listener. The Express server now starts listening on its port immediately, while MongoDB connects in the background.
-  - Leveraged Mongoose's internal buffering to ensure incoming requests are queued until the database is ready, improving perceived startup speed.
-- **MongoDB Connection Optimization**:
-  - Updated `backend/src/config/db.js` with optimized connection options:
-    - `family: 4`: Forces IPv4 to bypass slow DNS resolution delays common in local development environments.
-    - `serverSelectionTimeoutMS: 5000`: Set a 5-second timeout for server selection to ensure the app doesn't hang indefinitely on connection failures.
-  - Implemented a "Connection Guard" to prevent redundant connection attempts if the database is already in a connected or connecting state.
-
-### Refinement
-- **Beginner-Friendly Architecture**:
-  - Added detailed, student-focused comments to `server.js` and `db.js` explaining the benefits of parallel startup and IPv4 forcing.
-  - Standardized error logging with descriptive emojis (🚀, 📡, ❌) for better terminal visibility.
-
-
-## [2026-04-21] - Sidebar UI/UX and Structural Refinement
-
-### Added
-- **Glassmorphic Sidebar Design**:
-  - Implemented `backdrop-filter: blur(12px)` and semi-transparent backgrounds for a premium, integrated look.
-  - Added **Numeric Unread Badges**: Replaced default dots with vibrant purple pill-shaped badges that display the actual number of unread messages.
-  - **Micro-animations**: Added breathing `pulseGlow` to the "Create Channel" button and `onlinePulse` to presence indicators.
-  - **Interactive Hover States**: Standardized horizontal slide-ins and subtle background glows for all list items.
-- **Custom Empty State Indicator** (`frontend/src/components/EmptyStateIndicator.jsx`):
-  - Designed a high-fidelity "No channels" view with a glowing icon, glassmorphic card, and call-to-action text.
-  - Integrated this into the Stream SDK's `ChannelList` using the `EmptyStateIndicator` prop.
-- **Improved Direct Messages UI**:
-  - **Squircle Avatars**: Upgraded user avatars to rounded rectangles with subtle rings and shadows.
-  - **Flexible Layout**: Refined `.ch-item` to support variable heights, ensuring user status messages (like "Focus mode") are fully visible and elegantly styled.
-
-### Fixed
-- **Sidebar Clipping & Conflict Resolution**:
-  - **Class Renaming**: Resolved a naming conflict between our custom sidebar and the Stream SDK by renaming the outer `aside` to `.sidebar-container`.
-  - **Width & Overflow Fixes**: Updated the 320px width rule to target the new class exclusively. Removed aggressive `overflow: hidden` from the outer wrapper and switched the inner container to `overflow-x: clip`, preventing horizontal cutting of box-shadows and hover animations.
-  - **Symmetric Padding**: Standardized sidebar gutters to `1.25rem` for better visual balance.
-  - **Leave Button Animation**: Refined the "Leave Channel" button to fade in via opacity rather than sliding from the right, preventing clipping at the viewport edge.
-
-## [2026-04-21] - Channel Components UI Overhaul (Liquid Glass)
-
-### Added
-- **Vibrant FileCard Color Theme**:
-  - Implemented a type-specific "Liquid Glass" color language for file list items (`FileCard.jsx`).
-  - Added high-contrast color coding: Crimson/Rose Red for PDFs, Emerald Green for Images, Sky Blue for Documents, and Amber/Orange for Code/Archives.
-  - Added translucent glass tiles with custom border glows that react to the file type.
-  - Introduced a "Liquid Accent" hover effect (stripe on the left) and redesigned actions into "Glass Pills".
-- **Liquid Glass Members Modal**:
-  - Added a "Liquid Glass" search bar inside the modal.
-  - Added real-time presence indicators (Emerald Green for online, Soft Gray for offline) to member avatars.
-- **Liquid Glass Message Input**:
-  - Redesigned the chat composition bar with a modern 24px pill shape and high-density blur.
-- **Unified 'Liquid Sidebar' Overhaul**:
-  - Standardized all major channel sidebars (**Pinned Messages**, **Channel Tasks**, **File Explorer**) to use a premium `bg-white/85` wrapper with `backdrop-blur-[24px]` and a clean structural shadow.
-
-### Changed
-- **Decluttered Sidebar Workspace**: Removed decorative footers across all panels to maximize productivity space.
-- **Wider File Explorer**: Optimized the width of the File Explorer sidebar to `480px` for better document grid presentation.
-- **Custom Channel Header Redesign**: Completely modernized the top navigation bar with frosted glass and "Glass Pill" action buttons.
-
-### Fixed
-- **Modal Clipping Conflict**: Refactored the `CustomChannelHeader` component structure, moving the `MembersModal` outside the header container to ensure it covers the full screen correctly without being clipped by the header's CSS filter property.
-- **Syntax Resolution**: Fixed a Vite parsing error in `TaskListDrawer.jsx` caused by accidentally merged brackets.
