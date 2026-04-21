@@ -133,8 +133,9 @@ const CustomChannelHeader = () => {
     // ── RENDER ────────────────────────────────────────────────────────────────
 
     return (
-        // Outer bar: full width, frosted glass background, sticky top
-        <div className="h-16 border-b border-purple-500/10 flex items-center px-6 justify-between bg-white/70 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.02)] z-[50] relative">
+        <>
+            {/* Outer bar: full width, frosted glass background, sticky top */}
+            <div className="h-16 border-b border-purple-500/10 flex items-center px-6 justify-between bg-white/70 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.02)] z-[50] relative">
 
             {/* LEFT SIDE: channel icon + name (or DM user avatar + name) */}
             <div className="flex items-center gap-3">
@@ -235,7 +236,7 @@ const CustomChannelHeader = () => {
                 </button>
             </div>
 
-            {/* ── MODALS (rendered at the bottom so JSX stays readable) ───────── */}
+            {/* ── MODALS (rendered OUTSIDE the header div to fix clipping) ─── */}
 
             {/* MembersModal: pass all member objects and a close handler */}
             {showMembers && (
@@ -264,7 +265,7 @@ const CustomChannelHeader = () => {
             {/* FileExplorer: Slides in from the right to show all shared files.
                 onClose sets showFiles back to false, hiding the panel. */}
             {showFiles && <FileExplorer onClose={() => setShowFiles(false)} />}
-        </div>
+        </>
     );
 };
 
