@@ -1211,6 +1211,8 @@ button.str-chat__load-more-button,
   border: 1px solid rgba(168, 85, 247, 0.2);
   width: 100%;
   max-width: 480px; /* Give it a little more breathing room */
+  max-height: 90vh; /* Prevent it from overflowing the screen */
+  overflow-y: auto; /* Enable scrolling for contents */
   border-radius: 1.5rem;
   padding: 2rem;
   box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;

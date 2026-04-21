@@ -124,7 +124,7 @@ const CreateChannelModal = ({ onClose }) => {
 
   return (
     <div className="create-channel-modal-overlay">
-      <div className="create-channel-modal">
+      <div className="create-channel-modal ch-scrollbar">
         {/* HEADER SECTION */}
         <header className="create-channel-modal__header">
           <h2 className="text-xl font-extrabold text-white tracking-tight">Create New Channel</h2>
