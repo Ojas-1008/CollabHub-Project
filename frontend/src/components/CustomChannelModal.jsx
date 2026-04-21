@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { useChatContext } from "stream-chat-react";
 import * as Sentry from "@sentry/react";
 import toast from "react-hot-toast";
-import { AlertCircleIcon, HashIcon, LockIcon, UsersIcon, XIcon } from "lucide-react";
+import { AlertCircleIcon, HashIcon, LockIcon, UsersIcon, XIcon, SearchIcon, CheckIcon } from "lucide-react";
 
 // This component shows a popup to create a new Public or Private channel.
 const CreateChannelModal = ({ onClose }) => {
@@ -15,6 +15,7 @@ const CreateChannelModal = ({ onClose }) => {
   const [channelType, setChannelType] = useState("public"); // 'public' or 'private'
   const [description, setDescription] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   
   const [availableUsers, setAvailableUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -45,6 +46,11 @@ const CreateChannelModal = ({ onClose }) => {
 
     fetchAllUsers();
   }, [client]);
+
+  // Filter users by search query
+  const filteredUsers = availableUsers.filter(user => 
+    (user.name || user.id).toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // --- 3. UI Logic ---
   // If the channel is Public, everyone is automatically a member
@@ -121,9 +127,9 @@ const CreateChannelModal = ({ onClose }) => {
       <div className="create-channel-modal">
         {/* HEADER SECTION */}
         <header className="create-channel-modal__header">
-          <h2 className="text-xl font-bold text-white">Create New Channel</h2>
-          <button onClick={onClose} className="p-1 hover:bg-purple-800/40 rounded-full transition-colors">
-            <XIcon className="size-5 text-purple-400" />
+          <h2 className="text-xl font-extrabold text-white tracking-tight">Create New Channel</h2>
+          <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-full text-purple-400 hover:text-white transition-colors">
+            <XIcon className="size-5" />
           </button>
         </header>
 
@@ -136,46 +142,55 @@ const CreateChannelModal = ({ onClose }) => {
           )}
 
           {/* INPUT: CHANNEL NAME */}
-          <div className="form-group mb-4">
-            <label className="block text-sm font-semibold text-purple-200 mb-1">Channel Name</label>
+          <div className="form-group mb-5">
+            <label className="block text-[13px] font-bold text-purple-200 mb-1.5 uppercase tracking-wide">Channel Name</label>
             <div className="relative">
-              <HashIcon className="absolute left-3 top-2.5 size-4 text-purple-400" />
+              <HashIcon className="absolute left-3.5 top-3.5 size-4 text-purple-400/60" />
               <input 
                 type="text" 
                 value={channelName} 
                 onChange={(e) => { setChannelName(e.target.value); setErrorNote(""); }}
                 placeholder="e.g. project-x"
-                className="w-full pl-9 pr-4 py-2 bg-purple-950/50 border border-purple-700/40 rounded-lg text-white placeholder-purple-400/50 focus:border-purple-500 outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-purple-300/40 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-500/10 transition-all shadow-inner"
                 autoFocus
               />
             </div>
             {channelName && (
-              <p className="text-[10px] text-purple-400 mt-1">ID will be: #{formatChannelId(channelName)}</p>
+              <p className="text-[11px] text-purple-400/80 mt-1.5 font-medium pl-1">ID will be: #{formatChannelId(channelName)}</p>
             )}
           </div>
 
           {/* INPUT: TYPE SELECTION */}
-          <div className="form-group mb-4">
-            <label className="block text-sm font-semibold text-purple-200 mb-2">Channel Type</label>
+          <div className="form-group mb-6">
+            <label className="block text-[13px] font-bold text-purple-200 mb-2.5 uppercase tracking-wide">Channel Type</label>
             <div className="flex gap-3">
-              <label className={`flex-1 p-3 border rounded-xl cursor-pointer transition-all ${channelType === "public" ? "border-purple-500 bg-purple-900/40" : "border-purple-800/30 bg-purple-950/30"}`}>
+              <label className={`relative flex-1 p-4 border rounded-2xl cursor-pointer transition-all duration-300 overflow-hidden group ${channelType === "public" ? "border-purple-400 bg-purple-500/20 shadow-[0_0_20px_rgba(168,85,247,0.15)]" : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-purple-400/30"}`}>
                 <input type="radio" className="hidden" checked={channelType === "public"} onChange={() => setChannelType("public")} />
-                <div className="flex items-center gap-3">
-                  <HashIcon className="size-5 text-purple-400" />
+                {/* Active glow */}
+                {channelType === "public" && <div className="absolute inset-0 bg-gradient-to-br from-purple-400/10 to-transparent -z-10" />}
+                
+                <div className="flex flex-col gap-2 relative z-10">
+                  <div className={`size-8 rounded-lg flex items-center justify-center transition-colors ${channelType === "public" ? "bg-purple-500/30 text-purple-200" : "bg-white/5 text-purple-400 group-hover:text-purple-300"}`}>
+                    <HashIcon className="size-4.5" />
+                  </div>
                   <div>
-                    <p className="font-bold text-sm text-white">Public</p>
-                    <p className="text-[10px] text-purple-400">Open to everyone</p>
+                    <p className={`font-bold text-sm tracking-wide transition-colors ${channelType === "public" ? "text-white" : "text-purple-200 group-hover:text-white"}`}>Public</p>
+                    <p className="text-[11px] text-purple-400/80 mt-0.5 font-medium leading-tight">Open to your team</p>
                   </div>
                 </div>
               </label>
 
-              <label className={`flex-1 p-3 border rounded-xl cursor-pointer transition-all ${channelType === "private" ? "border-violet-500 bg-violet-900/40" : "border-purple-800/30 bg-purple-950/30"}`}>
+              <label className={`relative flex-1 p-4 border rounded-2xl cursor-pointer transition-all duration-300 overflow-hidden group ${channelType === "private" ? "border-violet-400 bg-violet-500/20 shadow-[0_0_20px_rgba(139,92,246,0.15)]" : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-violet-400/30"}`}>
                 <input type="radio" className="hidden" checked={channelType === "private"} onChange={() => setChannelType("private")} />
-                <div className="flex items-center gap-3">
-                  <LockIcon className="size-5 text-violet-400" />
+                {channelType === "private" && <div className="absolute inset-0 bg-gradient-to-br from-violet-400/10 to-transparent -z-10" />}
+                
+                <div className="flex flex-col gap-2 relative z-10">
+                  <div className={`size-8 rounded-lg flex items-center justify-center transition-colors ${channelType === "private" ? "bg-violet-500/30 text-violet-200" : "bg-white/5 text-purple-400 group-hover:text-violet-300"}`}>
+                    <LockIcon className="size-4.5" />
+                  </div>
                   <div>
-                    <p className="font-bold text-sm text-white">Private</p>
-                    <p className="text-[10px] text-purple-400">Only invited users</p>
+                    <p className={`font-bold text-sm tracking-wide transition-colors ${channelType === "private" ? "text-white" : "text-purple-200 group-hover:text-white"}`}>Private</p>
+                    <p className="text-[11px] text-purple-400/80 mt-0.5 font-medium leading-tight">Invite only access</p>
                   </div>
                 </div>
               </label>
@@ -184,37 +199,56 @@ const CreateChannelModal = ({ onClose }) => {
 
           {/* INPUT: MEMBER SELECTION (Private only) */}
           {channelType === "private" && (
-            <div className="form-group mb-4">
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-sm font-semibold text-purple-200">Add Team Members</label>
+            <div className="form-group mb-6">
+              <div className="flex justify-between items-center mb-2.5">
+                <label className="text-[13px] font-bold text-purple-200 uppercase tracking-wide">Add Team Members</label>
                 <button 
                   type="button" 
                   onClick={() => setSelectedUsers(availableUsers.map(u => u.id))} 
-                  className="text-xs text-purple-400 font-bold hover:text-purple-200"
+                  className="text-[11px] uppercase tracking-wider text-purple-400/80 font-bold hover:text-purple-200 transition-colors"
                 >
                   Select All
                 </button>
               </div>
-              <div className="max-h-32 overflow-y-auto border border-purple-800/30 rounded-lg bg-purple-950/30 divide-y divide-purple-800/20">
+              
+              {/* Search Bar */}
+              <div className="relative mb-3">
+                <SearchIcon className="absolute left-3.5 top-2.5 size-4 text-purple-400/50" />
+                <input 
+                  type="text"
+                  placeholder="Search members..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[13px] text-white placeholder-purple-300/40 outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-500/10 transition-all shadow-inner"
+                />
+              </div>
+
+              <div className="max-h-44 overflow-y-auto ch-scrollbar border border-white/10 rounded-xl bg-purple-950/20 divide-y divide-white/5">
                 {loadingUsers ? (
-                   <p className="p-4 text-center text-xs text-purple-400">Loading users...</p> 
-                ) : availableUsers.length === 0 ? (
-                   <p className="p-4 text-center text-xs text-purple-400">No other users found</p>
+                   <div className="flex items-center justify-center p-6"><p className="text-xs text-purple-400/80 animate-pulse font-medium">Loading users...</p></div> 
+                ) : filteredUsers.length === 0 ? (
+                   <div className="flex items-center justify-center p-6"><p className="text-xs text-purple-400/80 font-medium">No users found</p></div>
                 ) : (
-                  availableUsers.map(user => (
-                    <label key={user.id} className="flex items-center gap-3 p-2 hover:bg-purple-900/30 cursor-pointer">
+                  filteredUsers.map(user => (
+                    <label key={user.id} className="flex items-center gap-3 p-3 hover:bg-white/5 cursor-pointer group transition-colors">
+                      {/* Custom Checkbox */}
+                      <div className={`flex items-center justify-center size-5 rounded-md border transition-all ${selectedUsers.includes(user.id) ? 'bg-purple-500 border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'border-purple-500/40 group-hover:border-purple-400'}`}>
+                        {selectedUsers.includes(user.id) && <CheckIcon className="size-3.5 text-white" />}
+                      </div>
                       <input 
                         type="checkbox" 
-                        className="rounded border-purple-600 accent-purple-500"
+                        className="hidden"
                         checked={selectedUsers.includes(user.id)} 
                         onChange={() => toggleUser(user.id)} 
                       />
                       {user.image ? (
-                        <img src={user.image} className="size-6 rounded-full" alt="" />
+                        <img src={user.image} className="size-8 rounded-xl object-cover border border-white/10 shadow-sm" alt="" />
                       ) : (
-                        <UsersIcon className="size-6 p-1 bg-purple-800 rounded-full text-purple-300" />
+                        <div className="size-8 rounded-xl bg-gradient-to-br from-purple-800 to-indigo-900 flex items-center justify-center border border-white/10 shadow-sm">
+                          <UsersIcon className="size-4 text-purple-200" />
+                        </div>
                       )}
-                      <span className="text-sm text-purple-100">{user.name || user.id}</span>
+                      <span className="text-sm font-medium text-purple-100 group-hover:text-white transition-colors">{user.name || user.id}</span>
                     </label>
                   ))
                 )}
@@ -224,24 +258,29 @@ const CreateChannelModal = ({ onClose }) => {
 
           {/* INPUT: DESCRIPTION */}
           <div className="form-group mb-6">
-            <label className="block text-sm font-semibold text-purple-200 mb-1">Description (Optional)</label>
+            <label className="block text-[13px] font-bold text-purple-200 mb-1.5 uppercase tracking-wide">Description <span className="text-[10px] text-purple-400/60 ml-1">(Optional)</span></label>
             <textarea 
               value={description} 
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What's this group about?"
-              className="w-full p-2 bg-purple-950/50 border border-purple-700/40 rounded-lg h-16 resize-none outline-none text-sm text-white placeholder-purple-400/50 transition-all focus:border-purple-500"
+              className="w-full p-3.5 bg-white/5 border border-white/10 rounded-xl h-20 resize-none outline-none text-[13px] text-white placeholder-purple-300/40 focus:border-purple-400 focus:ring-4 focus:ring-purple-500/10 transition-all shadow-inner ch-scrollbar"
             />
           </div>
 
           {/* BOTTOM BUTTONS */}
-          <footer className="flex gap-4">
-            <button type="button" onClick={onClose} className="flex-1 py-2 text-sm font-bold text-purple-400 hover:text-purple-200 transition-colors">Cancel</button>
+          <footer className="flex gap-3 pt-2">
+            <button type="button" onClick={onClose} className="px-5 py-3 text-[13px] font-bold tracking-wide uppercase text-purple-300/80 hover:text-white hover:bg-white/5 rounded-xl transition-all">Cancel</button>
             <button 
               type="submit" 
               disabled={!channelName.trim() || isSaving} 
-              className="flex-1 py-2 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-lg font-bold hover:opacity-90 disabled:opacity-40 transition-all shadow-lg shadow-purple-900/40"
+              className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-violet-600 border border-purple-500/50 text-white rounded-xl font-bold uppercase tracking-wide text-[13px] hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
-              {isSaving ? "Saving..." : "Create Channel"}
+              {isSaving ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
+                  <span>Saving...</span>
+                </div>
+              ) : "Create Channel"}
             </button>
           </footer>
         </form>
