@@ -115,11 +115,14 @@ const HomePage = () => {
             <div className="team-channel-list">
               
               {/* APP HEADER */}
-              <div className="team-channel-list__header flex-col items-start gap-4">
-                <div className="flex items-center justify-between w-full">
-                  <div className="brand-container">
-                    <img src="/logo.png" alt="Logo" className="brand-logo" />
-                    <span className="brand-name">CollabHub</span>
+              <div className="team-channel-list__header flex-col items-start gap-4 w-full">
+                {/* Glassmorphic Floating Container */}
+                <div className="flex items-center justify-between w-full p-2.5 px-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                  <div className="flex items-center gap-2.5">
+                    <img src="/logo.png" alt="Logo" className="w-[30px] h-[30px] drop-shadow-lg" />
+                    <span className="text-[1.15rem] font-extrabold uppercase tracking-[0.05em] bg-gradient-to-r from-white via-white to-purple-400 bg-clip-text text-transparent">
+                      CollabHub
+                    </span>
                   </div>
                   <UserButton />
                 </div>
