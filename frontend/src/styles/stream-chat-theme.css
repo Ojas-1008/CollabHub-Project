@@ -163,6 +163,26 @@
   display: none;
 }
 
+/* Custom premium scrollbar for specific containers */
+.ch-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.ch-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.ch-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(167, 139, 250, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ch-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(167, 139, 250, 0.5);
+}
+
 /* ===================================================
    3. CREATE CHANNEL BUTTON
    =================================================== */

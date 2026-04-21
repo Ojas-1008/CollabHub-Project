@@ -119,7 +119,7 @@ export default function StatusInputPopover() {
 
             {/* 2. THE QUICK PRESETS POPOVER */}
             {isOpen && (
-                <div className="absolute top-full left-0 mt-3 w-72 bg-purple-950/80 backdrop-blur-3xl rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.5)] border border-purple-500/30 z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute top-full left-0 mt-3 w-72 max-h-[480px] overflow-y-auto ch-scrollbar bg-purple-950/90 backdrop-blur-3xl rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.5)] border border-purple-500/30 z-[100] animate-in fade-in zoom-in-95 duration-200">
                     
                     {/* Header */}
                     <div className="flex items-center justify-between p-3.5 border-b border-purple-500/20 bg-gradient-to-r from-purple-900/40 to-transparent">
