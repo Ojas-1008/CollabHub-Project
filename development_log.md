@@ -436,3 +436,28 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - **Width & Overflow Fixes**: Updated the 320px width rule to target the new class exclusively. Removed aggressive `overflow: hidden` from the outer wrapper and switched the inner container to `overflow-x: clip`, preventing horizontal cutting of box-shadows and hover animations.
   - **Symmetric Padding**: Standardized sidebar gutters to `1.25rem` for better visual balance.
   - **Leave Button Animation**: Refined the "Leave Channel" button to fade in via opacity rather than sliding from the right, preventing clipping at the viewport edge.
+
+## [2026-04-21] - Channel Components UI Overhaul (Liquid Glass)
+
+### Added
+- **Vibrant FileCard Color Theme**:
+  - Implemented a type-specific "Liquid Glass" color language for file list items (`FileCard.jsx`).
+  - Added high-contrast color coding: Crimson/Rose Red for PDFs, Emerald Green for Images, Sky Blue for Documents, and Amber/Orange for Code/Archives.
+  - Added translucent glass tiles with custom border glows that react to the file type.
+  - Introduced a "Liquid Accent" hover effect (stripe on the left) and redesigned actions into "Glass Pills".
+- **Liquid Glass Members Modal**:
+  - Added a "Liquid Glass" search bar inside the modal.
+  - Added real-time presence indicators (Emerald Green for online, Soft Gray for offline) to member avatars.
+- **Liquid Glass Message Input**:
+  - Redesigned the chat composition bar with a modern 24px pill shape and high-density blur.
+- **Unified 'Liquid Sidebar' Overhaul**:
+  - Standardized all major channel sidebars (**Pinned Messages**, **Channel Tasks**, **File Explorer**) to use a premium `bg-white/85` wrapper with `backdrop-blur-[24px]` and a clean structural shadow.
+
+### Changed
+- **Decluttered Sidebar Workspace**: Removed decorative footers across all panels to maximize productivity space.
+- **Wider File Explorer**: Optimized the width of the File Explorer sidebar to `480px` for better document grid presentation.
+- **Custom Channel Header Redesign**: Completely modernized the top navigation bar with frosted glass and "Glass Pill" action buttons.
+
+### Fixed
+- **Modal Clipping Conflict**: Refactored the `CustomChannelHeader` component structure, moving the `MembersModal` outside the header container to ensure it covers the full screen correctly without being clipped by the header's CSS filter property.
+- **Syntax Resolution**: Fixed a Vite parsing error in `TaskListDrawer.jsx` caused by accidentally merged brackets.
