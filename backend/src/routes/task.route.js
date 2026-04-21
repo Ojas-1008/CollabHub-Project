@@ -3,7 +3,9 @@ import { protectRoute } from "../middleware/auth.middleware.js";
 import { 
     createTask, 
     getTasksByChannel, 
-    updateTaskStatus 
+    updateTaskStatus,
+    deleteTask,
+    updateTask
 } from "../controllers/task.controller.js";
 
 const router = express.Router();
@@ -19,7 +21,14 @@ router.post("/", protectRoute, createTask);
 // GET /api/tasks/channel/:channelId - Get all tasks for a specific channel
 router.get("/channel/:channelId", protectRoute, getTasksByChannel);
 
-// PATCH /api/tasks/:taskId - Update the status of a task
-router.patch("/:taskId", protectRoute, updateTaskStatus);
+// PATCH /api/tasks/:taskId/status - Update the status of a task
+router.patch("/:taskId/status", protectRoute, updateTaskStatus);
+
+// PATCH /api/tasks/:taskId - Update the details of a task (edit)
+router.patch("/:taskId", protectRoute, updateTask);
+
+// DELETE /api/tasks/:taskId - Delete a task
+router.delete("/:taskId", protectRoute, deleteTask);
+
 
 export default router;

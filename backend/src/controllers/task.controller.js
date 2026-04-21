@@ -126,3 +126,67 @@ export const updateTaskStatus = async (req, res) => {
         res.status(500).json({ message: "Server error updating task" });
     }
 };
+
+/**
+ * 🗑️ DELETE TASK
+ * Permanently removes a task from MongoDB.
+ */
+export const deleteTask = async (req, res) => {
+    try {
+        const { taskId } = req.params;
+
+        const deletedTask = await Task.findByIdAndDelete(taskId);
+
+        if (!deletedTask) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+
+        res.status(200).json({ message: "Task deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting task:", error);
+        res.status(500).json({ message: "Server error deleting task" });
+    }
+};
+
+/**
+ * 📝 UPDATE TASK DETAILS
+ * General purpose update for title, description, assignee, etc.
+ */
+export const updateTask = async (req, res) => {
+    try {
+        const { taskId } = req.params;
+        const { title, description, assigneeClerkId, dueDate } = req.body;
+
+        // 1. If assignee changed, ensure they exist in our DB
+        let assigneeId = undefined;
+        if (assigneeClerkId) {
+            const assignee = await ensureUserExists(assigneeClerkId);
+            if (!assignee) {
+                return res.status(400).json({ message: "Assignee not found in system." });
+            }
+            assigneeId = assignee._id;
+        }
+
+        // 2. Perform the update
+        const updatedTask = await Task.findByIdAndUpdate(
+            taskId,
+            { 
+                title, 
+                description, 
+                ...(assigneeId && { assignee: assigneeId }), // Only update if provided
+                dueDate 
+            },
+            { new: true } 
+        ).populate("assignee", "name image");
+
+        if (!updatedTask) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+
+        res.status(200).json(updatedTask);
+    } catch (error) {
+        console.error("Error updating task details:", error);
+        res.status(500).json({ message: "Server error updating task" });
+    }
+};
+

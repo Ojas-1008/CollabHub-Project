@@ -1,7 +1,8 @@
-import React from "react";
-import { XIcon, CheckCircle2Icon, CircleIcon, CalendarIcon, UserIcon, Loader2Icon } from "lucide-react";
+import React, { useState } from "react";
+import { XIcon, CheckCircle2Icon, CircleIcon, CalendarIcon, UserIcon, Loader2Icon, PencilIcon, Trash2Icon } from "lucide-react";
 import { useTasks } from "../hooks/useTasks";
 import { useChannelStateContext } from "stream-chat-react";
+import TaskModal from "./TaskModal";
 
 /**
  * 📊 TASK LIST DRAWER
@@ -9,7 +10,10 @@ import { useChannelStateContext } from "stream-chat-react";
  */
 const TaskListDrawer = ({ onClose }) => {
     const { channel } = useChannelStateContext();
-    const { tasks, isLoading, updateStatus } = useTasks(channel.id);
+    const { tasks, isLoading, updateStatus, removeTask } = useTasks(channel.id);
+    
+    // State to track if we're currently editing a task
+    const [editingTask, setEditingTask] = useState(null);
 
     // Filter tasks into simple categories
     const todoTasks = tasks.filter(t => t.status !== "done");
@@ -18,6 +22,12 @@ const TaskListDrawer = ({ onClose }) => {
     const handleToggleStatus = (task) => {
         const newStatus = task.status === "done" ? "todo" : "done";
         updateStatus({ taskId: task._id, status: newStatus });
+    };
+
+    const handleDeleteTask = (taskId) => {
+        if (window.confirm("Are you sure you want to delete this task?")) {
+            removeTask(taskId);
+        }
     };
 
     return (
@@ -65,7 +75,13 @@ const TaskListDrawer = ({ onClose }) => {
                             <h3 className="text-xs font-bold text-purple-300/60 uppercase tracking-widest ml-1">To Do</h3>
                             <div className="space-y-3">
                                 {todoTasks.map(task => (
-                                    <TaskCard key={task._id} task={task} onToggle={() => handleToggleStatus(task)} />
+                                    <TaskCard 
+                                        key={task._id} 
+                                        task={task} 
+                                        onToggle={() => handleToggleStatus(task)} 
+                                        onEdit={() => setEditingTask(task)}
+                                        onDelete={() => handleDeleteTask(task._id)}
+                                    />
                                 ))}
                                 {todoTasks.length === 0 && <p className="text-xs text-purple-400/50 italic ml-1">Everything is caught up!</p>}
                             </div>
@@ -76,7 +92,13 @@ const TaskListDrawer = ({ onClose }) => {
                             <h3 className="text-xs font-bold text-purple-300/60 uppercase tracking-widest ml-1">Completed</h3>
                             <div className="space-y-3 opacity-60">
                                 {completedTasks.map(task => (
-                                    <TaskCard key={task._id} task={task} onToggle={() => handleToggleStatus(task)} isDone />
+                                    <TaskCard 
+                                        key={task._id} 
+                                        task={task} 
+                                        onToggle={() => handleToggleStatus(task)} 
+                                        onDelete={() => handleDeleteTask(task._id)}
+                                        isDone 
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -84,10 +106,18 @@ const TaskListDrawer = ({ onClose }) => {
                 )}
             </div>
 
+            {/* EDIT MODAL OVERLAY */}
+            {editingTask && (
+                <TaskModal 
+                    task={editingTask} 
+                    onClose={() => setEditingTask(null)} 
+                />
+            )}
+
             {/* FOOTER */}
             <div className="p-4 bg-purple-950/20 border-t border-purple-500/10">
                 <p className="text-[9px] text-center text-purple-400/60 uppercase font-bold tracking-tighter">
-                    CollabHub Task System • Version 1.0
+                    CollabHub Task System • Version 1.1
                 </p>
             </div>
         </div>
@@ -98,7 +128,7 @@ const TaskListDrawer = ({ onClose }) => {
  * 🃏 TASK CARD COMPONENT
  * Individual task display item
  */
-const TaskCard = ({ task, onToggle, isDone = false }) => {
+const TaskCard = ({ task, onToggle, onEdit, onDelete, isDone = false }) => {
     return (
         <div className={`group p-4 bg-purple-900/20 border border-purple-500/10 rounded-2xl transition-all hover:bg-purple-900/30 hover:border-purple-500/30 shadow-sm overflow-hidden relative ${isDone ? 'bg-black/10' : ''}`}>
             
@@ -114,7 +144,7 @@ const TaskCard = ({ task, onToggle, isDone = false }) => {
                 )}
             </button>
 
-            <div className="ml-8 space-y-2">
+            <div className="ml-8 pr-12 space-y-2">
                 <h4 className={`font-bold text-sm text-white tracking-tight ${isDone ? 'line-through text-white/40' : ''}`}>
                     {task.title}
                 </h4>
@@ -146,6 +176,26 @@ const TaskCard = ({ task, onToggle, isDone = false }) => {
                 </div>
             </div>
 
+            {/* Action Buttons (Right Side) */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                {!isDone && onEdit && (
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                        className="p-2 hover:bg-white/10 rounded-lg text-purple-300 hover:text-white transition-colors"
+                        title="Edit Task"
+                    >
+                        <PencilIcon className="size-3.5" />
+                    </button>
+                )}
+                <button 
+                    onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                    className="p-2 hover:bg-red-500/20 rounded-lg text-purple-300 hover:text-red-400 transition-colors"
+                    title="Delete Task"
+                >
+                    <Trash2Icon className="size-3.5" />
+                </button>
+            </div>
+
             {/* Gradient Glow */}
             {!isDone && (
                 <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 blur-3xl -z-10 group-hover:bg-purple-500/10 transition-all rounded-full" />
@@ -153,5 +203,6 @@ const TaskCard = ({ task, onToggle, isDone = false }) => {
         </div>
     );
 };
+
 
 export default TaskListDrawer;

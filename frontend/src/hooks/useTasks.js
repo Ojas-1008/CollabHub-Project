@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getTasks, updateTaskStatus } from "../../lib/api";
+import { getTasks, updateTaskStatus, updateTask, deleteTask } from "../../lib/api";
 import toast from "react-hot-toast";
 
 /**
@@ -23,7 +23,6 @@ export const useTasks = (channelId) => {
     const { mutate: updateStatus, isLoading: isUpdating } = useMutation({
         mutationFn: ({ taskId, status }) => updateTaskStatus(taskId, status),
         onSuccess: () => {
-            // Tell TanStack Query that the tasks list is now "old" so it fetches it again
             queryClient.invalidateQueries({ queryKey: ["tasks", channelId] });
             toast.success("Status updated!");
         },
@@ -33,11 +32,41 @@ export const useTasks = (channelId) => {
         }
     });
 
+    // 3. UPDATE TASK DETAILS (EDIT)
+    const { mutate: editTask, isLoading: isEditing } = useMutation({
+        mutationFn: ({ taskId, taskData }) => updateTask(taskId, taskData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["tasks", channelId] });
+            toast.success("Task updated!");
+        },
+        onError: (err) => {
+            const msg = err.response?.data?.message || "Failed to update task.";
+            toast.error(msg);
+        }
+    });
+
+    // 4. DELETE TASK
+    const { mutate: removeTask, isLoading: isDeleting } = useMutation({
+        mutationFn: (taskId) => deleteTask(taskId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["tasks", channelId] });
+            toast.success("Task deleted!");
+        },
+        onError: (err) => {
+            toast.error("Failed to delete task.");
+        }
+    });
+
     return {
         tasks,
         isLoading,
         error,
         updateStatus,
-        isUpdating
+        isUpdating,
+        editTask,
+        isEditing,
+        removeTask,
+        isDeleting
     };
 };
+

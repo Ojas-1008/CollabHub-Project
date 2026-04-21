@@ -371,6 +371,28 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Implement "Lazy User Sync" for robust task assignment.
 - [x] Optimize backend startup by parallelizing database connection and server listener.
 - [x] Configure MongoDB connection options for faster DNS resolution (IPv4).
+- [x] Implement "Edit Task" functionality with a shared modal.
+- [x] Implement "Delete Task" functionality with database sync.
+
+## [2026-04-21] - Task Management Enhancements
+
+### Added
+- **Interactive Task Actions**:
+  - Embedded "Edit" (Pencil) and "Delete" (Trash) icons into `TaskCard` within the `TaskListDrawer.jsx`. 
+  - Added hover-activated controls and a `window.confirm` safety gate for deletions.
+- **Backend CRUD Support**:
+  - Implemented `deleteTask` and `updateTask` in `task.controller.js`.
+  - Registered new `DELETE /api/tasks/:taskId` and `PATCH /api/tasks/:taskId` endpoints.
+
+### Changed
+- **Modal Refactoring**:
+  - Overhauled `TaskModal.jsx` to be a multi-mode component. It now seamlessly handles both creating new tasks from scratch and editing existing ones by detecting the presence of a `task` prop.
+- **API & Hooks Integration**:
+  - Expanded `frontend/lib/api.js` with `deleteTask` and `updateTask` utilities.
+  - Enhanced the `useTasks` custom hook with TanStack Query mutations for real-time list updates and cache invalidation.
+
+### Fixed
+- **Missing Imports Bug**: Resolved a critical issue in `useTasks.js` where the `deleteTask` and `updateTask` API functions were not imported, preventing the new UI actions from communicating with the backend.
 
 ## [2026-04-21] - Backend Performance and Startup Optimization
 

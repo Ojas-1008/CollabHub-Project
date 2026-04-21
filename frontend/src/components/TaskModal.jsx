@@ -2,60 +2,71 @@ import React, { useState } from "react";
 import { useChannelStateContext, useChatContext } from "stream-chat-react";
 import { XIcon, CheckSquareIcon, UserIcon, CalendarIcon, AlignLeftIcon } from "lucide-react";
 import toast from "react-hot-toast";
-import { createTask } from "../../lib/api";
+import { createTask, updateTask } from "../../lib/api";
 
 /**
  * 🎯 TASK MODAL
- * A premium-styled glassmorphic modal that converts a chat message into a task.
+ * A premium-styled glassmorphic modal that converts a chat message into a task
+ * OR edits an existing task.
  * 
  * Props:
- * - message: The Stream message object we are converting.
+ * - message: (Optional) The Stream message object we are converting.
+ * - task: (Optional) The existing task object we are editing.
  * - onClose: Function to close the modal.
  */
-const TaskModal = ({ message, onClose }) => {
-    const { client } = useChatContext();
+const TaskModal = ({ message, task, onClose }) => {
     const { channel } = useChannelStateContext();
 
     // --- 1. STATE ---
-    const [title, setTitle] = useState("");
-    const [assigneeId, setAssigneeId] = useState("");
-    const [dueDate, setDueDate] = useState("");
-    const [description, setDescription] = useState(message.text || "");
+    // Pre-fill if we are in 'Edit' mode
+    const [title, setTitle] = useState(task?.title || "");
+    const [assigneeId, setAssigneeId] = useState(task?.assignee?.clerkId || task?.assignee?._id || "");
+    const [dueDate, setDueDate] = useState(task?.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : "");
+    const [description, setDescription] = useState(task?.description || message?.text || "");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const isEditMode = !!task;
+
     // --- 2. DATA PREP ---
-    // Get all members of the current channel so the user can assign the task
     const members = Object.values(channel.state.members || {}).map(m => m.user);
 
     // --- 3. SUBMISSION ---
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Basic validation
         if (!title.trim()) return toast.error("Please provide a task title");
-        if (!assigneeId) return toast.error("Please assigned a team member");
+        if (!assigneeId) return toast.error("Please assign a team member");
 
         setIsSubmitting(true);
 
         try {
-            // Data for our backend
-            const taskData = {
-                title: title.trim(),
-                description: description.trim(),
-                assigneeClerkId: assigneeId, // Backend expects Clerk ID
-                channelId: channel.id,
-                messageId: message.id,
-                dueDate: dueDate || null
-            };
-
-            await createTask(taskData);
+            if (isEditMode) {
+                // EDIT MODE
+                await updateTask(task._id, {
+                    title: title.trim(),
+                    description: description.trim(),
+                    assigneeClerkId: assigneeId,
+                    dueDate: dueDate || null
+                });
+                toast.success("Task updated successfully!");
+            } else {
+                // CREATE MODE
+                const taskData = {
+                    title: title.trim(),
+                    description: description.trim(),
+                    assigneeClerkId: assigneeId,
+                    channelId: channel.id,
+                    messageId: message.id,
+                    dueDate: dueDate || null
+                };
+                await createTask(taskData);
+                toast.success("Task created successfully!");
+            }
             
-            toast.success("Task created successfully!");
-            onClose(); // Close the modal on success
+            onClose(); 
         } catch (error) {
-            console.error("Error creating task:", error);
-            // Extract descriptive error from backend if available
-            const errorMessage = error.response?.data?.message || "Failed to create task. Please try again.";
+            console.error("Task submission error:", error);
+            const errorMessage = error.response?.data?.message || "Failed to process task.";
             toast.error(errorMessage);
         } finally {
             setIsSubmitting(false);
@@ -72,7 +83,9 @@ const TaskModal = ({ message, onClose }) => {
                         <div className="p-2 bg-purple-500/20 rounded-lg">
                             <CheckSquareIcon className="size-5 text-purple-400" />
                         </div>
-                        <h2 className="text-xl font-bold text-white tracking-tight">Create Task</h2>
+                        <h2 className="text-xl font-bold text-white tracking-tight">
+                            {isEditMode ? "Edit Task" : "Create Task"}
+                        </h2>
                     </div>
                     <button 
                         onClick={onClose}
@@ -133,7 +146,7 @@ const TaskModal = ({ message, onClose }) => {
                         </div>
                     </div>
 
-                    {/* DESCRIPTION (PRE-FILLED) */}
+                    {/* DESCRIPTION */}
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-purple-300/80 uppercase tracking-wider ml-1">Context / Description</label>
                         <div className="relative">
@@ -157,12 +170,12 @@ const TaskModal = ({ message, onClose }) => {
                             {isSubmitting ? (
                                 <>
                                     <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    <span>Creating...</span>
+                                    <span>{isEditMode ? "Updating..." : "Creating..."}</span>
                                 </>
                             ) : (
                                 <>
                                     <CheckSquareIcon className="size-4 group-hover:scale-110 transition-transform" />
-                                    <span>Confirm Task</span>
+                                    <span>{isEditMode ? "Save Changes" : "Confirm Task"}</span>
                                 </>
                             )}
                         </button>
@@ -173,5 +186,6 @@ const TaskModal = ({ message, onClose }) => {
         </div>
     );
 };
+
 
 export default TaskModal;

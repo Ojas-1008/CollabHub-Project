@@ -21,9 +21,20 @@ export async function getTasks(channelId) {
 }
 
 export async function updateTaskStatus(taskId, status) {
-  const response = await axiosInstance.patch(`/tasks/${taskId}`, { status });
+  const response = await axiosInstance.patch(`/tasks/${taskId}/status`, { status });
   return response.data;
 }
+
+export async function updateTask(taskId, taskData) {
+  const response = await axiosInstance.patch(`/tasks/${taskId}`, taskData);
+  return response.data;
+}
+
+export async function deleteTask(taskId) {
+  const response = await axiosInstance.delete(`/tasks/${taskId}`);
+  return response.data;
+}
+
 
 /**
  * 👤 USER APIs
