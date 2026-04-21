@@ -762,16 +762,23 @@ button.str-chat__load-more-button,
 
 /* =====================================================
    MESSAGE INNER WRAPPER — constrains the bubble width
-   ===================================================== */
+   =====================================================
+
+   IMPORTANT: overflow must be VISIBLE here so the
+   hover actions toolbar (absolutely positioned above
+   the bubble) is never clipped by its parent.
+*/
 
 .str-chat__message-inner {
   display: flex !important;
   flex-direction: column !important;
   position: relative !important;
   width: fit-content !important;
-  max-width: min(72%, 42rem) !important;
+  /* Balanced cap: wide enough for files, narrow enough for readability */
+  max-width: min(68%, 38rem) !important;
   min-width: 0 !important;
-  overflow: hidden !important;
+  /* Must be visible — actions toolbar sits ABOVE the bubble */
+  overflow: visible !important;
 }
 
 /* My messages inner — align contents right */
@@ -781,14 +788,20 @@ button.str-chat__load-more-button,
 
 /* =====================================================
    BUBBLE — the coloured pill around message text
-   ===================================================== */
+   =====================================================
+
+   overflow is set to hidden here (on the BUBBLE) so
+   long words don't escape the pill, but the INNER
+   wrapper above stays visible so actions toolbar works.
+*/
 
 .str-chat__message-bubble {
-  /* Layout: block so it fills the inner width, not collapses to inline */
   display: block !important;
-  width: auto !important;
+  /* Takes the full available width of its inner wrapper */
+  width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
+  /* Clip text overflow AT the bubble edge, not at the inner wrapper */
   overflow: hidden !important;
 
   /* Bubble appearance */
@@ -804,26 +817,33 @@ button.str-chat__load-more-button,
   text-align: left !important;
 }
 
-/* Text inside bubble — handle both short and very long unbroken strings */
+/*
+  MESSAGE TEXT
+  ============
+  overflow-wrap: anywhere  → breaks long unbroken strings (URLs, spam) at any character
+  word-break: break-word   → breaks normal words only when they overflow (safer than break-all)
+  white-space: pre-wrap    → respects newlines the user typed
+*/
 .str-chat__message-text,
 .str-chat__message-text-inner {
   display: block !important;
-  width: auto !important;
+  width: 100% !important;
   min-width: 0 !important;
   max-width: 100% !important;
-  /* break-word handles long normal strings; anywhere handles URLs/gibberish */
   overflow-wrap: anywhere !important;
-  word-break: break-all !important;
+  word-break: break-word !important;
   white-space: pre-wrap !important;
-  /* Preserve intentional line breaks */
-  hyphens: none !important;
-  /* No auto-hyphenation splitting words */
+  overflow: hidden !important;
 }
 
-/* Strip inner <p> margin so text fits flush */
-.str-chat__message-text-inner p {
+/* Strip <p> margin inside the bubble so text fits flush */
+.str-chat__message-text-inner p,
+.str-chat__message-text p {
   margin: 0 !important;
   padding: 0 !important;
+  min-width: 0 !important;
+  overflow-wrap: inherit !important;
+  word-break: inherit !important;
 }
 
 /* =====================================================
@@ -839,8 +859,101 @@ button.str-chat__load-more-button,
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-.str-chat__message--me .str-chat__message-text-inner p {
+.str-chat__message--me .str-chat__message-text-inner p,
+.str-chat__message--me .str-chat__message-text p {
   color: #ffffff !important;
+}
+
+/* =====================================================
+   FILE ATTACHMENT CARD (inside message bubble)
+   =====================================================
+
+   The file card (.str-chat__message-attachment-file--item)
+   appears INSIDE the bubble. We need it to inherit the
+   bubble background so it doesn't show a jarring white
+   box inside a purple bubble.
+*/
+
+/* Container for file attachments */
+.str-chat__attachment-list {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.str-chat__message-attachment {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* The white file card pill */
+.str-chat__message-attachment-file--item {
+  /* Slightly off-white: visible on white bubbles, visible on purple ones */
+  background: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border-radius: 14px !important;
+  padding: 0.6rem 0.85rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* For OTHER people's messages — dark card on white bubble */
+.str-chat__message:not(.str-chat__message--me) .str-chat__message-attachment-file--item {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* File name text */
+.str-chat__message-attachment-file--item-name {
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  color: inherit !important;
+  /* Prevent long file names from overflowing */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+}
+
+/* File size text */
+.str-chat__message-attachment-file--item-size {
+  font-size: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  white-space: nowrap !important;
+}
+
+/* For other people's messages, file size is darker */
+.str-chat__message:not(.str-chat__message--me) .str-chat__message-attachment-file--item-size {
+  color: #94a3b8 !important;
+}
+
+/* Download icon inside file card */
+.str-chat__message-attachment-file--item-download {
+  opacity: 0.7 !important;
+  transition: opacity 0.15s ease !important;
+  flex-shrink: 0 !important;
+}
+.str-chat__message-attachment-file--item-download:hover {
+  opacity: 1 !important;
+}
+.str-chat__message--me .str-chat__message-attachment-file--item-download svg path {
+  fill: white !important;
+}
+
+/* First row inside the file card */
+.str-chat__message-attachment-file--item-first-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.5rem !important;
+  min-width: 0 !important;
+  width: 100% !important;
 }
 
 /* =====================================================
@@ -886,17 +999,31 @@ button.str-chat__load-more-button,
 
 /* =====================================================
    DELETED MESSAGES
-   ===================================================== */
+   =====================================================
+
+   The deleted component uses .str-chat__message--me
+   so it aligns right. We just make the pill look good.
+*/
+
+.str-chat__message--deleted {
+  /* Ensure the deleted pill aligns to the right for own messages */
+  width: 100% !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+}
 
 .str-chat__message--deleted-inner {
+  display: inline-block !important;
   color: #94a3b8 !important;
   font-style: italic !important;
-  background: #f8fafc !important;
+  background: rgba(248, 250, 252, 0.9) !important;
   border: 1px dashed #cbd5e1 !important;
   border-radius: 14px !important;
-  padding: 0.5rem 1rem !important;
-  opacity: 0.8 !important;
-  font-size: 0.875rem !important;
+  padding: 0.45rem 1rem !important;
+  font-size: 0.8rem !important;
+  max-width: 100% !important;
+  /* Deleted text should never overflow */
+  overflow-wrap: break-word !important;
 }
 
 /* =====================================================
@@ -948,19 +1075,36 @@ button.str-chat__load-more-button,
 
 /* =====================================================
    MESSAGE METADATA (timestamp / status below bubble)
-   Stream uses .str-chat__message-metadata in the DOM
-   ===================================================== */
+   =====================================================
+
+   This sits BELOW the bubble inside .str-chat__message-inner
+   which is now overflow: visible, so it is always readable.
+*/
 
 .str-chat__message-metadata {
   display: flex !important;
   align-items: center !important;
   gap: 0.35rem !important;
   margin-top: 4px !important;
-  padding: 0 2px !important;
+  padding: 0 4px !important;
+  /* Never clip the timestamp text */
+  overflow: visible !important;
+  white-space: nowrap !important;
+  width: 100% !important;
 }
 
+/* Right-align timestamp for own messages */
 .str-chat__message--me .str-chat__message-metadata {
   justify-content: flex-end !important;
+}
+
+/* Timestamp text */
+.str-chat__message-simple-timestamp {
+  color: #94a3b8 !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  white-space: nowrap !important;
 }
 
 /* =====================================================
