@@ -45,6 +45,7 @@
   max-width: 320px !important;
   background: linear-gradient(180deg, #3d106d 0%, #1e0633 100%) !important;
   border: none !important;
+  border-right: none !important; /* Explicitly remove any SDK right-side border */
   height: 100% !important;
   display: flex !important;
   flex-direction: column !important;
@@ -56,11 +57,14 @@
   INSIDE our sidebar. We must reset its width so it adapts to its parent
   (the padded .team-channel-list) instead of trying to be 320px wide.
 */
-.sidebar-container .str-chat__channel-list {
+.sidebar-container .str-chat__channel-list,
+.sidebar-container .str-chat-channel-list {
   width: 100% !important;
   min-width: 0 !important;
   max-width: 100% !important;
   background: transparent !important;
+  border: none !important;          /* No borders between sidebar items */
+  border-right: none !important;    /* Clear the right-side divider */
   height: auto !important;
   overflow: visible !important;
 }
@@ -650,6 +654,7 @@ button.str-chat__load-more-button,
 .str-chat__main-panel {
   height: 100% !important;
   background: white !important;
+  border-left: none !important; /* Remove the vertical line between sidebar and chat */
 }
 
 /* Channel header bar */
