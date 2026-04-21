@@ -369,4 +369,24 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Implement offline email notifications using Stream Webhooks, Inngest, and Resend.
 - [x] Implement "Leave Channel" functionality for public and private channels.
 - [x] Implement "Lazy User Sync" for robust task assignment.
+- [x] Optimize backend startup by parallelizing database connection and server listener.
+- [x] Configure MongoDB connection options for faster DNS resolution (IPv4).
+
+## [2026-04-21] - Backend Performance and Startup Optimization
+
+### Changed
+- **Parallel Server Startup**:
+  - Refactored `backend/src/server.js` to decouple the database connection from the server listener. The Express server now starts listening on its port immediately, while MongoDB connects in the background.
+  - Leveraged Mongoose's internal buffering to ensure incoming requests are queued until the database is ready, improving perceived startup speed.
+- **MongoDB Connection Optimization**:
+  - Updated `backend/src/config/db.js` with optimized connection options:
+    - `family: 4`: Forces IPv4 to bypass slow DNS resolution delays common in local development environments.
+    - `serverSelectionTimeoutMS: 5000`: Set a 5-second timeout for server selection to ensure the app doesn't hang indefinitely on connection failures.
+  - Implemented a "Connection Guard" to prevent redundant connection attempts if the database is already in a connected or connecting state.
+
+### Refinement
+- **Beginner-Friendly Architecture**:
+  - Added detailed, student-focused comments to `server.js` and `db.js` explaining the benefits of parallel startup and IPv4 forcing.
+  - Standardized error logging with descriptive emojis (🚀, 📡, ❌) for better terminal visibility.
+
 

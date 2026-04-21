@@ -63,7 +63,11 @@ const HomePage = () => {
 
   // Helper function to handle switching channels
   const handleSelectChannel = (channel) => {
-    setSearchParams({ channel: channel.id });
+    if (channel) {
+      setSearchParams({ channel: channel.id });
+    } else {
+      setSearchParams({});
+    }
   };
 
   // --- CUSTOM MESSAGE ACTIONS ---

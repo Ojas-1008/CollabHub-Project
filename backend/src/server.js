@@ -44,14 +44,18 @@ Sentry.setupExpressErrorHandler(app);
 
 const startServer = async () => {
   try {
-    await connectDB();
+    // 💡 IMPROVEMENT: We don't await connectDB() here. 
+    // This allows the Express server to start listening immediately.
+    // Mongoose is smart enough to "buffer" any database requests 
+    // until the connection is actually ready.
+    connectDB();
 
     app.listen(ENV.PORT, () => {
-      console.log("Server started on port:", ENV.PORT);
+      console.log(`🚀 Server is live on port: ${ENV.PORT}`);
+      console.log(`📡 Connecting to services...`);
     });
   } catch (error) {
-    console.error("Error starting server:", error);
-    // Guard: only call Sentry if it was initialized successfully
+    console.error("❌ Critical error during server startup:", error);
     if (Sentry.captureException) Sentry.captureException(error);
     process.exit(1);
   }
