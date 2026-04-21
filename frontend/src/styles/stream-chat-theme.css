@@ -1030,36 +1030,59 @@ button.str-chat__load-more-button,
 }
 
 
-/* =====================================================
-   MESSAGE INPUT AREA
-   ===================================================== */
+/* ===================================================
+   10. MESSAGE INPUT AREA (Liquid Glass Overhaul)
+   =================================================== */
 
+.str-chat__input-flat,
 .str-chat__message-input {
-  background: white !important;
-  border-top: 1px solid #eef0f5 !important;
-  padding: 0.875rem 1.25rem !important;
-  /* Subtle top shadow to lift it above the message list */
-  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.04) !important;
+  /* Give the container area some breathing room */
+  padding: 1rem 1.5rem !important;
+  background: transparent !important;
+  border-top: none !important;
+  position: relative !important;
 }
 
-/* The pill-shaped container holding everything */
+/* Optional subtle background glow at the bottom of the chat */
+.str-chat__input-flat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(124, 58, 237, 0.03), transparent);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* The pill-shaped container holding everything (Liquid Glass Design) */
 .str-chat__message-input-inner {
   display: flex !important;
   align-items: center !important;
   gap: 0.5rem !important;
-  border: 1.5px solid #e2e8f0 !important;
-  border-radius: 16px !important;
-  background: #f8fafc !important;
-  padding: 0.4rem 0.5rem 0.4rem 1rem !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
-  min-height: 52px !important;
+  
+  /* Liquid Glass Styles */
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(140%) !important;
+  border: 1px solid rgba(168, 85, 247, 0.25) !important;
+  border-radius: 24px !important; /* More pill-like */
+  padding: 0.5rem 0.5rem 0.5rem 1rem !important;
+  
+  /* Soft, layered shadows for depth */
+  box-shadow: 
+    0 8px 32px rgba(124, 58, 237, 0.1), /* Outer gentle ambient glow */
+    inset 0 1px 1px rgba(255, 255, 255, 0.9) !important; /* Top ridge reflection */
+  
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  min-height: 54px !important;
 }
 
 .str-chat__message-input-inner:focus-within {
-  border-color: #7c3aed !important;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05) !important;
-  background: #ffffff !important;
+  border-color: rgba(168, 85, 247, 0.6) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 
+    0 10px 40px rgba(124, 58, 237, 0.15), 
+    0 0 0 3px rgba(168, 85, 247, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 1) !important;
+  transform: translateY(-2px); /* Slight lift on focus */
 }
 
 /* Attachment / Plus Button — circular icon button on the left */
