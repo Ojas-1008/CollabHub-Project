@@ -353,8 +353,12 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - **Glassmorphic Bubbles**: Added `backdrop-filter: blur(12px)`, layered shadows, and inset highlights for a highly professional feel.
   - **Dynamic Background**: Replaced the flat background with a subtle purple-tinted vertical gradient for better depth.
   - **Premium Action Toolbar**: Redesigned the hover action menu with glassmorphism, scale-up entrance animations, and individual button hover states.
-- **Improved Metadata Flow**:
-  - Moved timestamps and read receipts from absolute positioning (inside the bubble) to normal document flow (below the bubble). This permanently fixed the "timestamp clipping" issue and improved readability for short messages.
+- **Floating Timestamp Tooltips**:
+  - Converted static timestamps into interactive glassmorphic tooltips that only appear on hover.
+  - Positioned tooltips to float alongside the action menu (toolbar extension), removing them from the document flow.
+- **Metadata Layout Optimization**:
+  - Reduced the `str-chat__message-metadata` footprint to zero margins/padding.
+  - Fixed a critical alignment issue where timestamps were pushing message bubbles horizontally, ensuring perfect vertical alignment for both sent and received messages.
 
 ### Fixed
 - **Horizontal Overflow & Clipping**:
@@ -405,4 +409,5 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Fix Sidebar Clipping and Structural Layout Conflicts.
 - [x] Redesign Chat Message UI for better responsiveness and aesthetics (Liquid Glass).
 - [x] Fix horizontal overflow and message clipping issues.
+- [x] Implement Floating Timestamp Tooltips for cleaner message alignment.
 

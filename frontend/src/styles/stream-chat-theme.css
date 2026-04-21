@@ -1307,9 +1307,9 @@ button.str-chat__load-more-button,
   position: static !important;
   display: flex !important;
   align-items: center !important;
-  gap: 0.35rem !important;
-  margin-top: 4px !important;
-  padding: 0 6px !important;
+  gap: 0.15rem !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
   white-space: nowrap !important;
   opacity: 0.7 !important;
   transition: opacity 0.2s ease !important;
@@ -1323,29 +1323,62 @@ button.str-chat__load-more-button,
 /* Received messages: metadata aligns left */
 .str-chat__message-metadata {
   justify-content: flex-start !important;
+  margin-left: 4px !important;
 }
 
 /* My messages: metadata aligns right */
 .str-chat__message--me .str-chat__message-metadata {
   justify-content: flex-end !important;
+  margin-left: 0 !important;
+  margin-right: 4px !important;
 }
 
-/* Hide timestamp on non-bottom messages in a group */
+/* Hide metadata container on non-bottom messages in a group */
 .str-chat__li--top .str-chat__message-metadata,
 .str-chat__li--middle .str-chat__message-metadata {
   display: none !important;
 }
 
 /* =====================================================
-   TIMESTAMP
+   TIMESTAMP - Converted into a floating hover tooltip
    ===================================================== */
 
 .str-chat__message-simple-timestamp {
-  color: #94a3b8 !important;
-  font-size: 0.6875rem !important;
-  font-weight: 500 !important;
+  position: absolute !important;
+  top: 0 !important;
+  /* Float beside the action menu */
+  right: 105px !important; 
+  transform: translateY(calc(-100% - 6px)) scale(0.95) !important;
+  
+  /* Glassmorphism pill styling */
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(150%) !important;
+  border-radius: 12px !important;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.1), 
+    0 1px 3px rgba(0, 0, 0, 0.06), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  padding: 6px 12px !important;
+  border: 1px solid rgba(124, 58, 237, 0.12) !important;
+  
+  color: #475569 !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
   letter-spacing: 0.02em !important;
-  font-variant-numeric: tabular-nums !important; /* Monospaced digits for clean alignment */
+  font-variant-numeric: tabular-nums !important;
+  
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 10 !important;
+}
+
+/* Subtly reveal alongside the action menu */
+.str-chat__message:hover .str-chat__message-simple-timestamp {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(calc(-100% - 6px)) scale(1) !important;
 }
 
 /* =====================================================
