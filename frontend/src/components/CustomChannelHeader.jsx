@@ -133,18 +133,22 @@ const CustomChannelHeader = () => {
     // ── RENDER ────────────────────────────────────────────────────────────────
 
     return (
-        // Outer bar: full width, white background, sits between sidebar and message list
-        <div className="h-14 border-b border-gray-200 flex items-center px-4 justify-between bg-white">
+        // Outer bar: full width, frosted glass background, sticky top
+        <div className="h-16 border-b border-purple-500/10 flex items-center px-6 justify-between bg-white/70 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.02)] z-[50] relative">
 
             {/* LEFT SIDE: channel icon + name (or DM user avatar + name) */}
             <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
 
                     {/* Show a lock icon for private channels, hash for public ones */}
                     {channel.data?.private ? (
-                        <LockIcon className="size-4 text-[#616061]" />
+                        <div className="size-8 rounded-lg bg-violet-100 flex items-center justify-center border border-violet-200">
+                            <LockIcon className="size-4.5 text-violet-600" />
+                        </div>
                     ) : (
-                        <HashIcon className="size-4 text-[#616061]" />
+                        <div className="size-8 rounded-lg bg-purple-100 flex items-center justify-center border border-purple-200">
+                            <HashIcon className="size-4.5 text-purple-600" />
+                        </div>
                     )}
 
                     {/* If this is a DM AND the other user has a profile photo, show it */}
@@ -152,17 +156,17 @@ const CustomChannelHeader = () => {
                         <img
                             src={otherUser.user.image}
                             alt={otherUser.user.name || otherUser.user.id}
-                            className="size-7 rounded-full object-cover mr-1"
+                            className="size-8 rounded-[10px] object-cover border border-purple-200/50 shadow-sm"
                         />
                     )}
 
                     {/* Display name: for DMs use the other person's name; for channels use channel ID */}
                     <div className="flex flex-col justify-center">
-                        <span className="font-medium text-[#1D1C1D] leading-tight">
+                        <span className="font-extrabold text-gray-900 tracking-tight text-[17px] leading-tight">
                             {isDM ? otherUser?.user?.name || otherUser?.user?.id : channel.data?.id}
                         </span>
                         {isDM && otherUser?.user?.status && (
-                            <span className="text-[11px] text-gray-500 mt-0.5 truncate max-w-[200px]">
+                            <span className="text-[12px] font-medium text-purple-600/70 mt-0.5 truncate max-w-[200px]">
                                 {otherUser.user.status}
                             </span>
                         )}
@@ -171,63 +175,63 @@ const CustomChannelHeader = () => {
             </div>
 
             {/* RIGHT SIDE: action buttons */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
 
-                {/* MEMBERS BUTTON: shows member count, opens MembersModal on click */}
+                {/* MEMBERS BUTTON: Glass Pill */}
                 <button
-                    className="flex items-center gap-2 hover:bg-[#F8F8F8] py-1 px-2 rounded"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200/60 bg-white/50 hover:bg-white hover:border-purple-300 hover:shadow-sm transition-all text-gray-600 hover:text-purple-600"
                     onClick={() => setShowMembers(true)}
                 >
-                    <UsersIcon className="size-5 text-[#616061]" />
-                    <span className="text-sm text-[#616061]">{memberCount}</span>
+                    <UsersIcon className="size-4.5" />
+                    <span className="text-[13px] font-bold">{memberCount}</span>
                 </button>
 
-                {/* VIDEO CALL BUTTON: sends a call link as a chat message */}
-                <button
-                    className="hover:bg-[#F8F8F8] p-1 rounded"
-                    onClick={handleVideoCall}
-                    title="Start Video Call"
-                >
-                    <VideoIcon className="size-5 text-[#1264A3]" />
-                </button>
-
-                {/* INVITE BUTTON: only shown for private channels */}
+                {/* INVITE BUTTON: Glass Pill (Private only) */}
                 {channel.data?.private && (
-                    <button className="btn btn-primary" onClick={() => setShowInvite(true)}>
+                    <button 
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-violet-200/60 bg-violet-50/50 hover:bg-violet-100/80 hover:border-violet-300 transition-all text-violet-600 font-bold text-[13px]" 
+                        onClick={() => setShowInvite(true)}
+                    >
                         Invite
                     </button>
                 )}
 
-                {/* PIN BUTTON: toggles the pinned messages sidebar
-                    When the sidebar is open, the button background turns purple (active state)
-                    — same visual pattern as the task drawer button below. */}
+                <div className="w-px h-6 bg-gray-200 mx-1"></div>
+
+                {/* VIDEO CALL BUTTON: Its own distinct color (Blue) */}
                 <button
-                    className={`p-1 rounded transition-colors ${showPinnedMessages ? 'bg-purple-100 text-purple-600' : 'hover:bg-[#F8F8F8] text-[#616061]'}`}
+                    className="p-2 rounded-xl border border-transparent hover:bg-blue-50 hover:border-blue-200 hover:shadow-sm transition-all text-blue-500"
+                    onClick={handleVideoCall}
+                    title="Start Video Call"
+                >
+                    <VideoIcon className="size-4.5" />
+                </button>
+
+                {/* PIN BUTTON */}
+                <button
+                    className={`p-2 rounded-xl border transition-all duration-200 ${showPinnedMessages ? 'bg-purple-100 border-purple-300 text-purple-600 shadow-inner' : 'border-transparent hover:bg-white hover:border-purple-200 hover:shadow-sm text-gray-500 hover:text-purple-500'}`}
                     onClick={handleShowPinned}
                     title={showPinnedMessages ? "Close pinned messages" : "View pinned messages"}
                 >
-                    <PinIcon className="size-4" />
+                    <PinIcon className="size-4.5" />
                 </button>
 
-                {/* TASK BUTTON: Opens the task list drawer */}
+                {/* TASK BUTTON */}
                 <button 
-                    className={`p-1 rounded transition-colors ${showTasks ? 'bg-purple-100 text-purple-600' : 'hover:bg-[#F8F8F8] text-[#616061]'}`}
+                    className={`p-2 rounded-xl border transition-all duration-200 ${showTasks ? 'bg-purple-100 border-purple-300 text-purple-600 shadow-inner' : 'border-transparent hover:bg-white hover:border-purple-200 hover:shadow-sm text-gray-500 hover:text-purple-500'}`}
                     onClick={() => setShowTasks(!showTasks)}
                     title={showTasks ? "Close tasks" : "View channel tasks"}
                 >
-                    <ListTodoIcon className="size-5" />
+                    <ListTodoIcon className="size-4.5" />
                 </button>
 
-                {/* FILES BUTTON: Opens the shared file explorer sidebar.
-                    Follows the same active-state pattern as Pin and Tasks buttons.
-                    When active: purple tint background + purple icon.
-                    When inactive: grey icon + subtle hover highlight. */}
+                {/* FILES BUTTON */}
                 <button
-                    className={`p-1 rounded transition-colors ${showFiles ? 'bg-purple-100 text-purple-600' : 'hover:bg-[#F8F8F8] text-[#616061]'}`}
+                    className={`p-2 rounded-xl border transition-all duration-200 ${showFiles ? 'bg-purple-100 border-purple-300 text-purple-600 shadow-inner' : 'border-transparent hover:bg-white hover:border-purple-200 hover:shadow-sm text-gray-500 hover:text-purple-500'}`}
                     onClick={() => setShowFiles(!showFiles)}
                     title={showFiles ? "Close file explorer" : "Browse shared files"}
                 >
-                    <FolderOpenIcon className="size-5" />
+                    <FolderOpenIcon className="size-4.5" />
                 </button>
             </div>
 
