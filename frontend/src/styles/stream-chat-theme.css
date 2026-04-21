@@ -741,9 +741,15 @@ button.str-chat__load-more-button,
 
 /* Every message row is a flex row */
 .str-chat__li {
-  padding: 2px 1.5rem !important;
+  padding: 3px 1.5rem !important;
   display: flex !important;
   flex-direction: column !important;
+}
+
+/* Add a little extra spacing between message groups */
+.str-chat__li--single,
+.str-chat__li--top {
+  margin-top: 0.5rem !important;
 }
 
 /* Other people's messages: left-aligned row */
@@ -762,22 +768,15 @@ button.str-chat__load-more-button,
 
 /* =====================================================
    MESSAGE INNER WRAPPER — constrains the bubble width
-   =====================================================
-
-   IMPORTANT: overflow must be VISIBLE here so the
-   hover actions toolbar (absolutely positioned above
-   the bubble) is never clipped by its parent.
-*/
+   ===================================================== */
 
 .str-chat__message-inner {
   display: flex !important;
   flex-direction: column !important;
   position: relative !important;
   width: fit-content !important;
-  /* Balanced cap: wide enough for files, narrow enough for readability */
-  max-width: min(68%, 38rem) !important;
+  max-width: min(72%, 42rem) !important;
   min-width: 0 !important;
-  /* Must be visible — actions toolbar sits ABOVE the bubble */
   overflow: visible !important;
 }
 
@@ -788,62 +787,56 @@ button.str-chat__load-more-button,
 
 /* =====================================================
    BUBBLE — the coloured pill around message text
-   =====================================================
-
-   overflow is set to hidden here (on the BUBBLE) so
-   long words don't escape the pill, but the INNER
-   wrapper above stays visible so actions toolbar works.
-*/
+   ===================================================== */
 
 .str-chat__message-bubble {
   display: block !important;
-  /* Takes the full available width of its inner wrapper */
-  width: 100% !important;
+  width: auto !important;
   max-width: 100% !important;
   min-width: 0 !important;
-  /* Clip text overflow AT the bubble edge, not at the inner wrapper */
   overflow: hidden !important;
 
   /* Bubble appearance */
   background: #ffffff !important;
   color: #1e293b !important;
-  border-radius: 18px !important;
-  border-bottom-left-radius: 5px !important;
-  padding: 0.65rem 1rem !important;
+  border-radius: 20px !important;
+  border-bottom-left-radius: 6px !important;
+  padding: 0 !important;
   border: 1px solid #e8edf5 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03) !important;
   font-size: 0.9375rem !important;
   line-height: 1.55 !important;
   text-align: left !important;
 }
 
-/*
-  MESSAGE TEXT
-  ============
-  overflow-wrap: anywhere  → breaks long unbroken strings (URLs, spam) at any character
-  word-break: break-word   → breaks normal words only when they overflow (safer than break-all)
-  white-space: pre-wrap    → respects newlines the user typed
-*/
-.str-chat__message-text,
-.str-chat__message-text-inner {
+/* =====================================================
+   MESSAGE TEXT — the text content inside the bubble
+   ===================================================== */
+
+.str-chat__message-text {
   display: block !important;
-  width: 100% !important;
+  width: auto !important;
   min-width: 0 !important;
   max-width: 100% !important;
-  overflow-wrap: anywhere !important;
-  word-break: break-word !important;
-  white-space: pre-wrap !important;
-  overflow: hidden !important;
+  padding: 0.7rem 1rem !important;
 }
 
-/* Strip <p> margin inside the bubble so text fits flush */
-.str-chat__message-text-inner p,
-.str-chat__message-text p {
+.str-chat__message-text-inner {
+  display: block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  /* break-word for normal words; anywhere for URLs/gibberish */
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+  white-space: pre-wrap !important;
+  hyphens: none !important;
+}
+
+/* Strip inner <p> margin so text fits flush */
+.str-chat__message-text-inner p {
   margin: 0 !important;
   padding: 0 !important;
-  min-width: 0 !important;
-  overflow-wrap: inherit !important;
-  word-break: inherit !important;
 }
 
 /* =====================================================
@@ -854,106 +847,199 @@ button.str-chat__load-more-button,
   background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%) !important;
   color: #ffffff !important;
   border: none !important;
-  border-radius: 18px !important;
-  border-bottom-right-radius: 5px !important;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 20px !important;
+  border-bottom-right-radius: 6px !important;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25), 0 1px 3px rgba(0, 0, 0, 0.08) !important;
 }
 
-.str-chat__message--me .str-chat__message-text-inner p,
-.str-chat__message--me .str-chat__message-text p {
+.str-chat__message--me .str-chat__message-text-inner,
+.str-chat__message--me .str-chat__message-text-inner p {
   color: #ffffff !important;
 }
 
 /* =====================================================
-   FILE ATTACHMENT CARD (inside message bubble)
-   =====================================================
+   FILE & IMAGE ATTACHMENTS — responsive layout
+   ===================================================== */
 
-   The file card (.str-chat__message-attachment-file--item)
-   appears INSIDE the bubble. We need it to inherit the
-   bubble background so it doesn't show a jarring white
-   box inside a purple bubble.
-*/
-
-/* Container for file attachments */
+/* The attachment list container inside the bubble */
 .str-chat__attachment-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
   width: 100% !important;
-  min-width: 0 !important;
-}
-
-.str-chat__message-attachment {
-  width: 100% !important;
-  min-width: 0 !important;
   max-width: 100% !important;
+  overflow: hidden !important;
 }
 
-/* The white file card pill */
+/* --- FILE ATTACHMENT (PDF, doc, etc.) --- */
+.str-chat__message-attachment--file {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
 .str-chat__message-attachment-file--item {
-  /* Slightly off-white: visible on white bubbles, visible on purple ones */
-  background: rgba(255, 255, 255, 0.18) !important;
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  border-radius: 14px !important;
-  padding: 0.6rem 0.85rem !important;
   display: flex !important;
   align-items: center !important;
-  gap: 0.65rem !important;
+  gap: 0.75rem !important;
   width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0 !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
   min-width: 0 !important;
-  overflow: hidden !important;
-  margin-bottom: 0.5rem !important;
 }
 
-/* For OTHER people's messages — dark card on white bubble */
-.str-chat__message:not(.str-chat__message--me) .str-chat__message-attachment-file--item {
-  background: #f1f5f9 !important;
-  border: 1px solid #e2e8f0 !important;
-}
-
-/* File name text */
-.str-chat__message-attachment-file--item-name {
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  color: inherit !important;
-  /* Prevent long file names from overflowing */
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-  min-width: 0 !important;
-  flex: 1 !important;
-}
-
-/* File size text */
-.str-chat__message-attachment-file--item-size {
-  font-size: 0.75rem !important;
-  color: rgba(255, 255, 255, 0.7) !important;
-  white-space: nowrap !important;
-}
-
-/* For other people's messages, file size is darker */
-.str-chat__message:not(.str-chat__message--me) .str-chat__message-attachment-file--item-size {
-  color: #94a3b8 !important;
-}
-
-/* Download icon inside file card */
-.str-chat__message-attachment-file--item-download {
-  opacity: 0.7 !important;
-  transition: opacity 0.15s ease !important;
+/* File icon (PDF, DOC, etc.) */
+.str-chat__message-attachment-file--item > svg,
+.str-chat__message-attachment-file--item .rfu-file-pdf,
+.str-chat__message-attachment-file--item .str-chat__file-icon {
   flex-shrink: 0 !important;
-}
-.str-chat__message-attachment-file--item-download:hover {
-  opacity: 1 !important;
-}
-.str-chat__message--me .str-chat__message-attachment-file--item-download svg path {
-  fill: white !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
 }
 
-/* First row inside the file card */
+/* File info text wrapper */
+.str-chat__message-attachment-file--item-text {
+  flex: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
 .str-chat__message-attachment-file--item-first-row {
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
   gap: 0.5rem !important;
   min-width: 0 !important;
-  width: 100% !important;
+}
+
+/* File name */
+.str-chat__message-attachment-file--item-name {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+/* File size label */
+.str-chat__message-attachment-file--item-size {
+  font-size: 0.72rem !important;
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+  margin-top: 2px !important;
+}
+
+/* Download button inside file attachment */
+.str-chat__message-attachment-file--item-download {
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 10px !important;
+  transition: background 0.2s ease !important;
+}
+
+.str-chat__message-attachment-file--item-download:hover {
+  background: rgba(124, 58, 237, 0.08) !important;
+}
+
+.str-chat__message-attachment-download-icon {
+  width: 18px !important;
+  height: 18px !important;
+  fill: #64748b !important;
+  transition: fill 0.2s ease !important;
+}
+
+.str-chat__message-attachment-file--item-download:hover .str-chat__message-attachment-download-icon {
+  fill: #7c3aed !important;
+}
+
+/* My messages: file attachments adapt to purple background */
+.str-chat__message--me .str-chat__message-attachment-file--item {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.str-chat__message--me .str-chat__message-attachment-file--item-name {
+  color: #ffffff !important;
+}
+
+.str-chat__message--me .str-chat__message-attachment-file--item-size {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.str-chat__message--me .str-chat__message-attachment-download-icon {
+  fill: rgba(255, 255, 255, 0.7) !important;
+}
+
+.str-chat__message--me .str-chat__message-attachment-file--item-download:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.str-chat__message--me .str-chat__message-attachment-file--item-download:hover .str-chat__message-attachment-download-icon {
+  fill: #ffffff !important;
+}
+
+/* --- IMAGE ATTACHMENTS --- */
+.str-chat__message-attachment--image,
+.str-chat__message-attachment--img,
+.str-chat__message-attachment--gallery {
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  max-width: 100% !important;
+}
+
+.str-chat__message-attachment--image img,
+.str-chat__message-attachment--img img,
+.str-chat__gallery--square img {
+  display: block !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: 340px !important;
+  object-fit: cover !important;
+  border-radius: 0 !important;
+}
+
+/* When a message has BOTH an attachment and text, add a separator */
+.str-chat__message-text-inner--has-attachment {
+  border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+  margin-top: 0 !important;
+}
+
+.str-chat__message--me .str-chat__message-text-inner--has-attachment {
+  border-top-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Dynamic size containers — constrain them */
+.str-chat__message-attachment-dynamic-size {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* =====================================================
+   PINNED MESSAGE INDICATOR
+   ===================================================== */
+
+.str-chat__message--pinned .str-chat__message-bubble {
+  border-color: rgba(124, 58, 237, 0.2) !important;
+}
+
+.str-chat__message--me.str-chat__message--pinned .str-chat__message-bubble {
+  box-shadow: 
+    0 4px 16px rgba(124, 58, 237, 0.25),
+    0 0 0 2px rgba(168, 85, 247, 0.15) !important;
 }
 
 /* =====================================================
@@ -965,6 +1051,17 @@ button.str-chat__load-more-button,
   height: 30px !important;
   flex-shrink: 0 !important;
   margin-bottom: 2px !important;
+}
+
+.str-chat__avatar-image {
+  border-radius: 10px !important;
+  object-fit: cover !important;
+}
+
+/* Hide avatar on non-bottom messages in a group (only show on the last one) */
+.str-chat__li--top .str-chat__message-sender-avatar,
+.str-chat__li--middle .str-chat__message-sender-avatar {
+  visibility: hidden !important;
 }
 
 /* =====================================================
@@ -993,37 +1090,34 @@ button.str-chat__load-more-button,
 /* Timestamp */
 .str-chat__message-simple-timestamp {
   color: #94a3b8 !important;
-  font-size: 0.72rem !important;
-  font-weight: 400 !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
 }
 
 /* =====================================================
-   DELETED MESSAGES
-   =====================================================
-
-   The deleted component uses .str-chat__message--me
-   so it aligns right. We just make the pill look good.
-*/
+   DELETED MESSAGES — ghostly, premium
+   ===================================================== */
 
 .str-chat__message--deleted {
-  /* Ensure the deleted pill aligns to the right for own messages */
-  width: 100% !important;
+  /* Reset the message row so the deleted box stands alone */
   display: flex !important;
-  justify-content: flex-end !important;
+  justify-content: center !important;
+  padding: 0.25rem 0 !important;
 }
 
 .str-chat__message--deleted-inner {
-  display: inline-block !important;
   color: #94a3b8 !important;
   font-style: italic !important;
-  background: rgba(248, 250, 252, 0.9) !important;
+  background: rgba(241, 245, 249, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
   border: 1px dashed #cbd5e1 !important;
-  border-radius: 14px !important;
-  padding: 0.45rem 1rem !important;
-  font-size: 0.8rem !important;
-  max-width: 100% !important;
-  /* Deleted text should never overflow */
-  overflow-wrap: break-word !important;
+  border-radius: 16px !important;
+  padding: 0.5rem 1.15rem !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+  max-width: fit-content !important;
 }
 
 /* =====================================================
@@ -1049,9 +1143,10 @@ button.str-chat__load-more-button,
   right: 0 !important;
   z-index: 10 !important;
   background: white !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-  padding: 2px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
+  padding: 3px !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
 }
 
 /* For own messages, flip to the left side */
@@ -1075,11 +1170,7 @@ button.str-chat__load-more-button,
 
 /* =====================================================
    MESSAGE METADATA (timestamp / status below bubble)
-   =====================================================
-
-   This sits BELOW the bubble inside .str-chat__message-inner
-   which is now overflow: visible, so it is always readable.
-*/
+   ===================================================== */
 
 .str-chat__message-metadata {
   display: flex !important;
@@ -1087,24 +1178,16 @@ button.str-chat__load-more-button,
   gap: 0.35rem !important;
   margin-top: 4px !important;
   padding: 0 4px !important;
-  /* Never clip the timestamp text */
-  overflow: visible !important;
-  white-space: nowrap !important;
-  width: 100% !important;
 }
 
-/* Right-align timestamp for own messages */
 .str-chat__message--me .str-chat__message-metadata {
   justify-content: flex-end !important;
 }
 
-/* Timestamp text */
-.str-chat__message-simple-timestamp {
-  color: #94a3b8 !important;
-  font-size: 0.7rem !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.01em !important;
-  white-space: nowrap !important;
+/* Hide timestamp on non-bottom messages in a group */
+.str-chat__li--top .str-chat__message-metadata,
+.str-chat__li--middle .str-chat__message-metadata {
+  display: none !important;
 }
 
 /* =====================================================
@@ -1113,6 +1196,8 @@ button.str-chat__load-more-button,
 
 .str-chat__message-simple-status {
   margin-right: 4px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 .str-chat__message-simple-status svg {
@@ -1129,26 +1214,29 @@ button.str-chat__load-more-button,
   display: flex !important;
   align-items: center !important;
   gap: 0.75rem !important;
-  padding: 0.5rem 1.5rem !important;
-  margin: 0.5rem 0 !important;
+  padding: 0.75rem 1.5rem !important;
+  margin: 0.35rem 0 !important;
 }
 
 .str-chat__date-separator-line {
   flex: 1 !important;
   height: 1px !important;
   background: #e2e8f0 !important;
+  border: none !important;
 }
 
 .str-chat__date-separator-date {
-  font-size: 0.72rem !important;
+  font-size: 0.7rem !important;
   font-weight: 600 !important;
   color: #94a3b8 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  background: #f8f9fc !important;
-  padding: 2px 10px !important;
+  background: #f1f5f9 !important;
+  padding: 4px 12px !important;
   border-radius: 99px !important;
   border: 1px solid #e2e8f0 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 /* =====================================================
@@ -1407,7 +1495,7 @@ button.str-chat__load-more-button,
 
 @media (max-width: 1024px) {
   .str-chat__li {
-    padding: 2px 1rem !important;
+    padding: 3px 1rem !important;
   }
 
   .str-chat__message-inner {
@@ -1417,7 +1505,7 @@ button.str-chat__load-more-button,
 
 @media (max-width: 768px) {
   .str-chat__li {
-    padding: 2px 0.85rem !important;
+    padding: 3px 0.85rem !important;
   }
 
   .str-chat__message {
@@ -1429,8 +1517,20 @@ button.str-chat__load-more-button,
   }
 
   .str-chat__message-bubble {
+    border-radius: 16px !important;
+  }
+
+  .str-chat__message--me .str-chat__message-bubble {
+    border-radius: 16px !important;
+    border-bottom-right-radius: 5px !important;
+  }
+
+  .str-chat__message-bubble {
+    border-bottom-left-radius: 5px !important;
+  }
+
+  .str-chat__message-text {
     padding: 0.55rem 0.85rem !important;
-    border-radius: 15px !important;
   }
 }
 
@@ -1446,6 +1546,10 @@ button.str-chat__load-more-button,
   .str-chat__message .str-chat__avatar {
     width: 26px !important;
     height: 26px !important;
+  }
+
+  .str-chat__message-text {
+    padding: 0.5rem 0.75rem !important;
   }
 }
 
