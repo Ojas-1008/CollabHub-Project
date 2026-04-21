@@ -40,15 +40,15 @@ import { useNavigate } from "react-router-dom";
 const getFileIcon = (type, mimeType = "") => {
     // --- Images ---
     if (type === "image") {
-        return { Icon: ImageIcon, bg: "bg-blue-500/20", text: "text-blue-400" };
+        return { Icon: ImageIcon, bg: "bg-emerald-500/10", text: "text-emerald-600", accent: "from-emerald-500 to-teal-500" };
     }
 
     // --- PDFs ---
     if (mimeType.includes("pdf")) {
-        return { Icon: FileTextIcon, bg: "bg-red-500/20", text: "text-red-400" };
+        return { Icon: FileTextIcon, bg: "bg-rose-500/10", text: "text-rose-600", accent: "from-rose-500 to-crimson-600" };
     }
 
-    // --- Word / PowerPoint / Excel documents ---
+    // --- Documents (Word / PowerPoint / Excel) ---
     if (
         mimeType.includes("word") ||
         mimeType.includes("document") ||
@@ -56,32 +56,30 @@ const getFileIcon = (type, mimeType = "") => {
         mimeType.includes("spreadsheet") ||
         mimeType.includes("excel")
     ) {
-        return { Icon: FileTextIcon, bg: "bg-blue-500/20", text: "text-blue-400" };
+        return { Icon: FileTextIcon, bg: "bg-sky-500/10", text: "text-sky-600", accent: "from-sky-500 to-indigo-600" };
     }
 
-    // --- Code or archive files (recognised by extension in the name) ---
+    // --- Archive / Code / Data files ---
     if (
         mimeType.includes("zip") ||
         mimeType.includes("json") ||
         mimeType.includes("javascript") ||
         mimeType.includes("python") ||
         mimeType.includes("html") ||
-        mimeType.includes("css")
+        mimeType.includes("css") ||
+        mimeType.includes("octet-stream")
     ) {
-        return { Icon: FileCodeIcon, bg: "bg-green-500/20", text: "text-green-400" };
+        return { Icon: FileCodeIcon, bg: "bg-amber-500/10", text: "text-amber-600", accent: "from-amber-500 to-orange-600" };
     }
 
     // --- Default (unknown type) ---
-    return { Icon: FileIcon, bg: "bg-purple-500/20", text: "text-purple-400" };
+    return { Icon: FileIcon, bg: "bg-purple-500/10", text: "text-purple-600", accent: "from-purple-500 to-violet-600" };
 };
 
 // ─── HELPER: formatFileSize ────────────────────────────────────────────────────
 
 /*
  * Converts raw bytes into a human-friendly string.
- *   204800  → "200 KB"
- *   1572864 → "1.5 MB"
- *   undefined → "" (we just don't show anything)
  */
 const formatFileSize = (bytes) => {
     if (!bytes) return "";
@@ -92,12 +90,6 @@ const formatFileSize = (bytes) => {
 
 // ─── HELPER: formatDate ────────────────────────────────────────────────────────
 
-/*
- * Shows a short date label:
- *   - "Today" if the file was shared today
- *   - "Yesterday" if it was yesterday
- *   - "Apr 15" otherwise (month + day, no year for current year)
- */
 const formatDate = (date) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -116,32 +108,18 @@ const FileCard = ({ file, channelId }) => {
     const navigate = useNavigate();
 
     // Pick the right icon and colours for this file type
-    const { Icon, bg, text } = getFileIcon(file.type, file.mimeType);
+    const { Icon, bg, text, accent } = getFileIcon(file.type, file.mimeType);
     const sizeLabel = formatFileSize(file.fileSize);
     const dateLabel = formatDate(file.sentAt);
 
     // --- HANDLERS ---
 
-    /*
-     * handleDownload
-     * Opens the file's CDN URL in a new tab.
-     * The browser will either display it (images, PDFs) or download it.
-     */
     const handleDownload = () => {
         if (file.url) {
             window.open(file.url, "_blank", "noopener,noreferrer");
         }
     };
 
-    /*
-     * handleJumpToMessage
-     * Sets the URL to ?channel=X&message=Y.
-     * HomePage.jsx already reads the `channel` param to set the active channel.
-     *
-     * NOTE: Stream Chat's MessageList will scroll to a message if you pass
-     * a `highlightedMessageId` prop. We store the messageId in the URL so
-     * the parent (HomePage) can pass it down when it reads the search params.
-     */
     const handleJumpToMessage = () => {
         navigate(`/?channel=${channelId}&message=${file.messageId}`);
     };
@@ -149,89 +127,76 @@ const FileCard = ({ file, channelId }) => {
     // --- RENDER ---
 
     return (
-        /*
-         * group → Tailwind's group modifier lets child elements react to this
-         *         parent being hovered (e.g. show action buttons on hover)
-         */
-        <div className="group p-4 bg-purple-900/20 border border-purple-500/10 rounded-2xl transition-all hover:bg-purple-900/30 hover:border-purple-500/30 shadow-sm">
-
+        <div className="group p-5 bg-white/40 border border-white/60 rounded-[24px] transition-all hover:bg-white hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:border-purple-200/50 relative overflow-hidden">
+            
             {/* TOP ROW: icon + file name + size */}
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-4">
 
-                {/* File type icon badge */}
-                <div className={`flex-shrink-0 w-10 h-10 ${bg} rounded-xl flex items-center justify-center`}>
-                    <Icon className={`size-5 ${text}`} />
+                {/* File type icon badge (Liquid Glass tile) */}
+                <div className={`flex-shrink-0 size-12 ${bg} rounded-2xl flex items-center justify-center border border-white/80 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className={`size-6 ${text}`} />
                 </div>
 
                 {/* File name and size */}
                 <div className="flex-1 min-w-0">
-                    {/*
-                     * truncate → clips long file names with "..." instead of
-                     *            breaking onto a second line
-                     */}
-                    <p className="text-sm font-semibold text-white truncate" title={file.name}>
+                    <p className="text-[15px] font-bold text-gray-900 truncate leading-tight group-hover:text-purple-700 transition-colors" title={file.name}>
                         {file.name}
                     </p>
-                    <p className="text-[11px] text-purple-400/70 mt-0.5">
-                        {/* Show size if available, otherwise just show the type */}
+                    <p className="text-[11px] font-bold text-gray-400 mt-1 uppercase tracking-widest">
                         {sizeLabel || file.type.toUpperCase()}
                     </p>
                 </div>
             </div>
 
             {/* SENDER INFO ROW */}
-            <div className="flex items-center gap-2 mt-3">
-                {/* Sender avatar — photo if available, initial letter otherwise */}
+            <div className="flex items-center gap-2.5 mt-4">
                 {file.sender.image ? (
                     <img
                         src={file.sender.image}
                         alt={file.sender.name}
-                        className="w-5 h-5 rounded-full object-cover border border-purple-500/30 flex-shrink-0"
+                        className="size-6 rounded-lg object-cover border border-white/80 shadow-sm flex-shrink-0"
                     />
                 ) : (
-                    <div className="w-5 h-5 rounded-full bg-purple-500/40 border border-purple-500/30 flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-[9px] font-bold">
-                            {(file.sender.name).charAt(0).toUpperCase()}
+                    <div className="size-6 rounded-lg bg-gradient-to-br from-purple-100 to-purple-50 border border-white/80 shadow-sm flex items-center justify-center flex-shrink-0">
+                        <span className="text-purple-600 text-[10px] font-black">
+                            {(file.sender.name || "?").charAt(0).toUpperCase()}
                         </span>
                     </div>
                 )}
 
-                {/* Sender name + date */}
-                <span className="text-[11px] text-purple-300/70 truncate">
-                    {file.sender.name}
-                </span>
-                <span className="text-[11px] text-purple-400/40">·</span>
-                <span className="text-[11px] text-purple-400/50 flex-shrink-0">
-                    {dateLabel}
-                </span>
+                <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-[12px] font-bold text-gray-700 truncate">
+                        {file.sender.name}
+                    </span>
+                    <span className="size-1 rounded-full bg-gray-300/60" />
+                    <span className="text-[12px] font-medium text-gray-500/70 flex-shrink-0">
+                        {dateLabel}
+                    </span>
+                </div>
             </div>
 
-            {/* ACTION BUTTONS ROW
-                These are hidden by default and only appear when hovering the card.
-                `opacity-0 group-hover:opacity-100` is the Tailwind trick for this. */}
-            <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-all duration-200">
-
-                {/* DOWNLOAD BUTTON */}
+            {/* ACTION BUTTONS (Glass Pill style) */}
+            <div className="flex items-center gap-2 mt-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                 <button
                     onClick={handleDownload}
                     disabled={!file.url}
-                    className="flex items-center gap-1.5 text-[11px] font-bold text-purple-300 hover:text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 hover:bg-purple-500/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                    title="Download file"
+                    className="flex items-center gap-1.5 text-[10px] font-black text-purple-700 uppercase tracking-widest px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-100 transition-all disabled:opacity-30"
                 >
-                    <DownloadIcon className="size-3" />
+                    <DownloadIcon className="size-3.5" />
                     Download
                 </button>
 
-                {/* JUMP TO MESSAGE BUTTON */}
                 <button
                     onClick={handleJumpToMessage}
-                    className="flex items-center gap-1.5 text-[11px] font-bold text-purple-300 hover:text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 hover:bg-purple-500/20 transition-colors"
-                    title="Go to the message where this file was shared"
+                    className="flex items-center gap-1.5 text-[10px] font-black text-gray-600 hover:text-purple-700 uppercase tracking-widest px-3.5 py-2 rounded-xl bg-gray-50/80 hover:bg-white border border-gray-100 transition-all"
                 >
-                    <CornerDownRightIcon className="size-3" />
+                    <CornerDownRightIcon className="size-3.5" />
                     Jump
                 </button>
             </div>
+
+            {/* Accent stripe on hover (Liquid highlight) */}
+            <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${accent} opacity-0 group-hover:opacity-100 transition-opacity`} />
         </div>
     );
 };
