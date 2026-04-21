@@ -28,7 +28,9 @@ const TaskListDrawer = ({ onClose }) => {
         if (window.confirm("Are you sure you want to delete this task?")) {
             removeTask(taskId);
         }
-    }    return (
+    };
+
+    return (
         <div className="fixed inset-y-0 right-0 w-[400px] z-[100] bg-white/85 backdrop-blur-[24px] border-l border-white/60 shadow-[-10px_0_40px_rgba(0,0,0,0.05)] flex flex-col animate-in slide-in-from-right duration-300">
             
             {/* HEADER */}
