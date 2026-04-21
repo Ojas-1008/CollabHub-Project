@@ -375,6 +375,9 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Implement "Delete Task" functionality with database sync.
 - [x] Redesign Header with Glassmorphic Floating Capsule & Gradient Typography.
 - [x] Overhaul Status System with Frosted Glass Badge & Quick Presets Grid.
+- [x] Redesign Sidebar with Glassmorphic Design, Micro-animations, and Numeric Badges.
+- [x] Implement Custom Empty State Indicator.
+- [x] Fix Sidebar Clipping and Structural Layout Conflicts.
 
 ## [2026-04-21] - UI/UX Premium Overhaul ("SLAP" Aesthetic)
 
@@ -412,3 +415,24 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - Standardized error logging with descriptive emojis (🚀, 📡, ❌) for better terminal visibility.
 
 
+## [2026-04-21] - Sidebar UI/UX and Structural Refinement
+
+### Added
+- **Glassmorphic Sidebar Design**:
+  - Implemented `backdrop-filter: blur(12px)` and semi-transparent backgrounds for a premium, integrated look.
+  - Added **Numeric Unread Badges**: Replaced default dots with vibrant purple pill-shaped badges that display the actual number of unread messages.
+  - **Micro-animations**: Added breathing `pulseGlow` to the "Create Channel" button and `onlinePulse` to presence indicators.
+  - **Interactive Hover States**: Standardized horizontal slide-ins and subtle background glows for all list items.
+- **Custom Empty State Indicator** (`frontend/src/components/EmptyStateIndicator.jsx`):
+  - Designed a high-fidelity "No channels" view with a glowing icon, glassmorphic card, and call-to-action text.
+  - Integrated this into the Stream SDK's `ChannelList` using the `EmptyStateIndicator` prop.
+- **Improved Direct Messages UI**:
+  - **Squircle Avatars**: Upgraded user avatars to rounded rectangles with subtle rings and shadows.
+  - **Flexible Layout**: Refined `.ch-item` to support variable heights, ensuring user status messages (like "Focus mode") are fully visible and elegantly styled.
+
+### Fixed
+- **Sidebar Clipping & Conflict Resolution**:
+  - **Class Renaming**: Resolved a naming conflict between our custom sidebar and the Stream SDK by renaming the outer `aside` to `.sidebar-container`.
+  - **Width & Overflow Fixes**: Updated the 320px width rule to target the new class exclusively. Removed aggressive `overflow: hidden` from the outer wrapper and switched the inner container to `overflow-x: clip`, preventing horizontal cutting of box-shadows and hover animations.
+  - **Symmetric Padding**: Standardized sidebar gutters to `1.25rem` for better visual balance.
+  - **Leave Button Animation**: Refined the "Leave Channel" button to fade in via opacity rather than sliding from the right, preventing clipping at the viewport edge.

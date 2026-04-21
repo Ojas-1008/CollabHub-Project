@@ -97,14 +97,18 @@ const UsersList = ({ activeChannel }) => {
                         <div className="flex-1 min-w-0 flex flex-col justify-center">
                             <span className="ch-item__name leading-tight">{user.name || user.id}</span>
                             {user.status && (
-                                <span className="text-[10px] text-gray-400 truncate w-full opacity-80 mt-0.5">
+                                <span className="ch-item__status truncate w-full mt-0.5">
                                     {user.status}
                                 </span>
                             )}
                         </div>
 
-                        {/* Unread dot */}
-                        {unreadCount > 0 && <div className="ch-item__badge shrink-0 relative z-10" />}
+                        {/* Unread count badge — same pill style as channel list */}
+                        {unreadCount > 0 && (
+                            <div className="ch-item__badge shrink-0 relative z-10">
+                                {unreadCount > 99 ? '99+' : unreadCount}
+                            </div>
+                        )}
                     </button>
                 );
             })}

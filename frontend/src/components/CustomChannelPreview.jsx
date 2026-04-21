@@ -45,7 +45,13 @@ const CustomChannelPreview = ({ channel, setActiveChannel, activeChannel }) => {
         <div className={`ch-item ${isActive ? 'ch-item--active' : ''}`} onClick={handleClick}>
             <HashIcon className="ch-item__icon" />
             <span className="ch-item__name">{channel.data.id || channel.data.name}</span>
-            {unreadCount > 0 && <div className="ch-item__badge" />}
+            {/* Show count in badge pill — only renders when there are unread messages */}
+            {unreadCount > 0 && (
+                <div className="ch-item__badge">
+                    {/* Cap at 99 so the badge doesn't get too wide */}
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                </div>
+            )}
             
             <button 
                 className="ch-item__leave-btn" 

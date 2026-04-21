@@ -21,6 +21,7 @@ import CustomChannelPreview from "../components/CustomChannelPreview";
 import CustomChannelHeader from "../components/CustomChannelHeader";
 import UsersList from "../components/UsersList";
 import StatusInputPopover from "../components/StatusInputPopover";
+import EmptyStateIndicator from "../components/EmptyStateIndicator";
 
 // Icons and Styles
 import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
@@ -111,7 +112,7 @@ const HomePage = () => {
         <div className="chat-container">
           
           {/* LEFT SIDEBAR: Branding and Channel Lists */}
-          <aside className="str-chat__channel-list">
+          <aside className="sidebar-container">
             <div className="team-channel-list">
               
               {/* APP HEADER */}
@@ -145,6 +146,7 @@ const HomePage = () => {
                 <ChannelList
                   filters={{ members: { $in: [chatClient.user.id] } }}
                   options={{ state: true, watch: true }}
+                  EmptyStateIndicator={EmptyStateIndicator}
                   Preview={(previewProps) => (
                     <CustomChannelPreview
                       {...previewProps}
