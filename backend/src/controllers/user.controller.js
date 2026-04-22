@@ -1,5 +1,6 @@
 import { User } from "../models/user.model.js";
 import { upsertStreamUser } from "../config/stream.js";
+import { logActivity } from "../utils/auditLog.js";
 
 /**
  * Updates a user's custom status in both our database and Stream Chat.
@@ -36,6 +37,17 @@ export const updateUserStatus = async (req, res) => {
         await upsertStreamUser({
             id: clerkId,
             status: status || ""
+        });
+
+        // Record the status update in the audit trail
+        await logActivity({
+            userId: clerkId,
+            userName: updatedUser.name,
+            action: "UPDATE_USER_STATUS",
+            resourceType: "User",
+            resourceId: updatedUser._id.toString(),
+            metadata: { newStatus: status || "" },
+            ip: req.ip,
         });
 
         res.status(200).json(updatedUser);

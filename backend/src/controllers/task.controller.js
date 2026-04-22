@@ -1,6 +1,7 @@
 import { clerkClient } from "@clerk/express";
 import { Task } from "../models/task.model.js";
 import { User } from "../models/user.model.js";
+import { logActivity } from "../utils/auditLog.js";
 
 /**
  * 🛠️ HELPER: ENSURE USER EXISTS
@@ -73,6 +74,17 @@ export const createTask = async (req, res) => {
         // Step 3: Save to MongoDB
         await newTask.save();
 
+        // Step 4: Record this action in the audit trail
+        await logActivity({
+            userId: creatorClerkId,
+            userName: creator.name,
+            action: "CREATE_TASK",
+            resourceType: "Task",
+            resourceId: newTask._id.toString(),
+            metadata: { taskTitle: newTask.title, channelId: newTask.channelId },
+            ip: req.ip,
+        });
+
         res.status(201).json(newTask);
     } catch (error) {
         console.error("Error creating task:", error);
@@ -120,6 +132,17 @@ export const updateTaskStatus = async (req, res) => {
             return res.status(404).json({ message: "Task not found" });
         }
 
+        // Record the status change in the audit trail
+        await logActivity({
+            userId: req.auth().userId,
+            userName: "User", // We don't have name here, that's fine
+            action: "UPDATE_TASK_STATUS",
+            resourceType: "Task",
+            resourceId: taskId,
+            metadata: { newStatus: status },
+            ip: req.ip,
+        });
+
         res.status(200).json(updatedTask);
     } catch (error) {
         console.error("Error updating task:", error);
@@ -140,6 +163,17 @@ export const deleteTask = async (req, res) => {
         if (!deletedTask) {
             return res.status(404).json({ message: "Task not found" });
         }
+
+        // Record the deletion in the audit trail
+        await logActivity({
+            userId: req.auth().userId,
+            userName: "User",
+            action: "DELETE_TASK",
+            resourceType: "Task",
+            resourceId: taskId,
+            metadata: { taskTitle: deletedTask.title },
+            ip: req.ip,
+        });
 
         res.status(200).json({ message: "Task deleted successfully" });
     } catch (error) {
@@ -182,6 +216,17 @@ export const updateTask = async (req, res) => {
         if (!updatedTask) {
             return res.status(404).json({ message: "Task not found" });
         }
+
+        // Record the update in the audit trail
+        await logActivity({
+            userId: req.auth().userId,
+            userName: "User",
+            action: "UPDATE_TASK",
+            resourceType: "Task",
+            resourceId: taskId,
+            metadata: { taskTitle: updatedTask.title },
+            ip: req.ip,
+        });
 
         res.status(200).json(updatedTask);
     } catch (error) {

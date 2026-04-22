@@ -412,6 +412,21 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - **Auto-Camera Disable**: Updated `CallPage.jsx` to parse the `type=audio` flag and automatically execute `callInstance.camera.disable()` upon joining, ensuring a secure audio-only start.
   - **Dynamic Branding**: The UI dynamically updates to "Secure Voice Session" to provide clear contextual feedback when in audio mode.
 
+## [2026-04-23] - Backend Security & Audit Logging
+
+### Added
+- **Security Hardening (Helmet + Rate Limiting)**:
+  - Integrated `helmet` middleware globally in `server.js` to set secure HTTP headers (XSS protection, no-sniff, etc.).
+  - Implemented `express-rate-limit` with tiered limits:
+    - `globalLimiter`: 200 requests/15 mins on all routes.
+    - `apiLimiter`: 100 requests/15 mins on `/api/*` data endpoints.
+    - `authLimiter`: 20 requests/15 mins strictly on the `/api/chat/token` endpoint to prevent token farming.
+- **Activity Audit Logging**:
+  - **Data Model**: Created `ActivityLog` schema to record `userId`, `userName`, `action`, `resourceType`, `resourceId`, `metadata`, and `ip`.
+  - **Audit Helper**: Created `logActivity` utility for frictionless, non-blocking DB writes across controllers.
+  - **Event Tracking**: Integrated audit logging into all major mutating endpoints: `createTask`, `updateTask`, `updateTaskStatus`, `deleteTask`, and `updateUserStatus`.
+  - **Log API**: Exposed a protected `GET /api/activity` endpoint with optional query filters (`userId`, `action`, `limit`) for retrieving the audit trail.
+
 ### Fixed
 - **Dependency Resolution**: Resolved a critical issue where `@stream-io/video-react-sdk` was missing from `package.json`, preventing the call feature from launching.
 - **Import Path Synchronization**: Fixed incorrect relative paths for `getStreamToken` and synchronized Clerk/Router imports across the page.
@@ -456,3 +471,5 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Integrate Stream Video SDK on the frontend and backend.
 - [x] Design and implement a premium, glassmorphic Video Call UI.
 - [x] Implement Premium Voice Call feature with auto-camera disable.
+- [x] Implement backend security hardening with Helmet and tiered Rate Limiting.
+- [x] Implement database-driven Activity Audit Logging for core operations.
