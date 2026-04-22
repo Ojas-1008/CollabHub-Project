@@ -393,6 +393,26 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - **Date Separator**:
   - Upgraded the date separator to a premium glassmorphism pill with blur and a subtle border.
 
+## [2026-04-23] - Stream Video Integration and Premium UI Overhaul
+
+### Added
+- **Stream Video Integration**:
+  - Implemented `CallPage.jsx` using `@stream-io/video-react-sdk`.
+  - Configured secure video client initialization with backend-generated Stream tokens.
+  - Added automatic user synchronization between Clerk and the Stream Video client.
+- **Premium Video UI ("Cosmic Glass" Theme)**:
+  - Developed a high-fidelity, immersive dark theme for video calls.
+  - **Glassmorphic Architecture**: Implemented `backdrop-blur-3xl` and semi-transparent borders for a modern, frosted look.
+  - **Dynamic Backgrounds**: Added pulsing ambient blobs and gradients (`from-[#1a0b3b] via-[#2d094b] to-[#0f0524]`) to create depth and visual interest.
+  - **Interactive Loading State**: Redesigned the "Connecting" screen with animated logos, pulsing glows, and a glassmorphic status badge.
+  - **Custom Video Header**: Added a sleek navigation bar with live "End-to-End Encrypted" status and project branding.
+  - **Responsive Layout**: Designed a large-scale video container that maximizes screen real estate while maintaining structural integrity.
+
+### Fixed
+- **Dependency Resolution**: Resolved a critical issue where `@stream-io/video-react-sdk` was missing from `package.json`, preventing the call feature from launching.
+- **Import Path Synchronization**: Fixed incorrect relative paths for `getStreamToken` and synchronized Clerk/Router imports across the page.
+- **Robustness**: Added environment variable guards for `VITE_STREAM_API_KEY` and optional chaining for async token data to prevent runtime crashes.
+
 ### Task List
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
@@ -429,4 +449,6 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Redesign Chat Message UI for better responsiveness and aesthetics (Liquid Glass).
 - [x] Fix horizontal overflow and message clipping issues.
 - [x] Implement Floating Timestamp Tooltips for cleaner message alignment.
+- [x] Integrate Stream Video SDK on the frontend and backend.
+- [x] Design and implement a premium, glassmorphic Video Call UI.
 

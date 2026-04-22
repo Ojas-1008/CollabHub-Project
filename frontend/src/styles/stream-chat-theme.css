@@ -801,7 +801,7 @@ button.str-chat__load-more-button,
   display: flex !important;
   flex-direction: column !important;
   position: relative !important;
-  width: fit-content !important;
+  width: max-content !important;
   max-width: min(70%, 38rem) !important;
   min-width: 4rem !important; /* Minimum width so very short messages still look good */
   /* Allow vertical overflow so the hover action menu can render above
@@ -1252,7 +1252,6 @@ button.str-chat__load-more-button,
 .str-chat__message-simple__actions,
 .str-chat__message-options {
   opacity: 0 !important;
-  visibility: hidden !important;
   pointer-events: none !important;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: absolute !important;
@@ -1303,7 +1302,6 @@ button.str-chat__load-more-button,
 .str-chat__message:hover .str-chat__message-simple__actions,
 .str-chat__message:hover .str-chat__message-options {
   opacity: 1 !important;
-  visibility: visible !important;
   pointer-events: auto !important;
   transform: translateY(calc(-100% - 6px)) scale(1) !important;
 }
@@ -1407,7 +1405,6 @@ button.str-chat__load-more-button,
   font-variant-numeric: tabular-nums !important;
   
   opacity: 0 !important;
-  visibility: hidden !important;
   pointer-events: none !important;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
   z-index: 10 !important;
@@ -1416,7 +1413,6 @@ button.str-chat__load-more-button,
 /* Subtly reveal alongside the action menu */
 .str-chat__message:hover .str-chat__message-simple-timestamp {
   opacity: 1 !important;
-  visibility: visible !important;
   transform: translateY(calc(-100% - 6px)) scale(1) !important;
 }
 
