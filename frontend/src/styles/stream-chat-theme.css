@@ -1121,21 +1121,42 @@ button.str-chat__load-more-button,
 .str-chat__message .str-chat__avatar {
   width: 32px !important;
   height: 32px !important;
+  min-width: 32px !important;
   flex-shrink: 0 !important;
   margin-bottom: 2px !important;
+  margin-left: 0 !important; /* Overrides Stream's negative margin */
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
+  border-radius: 10px !important;
 }
 
 .str-chat__message:hover .str-chat__avatar {
   transform: scale(1.05) !important;
 }
 
+/* Base avatar image styles */
 .str-chat__avatar-image {
   border-radius: 10px !important;
   object-fit: cover !important;
   border: 2px solid rgba(124, 58, 237, 0.15) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
   transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/*
+  Stream assigns .str-chat__avatar--one-letter when the avatar renders
+  a text-initial fallback. Its own CSS then clips the <img> or sets it
+  to 0 size. We force it to fill the container correctly so the profile
+  picture always renders at the right dimensions.
+*/
+.str-chat__message .str-chat__avatar--one-letter .str-chat__avatar-image,
+.str-chat__message .str-chat__avatar-image {
+  display: block !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .str-chat__message:hover .str-chat__avatar-image {
@@ -1147,6 +1168,11 @@ button.str-chat__load-more-button,
 .str-chat__li--top .str-chat__message-sender-avatar,
 .str-chat__li--middle .str-chat__message-sender-avatar {
   visibility: hidden !important;
+}
+
+/* Hide avatar entirely for the user's own messages */
+.str-chat__message--me .str-chat__avatar {
+  display: none !important;
 }
 
 /* =====================================================
@@ -1252,6 +1278,19 @@ button.str-chat__load-more-button,
   align-items: center !important;
   gap: 2px !important;
   width: max-content !important;
+}
+
+/* Invisible bridge to prevent hover loss when moving mouse over the 6px gap */
+.str-chat__message-simple__actions::after,
+.str-chat__message-options::after,
+.str-chat__message-simple-timestamp::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: -15px !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 15px !important;
+  background: transparent !important;
 }
 
 /* For own messages, keep right-aligned */
@@ -1787,3 +1826,344 @@ button.str-chat__load-more-button,
   are defined near their first point of use (Create Channel section)
   so they're easy to find alongside the elements that use them.
 */
+
+/* =====================================================
+   REACTION DETAILS MODAL (Who reacted)
+   ===================================================== */
+
+/* Outer modal overlay */
+.str-chat__message-reactions-details-modal {
+  background: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(4px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 1000 !important;
+}
+
+/* Modal Inner Box */
+.str-chat__message-reactions-details-modal .str-chat__modal__inner {
+  position: relative !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(150%) !important;
+  border: 1px solid rgba(124, 58, 237, 0.15) !important;
+  border-radius: 24px !important;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  padding: 1.5rem !important;
+  width: 90% !important;
+  max-width: 360px !important;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Close button wrapper */
+.str-chat__message-reactions-details-modal > .str-chat__modal__close-button {
+  position: absolute !important;
+  top: 1rem !important;
+  right: 1rem !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease, opacity 0.2s ease !important;
+  z-index: 1001 !important;
+  opacity: 0.6 !important;
+}
+
+.str-chat__message-reactions-details-modal > .str-chat__modal__close-button:hover {
+  transform: scale(1.1) !important;
+  opacity: 1 !important;
+}
+
+.str-chat__message-reactions-details-modal > .str-chat__modal__close-button svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+/* The inner content wrapper */
+.str-chat__message-reactions-details {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Tabs for different reaction types */
+.str-chat__message-reactions-details-reaction-types {
+  display: flex !important;
+  gap: 0.5rem !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  padding-bottom: 0.75rem !important;
+  margin-bottom: 1rem !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+}
+
+.str-chat__message-reactions-details-reaction-type {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  padding: 0.4rem 0.8rem !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  background: rgba(0, 0, 0, 0.03) !important;
+}
+
+.str-chat__message-reactions-details-reaction-type:hover {
+  background: rgba(124, 58, 237, 0.08) !important;
+}
+
+.str-chat__message-reactions-details-reaction-type--selected {
+  background: rgba(124, 58, 237, 0.12) !important;
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.2) !important;
+}
+
+.str-chat__message-reaction-count {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+}
+
+.str-chat__message-reactions-details-reaction-type--selected .str-chat__message-reaction-count {
+  color: #7c3aed !important;
+}
+
+/* Big Emoji display */
+.str-chat__message-reactions-details .str-chat__message-reaction-emoji-big {
+  display: none !important; /* Hide the big emoji, it breaks the flow */
+}
+
+/* User List */
+.str-chat__message-reactions-details-reacting-users {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.25rem !important;
+  max-height: 250px !important;
+  overflow-y: auto !important;
+  padding-right: 0.5rem !important;
+}
+
+/* Use our custom scrollbar for the user list */
+.str-chat__message-reactions-details-reacting-users::-webkit-scrollbar {
+  width: 5px;
+}
+.str-chat__message-reactions-details-reacting-users::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+.str-chat__message-reactions-details-reacting-users::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 10px;
+}
+
+.str-chat__message-reactions-details-reacting-user {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  padding: 0.5rem 0.6rem !important;
+  border-radius: 12px !important;
+  transition: background 0.2s ease !important;
+  cursor: pointer !important; /* Signal this row is clickable */
+}
+
+.str-chat__message-reactions-details-reacting-user:hover {
+  background: rgba(124, 58, 237, 0.07) !important;
+}
+
+/* DM hint label that appears on hover */
+.str-chat__message-reactions-details-reacting-user::after {
+  content: 'Open DM →' !important;
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  color: #7c3aed !important;
+  margin-left: auto !important;
+  opacity: 0 !important;
+  transition: opacity 0.2s ease !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.str-chat__message-reactions-details-reacting-user:hover::after {
+  opacity: 1 !important;
+}
+
+/* Make the avatar sized properly */
+.str-chat__message-reactions-details-reacting-user .str-chat__avatar {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Show the avatar image at full size.
+   Stream adds .str-chat__avatar--one-letter when it thinks the image failed
+   and hides the <img> in favour of a text initial. We force it visible here
+   because the reaction modal avatars DO have a valid src URL. */
+.str-chat__message-reactions-details-reacting-user .str-chat__avatar-image,
+.str-chat__message-reactions-details-reacting-user .str-chat__avatar--one-letter .str-chat__avatar-image {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  object-fit: cover !important;
+  border: 1.5px solid rgba(124, 58, 237, 0.15) !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fallback when no image */
+.str-chat__message-reactions-details-reacting-user .str-chat__avatar-fallback {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #7c3aed, #4c1d95) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.str-chat__message-reactions-details-reacting-user .str-chat__user-item--name {
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+  color: #1e293b !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* =====================================================
+   QUOTED MESSAGES (Replies)
+   ===================================================== */
+
+/* Container for the quoted message inside the bubble */
+.str-chat__quoted-message-preview {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.5rem 0.6rem !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-radius: 12px !important;
+  margin-bottom: 0.5rem !important;
+  border-left: 3px solid #7c3aed !important;
+  max-width: 100% !important;
+}
+
+/* For quoted messages inside my own purple bubble */
+.str-chat__message--me .str-chat__quoted-message-preview {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-left: 3px solid rgba(255, 255, 255, 0.6) !important;
+}
+
+/* The actual bubble of the quote */
+.str-chat__quoted-message-bubble {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border: none !important;
+  flex: 1 !important;
+  min-width: 0 !important; /* allow text truncation */
+  overflow: hidden !important;
+}
+
+/* Text inside the quote */
+.str-chat__quoted-message-bubble__text {
+  font-size: 0.85rem !important;
+  color: #475569 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  line-height: 1.4 !important;
+  text-overflow: ellipsis !important;
+  word-break: break-word !important;
+  margin: 0 !important;
+}
+
+.str-chat__message--me .str-chat__quoted-message-bubble__text {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Hide paragraphs margin in quote */
+.str-chat__quoted-message-bubble__text p {
+  margin: 0 !important;
+  display: inline !important;
+}
+
+/* Small avatar inside the quote */
+.str-chat__quoted-message-preview .str-chat__avatar {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  border-radius: 6px !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.str-chat__quoted-message-preview .str-chat__avatar-image,
+.str-chat__quoted-message-preview .str-chat__avatar--one-letter .str-chat__avatar-image {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  border: 1px solid rgba(0,0,0,0.1) !important;
+  border-radius: 6px !important;
+  display: block !important;
+}
+
+.str-chat__message--me .str-chat__quoted-message-preview .str-chat__avatar-image {
+  border-color: rgba(255,255,255,0.2) !important;
+}
+
+/* =====================================================
+   MESSAGE REPLY PREVIEW (In the input box)
+   ===================================================== */
+
+/* Stream's reply preview container above the input */
+.str-chat__message-input-reply-to {
+  margin: 0.5rem 1.5rem 0.5rem 1.5rem !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(124, 58, 237, 0.2) !important;
+  border-radius: 14px !important;
+  padding: 0.5rem 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+}
+
+.str-chat__message-input-reply-to .str-chat__message-input-reply-to-text {
+  font-size: 0.85rem !important;
+  color: #475569 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 1 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Ensure the reply close button looks good */
+.str-chat__message-input-reply-to .str-chat__message-input-reply-to-close {
+  background: rgba(124, 58, 237, 0.1) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+}
+
+.str-chat__message-input-reply-to .str-chat__message-input-reply-to-close:hover {
+  background: rgba(124, 58, 237, 0.2) !important;
+  transform: scale(1.1) !important;
+}

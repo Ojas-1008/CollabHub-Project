@@ -352,7 +352,17 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - Implemented a "Liquid Glass" theme overhaul for the entire message list area.
   - **Glassmorphic Bubbles**: Added `backdrop-filter: blur(12px)`, layered shadows, and inset highlights for a highly professional feel.
   - **Dynamic Background**: Replaced the flat background with a subtle purple-tinted vertical gradient for better depth.
+  - **Dynamic Background**: Replaced the flat background with a subtle purple-tinted vertical gradient for better depth.
   - **Premium Action Toolbar**: Redesigned the hover action menu with glassmorphism, scale-up entrance animations, and individual button hover states.
+- **Reaction Details Modal Overhaul**:
+  - Re-styled the Stream SDK's internal reaction modal to match the "Liquid Glass" aesthetic (blur, custom shadows, rounded corners).
+  - Hid redundant UI elements (like the oversized fallback emoji) and improved the user list scrollability and layout.
+- **Quick DM from Reactions**:
+  - Created `useReactionUserDM.js` hook that uses event delegation to capture clicks on reaction users inside the Stream modal.
+  - Automatically queries the user and redirects to a direct message channel, greatly improving UX for socializing.
+- **Quoted Messages (Replies) Optimization**:
+  - Added custom styles for `.str-chat__quoted-message-preview` to cap quoted text at 2 lines (`-webkit-line-clamp: 2`).
+  - Styled the reply preview box above the input area to match the floating pill aesthetic.
 - **Floating Timestamp Tooltips**:
   - Converted static timestamps into interactive glassmorphic tooltips that only appear on hover.
   - Positioned tooltips to float alongside the action menu (toolbar extension), removing them from the document flow.
@@ -369,13 +379,17 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - **Horizontal Overflow & Clipping**:
   - Resolved long-standing issues where very long messages or unbroken strings would expand the chat viewport or get clipped at the edges.
   - Strictly enforced `overflow-x: hidden` at the container level and `overflow-wrap: anywhere` at the text level.
-- **Action Menu Positioning**:
+- **Action Menu Positioning & Hover State Drop**:
   - Fixed a bug where the hover action menu (⋯, thread, reactions) was being clipped by the message container.
-  - Changed positioning to `top: 0` + `translateY(-100% - 6px)` to ensure the menu always floats clearly above the bubble without overlapping text.
-  - Forced horizontal layout for menu buttons to prevent vertical stacking on narrow bubbles.
+  - Changed positioning to `top: 0` + `translateY(-100% - 6px)` to ensure the menu floats clearly above the bubble.
+  - **Fixed** a critical usability issue where moving the mouse across the 6px visual gap caused the menu to disappear. Added an invisible `::after` bridge pseudo-element to maintain the hover state.
 - **Avatar & Hover States**:
   - Refined avatar styling with animated purple borders and scale-up effects on message hover.
   - Added subtle background highlights to the entire message row on hover for better focus.
+- **Avatar Image Clipping Resolution**:
+  - **Negative Margin Fix**: Removed Stream's default negative left margin (`-32px`) from avatars that was pulling profile pictures out of the padded container and causing sharp vertical clipping.
+  - **One-Letter Fallback Override**: Overrode Stream's `.str-chat__avatar--one-letter` variant which aggressively hides `<img>` tags even when valid URLs are present.
+  - Hid avatars entirely for the user's own sent messages (`.str-chat__message--me`) to clean up the right-hand side of the chat.
 - **Date Separator**:
   - Upgraded the date separator to a premium glassmorphism pill with blur and a subtle border.
 

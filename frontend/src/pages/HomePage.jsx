@@ -22,10 +22,21 @@ import CustomChannelHeader from "../components/CustomChannelHeader";
 import UsersList from "../components/UsersList";
 import StatusInputPopover from "../components/StatusInputPopover";
 import EmptyStateIndicator from "../components/EmptyStateIndicator";
+import useReactionUserDM from "../hooks/useReactionUserDM";
 
 // Icons and Styles
 import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
 import "../styles/stream-chat-theme.css";
+
+/**
+ * ReactionDMRegistrar must be rendered INSIDE <Chat> so it can access
+ * the Stream client via useChatContext(). It registers the global
+ * reaction-user click handler and renders nothing itself.
+ */
+const ReactionDMRegistrar = () => {
+  useReactionUserDM();
+  return null;
+};
 
 const HomePage = () => {
   // 1. Get our custom chat client and status from our hook
@@ -109,6 +120,8 @@ const HomePage = () => {
   return (
     <div className="chat-wrapper">
       <Chat client={chatClient}>
+        {/* Registers the reaction-user DM click handler inside the Chat context */}
+        <ReactionDMRegistrar />
         <div className="chat-container">
           
           {/* LEFT SIDEBAR: Branding and Channel Lists */}
