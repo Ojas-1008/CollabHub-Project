@@ -360,6 +360,11 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - Reduced the `str-chat__message-metadata` footprint to zero margins/padding.
   - Fixed a critical alignment issue where timestamps were pushing message bubbles horizontally, ensuring perfect vertical alignment for both sent and received messages.
 
+- **Backend Startup Optimization**:
+  - Refactored `instrument.js` to disable CPU profiling and reduce trace sampling in development mode, significantly cutting down initialization time.
+  - Optimized `server.js` startup sequence by moving `connectDB()` execution after the Express listener starts, reducing the time to "Ready" state.
+  - Added high-resolution timing logs (`console.time`) to monitor and maintain backend performance.
+
 ### Fixed
 - **Horizontal Overflow & Clipping**:
   - Resolved long-standing issues where very long messages or unbroken strings would expand the chat viewport or get clipped at the edges.

@@ -14,6 +14,8 @@ import taskRoutes from "./routes/task.route.js";
 import userRoutes from "./routes/user.route.js";
 import webhookRoutes from "./routes/webhook.route.js";
 
+console.time("⏱️ Server Startup");
+
 const app = express();
 
 app.use(express.json());
@@ -44,15 +46,14 @@ Sentry.setupExpressErrorHandler(app);
 
 const startServer = async () => {
   try {
-    // 💡 IMPROVEMENT: We don't await connectDB() here. 
-    // This allows the Express server to start listening immediately.
-    // Mongoose is smart enough to "buffer" any database requests 
-    // until the connection is actually ready.
-    connectDB();
-
-    app.listen(ENV.PORT, () => {
+    // Start listening ASAP
+    const server = app.listen(ENV.PORT, () => {
       console.log(`🚀 Server is live on port: ${ENV.PORT}`);
-      console.log(`📡 Connecting to services...`);
+      console.timeEnd("⏱️ Server Startup");
+      
+      // Initialize DB connection in the background after the server starts
+      console.log(`📡 Connecting to MongoDB...`);
+      connectDB();
     });
   } catch (error) {
     console.error("❌ Critical error during server startup:", error);
