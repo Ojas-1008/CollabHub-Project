@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useUser } from "@clerk/react";
 import toast from "react-hot-toast";
@@ -24,6 +24,8 @@ const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
 const CallPage = () => {
   const { id: callId } = useParams();
+  const [searchParams] = useSearchParams();
+  const isAudioOnly = searchParams.get("type") === "audio";
   const { user, isLoaded } = useUser();
 
   const [client, setClient] = useState(null);
@@ -60,6 +62,11 @@ const CallPage = () => {
 
         const callInstance = videoClient.call("default", callId);
         await callInstance.join({ create: true });
+
+        // If joining via "Voice Call", turn off the camera immediately
+        if (isAudioOnly) {
+          await callInstance.camera.disable();
+        }
 
         setClient(videoClient);
         setCall(callInstance);
@@ -109,7 +116,7 @@ const CallPage = () => {
               CollabHub
             </span>
             <span className="text-[11px] font-bold text-purple-400/80 tracking-[0.2em] uppercase leading-none">
-              Secure Video Session
+              {isAudioOnly ? "Secure Voice Session" : "Secure Video Session"}
             </span>
           </div>
         </div>
@@ -136,7 +143,7 @@ const CallPage = () => {
             {client && call ? (
               <StreamVideo client={client}>
                 <StreamCall call={call}>
-                  <CallContent />
+                  <CallContent isAudioOnly={isAudioOnly} />
                 </StreamCall>
               </StreamVideo>
             ) : (
@@ -163,7 +170,7 @@ const CallPage = () => {
   );
 };
 
-const CallContent = () => {
+const CallContent = ({ isAudioOnly }) => {
   const { useCallCallingState } = useCallStateHooks();
   const callingState = useCallCallingState();
   const navigate = useNavigate();

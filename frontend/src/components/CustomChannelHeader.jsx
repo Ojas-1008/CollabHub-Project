@@ -1,4 +1,4 @@
-import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon, FolderOpenIcon } from "lucide-react";
+import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon, FolderOpenIcon, PhoneIcon } from "lucide-react";
 import { useChannelStateContext, useChatContext } from "stream-chat-react";
 import { useState } from "react";
 import { useUser } from "@clerk/react";
@@ -59,6 +59,15 @@ const CustomChannelHeader = () => {
         }
     };
 
+    const handleVoiceCall = async () => {
+        if (channel) {
+            const callUrl = `${window.location.origin}/call/${channel.id}?type=audio`;
+            await channel.sendMessage({
+                text: `I've started a secure voice call. Join me here: ${callUrl}`,
+            });
+        }
+    };
+
     return (
         <>
             <div className="h-16 border-b border-purple-500/10 flex items-center px-6 justify-between bg-white/70 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.02)] z-[50] relative">
@@ -114,6 +123,14 @@ const CustomChannelHeader = () => {
                     )}
 
                     <div className="w-px h-6 bg-gray-200 mx-1"></div>
+
+                    <button
+                        className="p-2 rounded-xl border border-transparent hover:bg-emerald-50 hover:border-emerald-200 hover:shadow-sm transition-all text-emerald-500"
+                        onClick={handleVoiceCall}
+                        title="Start Voice Call"
+                    >
+                        <PhoneIcon className="size-4.5" />
+                    </button>
 
                     <button
                         className="p-2 rounded-xl border border-transparent hover:bg-blue-50 hover:border-blue-200 hover:shadow-sm transition-all text-blue-500"

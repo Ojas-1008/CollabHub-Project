@@ -407,6 +407,10 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
   - **Interactive Loading State**: Redesigned the "Connecting" screen with animated logos, pulsing glows, and a glassmorphic status badge.
   - **Custom Video Header**: Added a sleek navigation bar with live "End-to-End Encrypted" status and project branding.
   - **Responsive Layout**: Designed a large-scale video container that maximizes screen real estate while maintaining structural integrity.
+- **Premium Voice Call Feature**:
+  - **Header Integration**: Added a "Start Voice Call" button (`PhoneIcon`) to `CustomChannelHeader.jsx` that generates a `?type=audio` URL.
+  - **Auto-Camera Disable**: Updated `CallPage.jsx` to parse the `type=audio` flag and automatically execute `callInstance.camera.disable()` upon joining, ensuring a secure audio-only start.
+  - **Dynamic Branding**: The UI dynamically updates to "Secure Voice Session" to provide clear contextual feedback when in audio mode.
 
 ### Fixed
 - **Dependency Resolution**: Resolved a critical issue where `@stream-io/video-react-sdk` was missing from `package.json`, preventing the call feature from launching.
@@ -451,4 +455,4 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Implement Floating Timestamp Tooltips for cleaner message alignment.
 - [x] Integrate Stream Video SDK on the frontend and backend.
 - [x] Design and implement a premium, glassmorphic Video Call UI.
-
+- [x] Implement Premium Voice Call feature with auto-camera disable.
