@@ -26,7 +26,7 @@ import CustomMessageInput from "../components/CustomMessageInput";
 import useReactionUserDM from "../hooks/useReactionUserDM";
 
 // Icons and Styles
-import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
+import { HashIcon, PlusIcon, UsersIcon, MenuIcon } from "lucide-react";
 import "../styles/stream-chat-theme.css";
 
 /**
@@ -47,6 +47,7 @@ const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeChannel, setActiveChannel] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Task Integration State
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -126,7 +127,7 @@ const HomePage = () => {
         <div className="chat-container">
           
           {/* LEFT SIDEBAR: Branding and Channel Lists */}
-          <aside className="sidebar-container">
+          <aside className={`sidebar-container ${!isSidebarOpen ? "collapsed" : ""}`}>
             <div className="team-channel-list">
               
               {/* APP HEADER */}
@@ -196,11 +197,22 @@ const HomePage = () => {
           </aside>
 
           {/* RIGHT VIEW: The actual chat conversation */}
-          <main className="chat-main">
+          <main className="chat-main relative">
+            {/* SIDEBAR TOGGLE BUTTON - Floating button on the left edge (Only visible in empty state) */}
+            {!activeChannel && (
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="absolute top-4 left-4 z-[100] p-2 bg-white/50 backdrop-blur-md rounded-xl border border-gray-200 shadow-sm hover:bg-white transition-all text-purple-600 focus:outline-none"
+                title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+              >
+                <MenuIcon className="size-5" />
+              </button>
+            )}
+
             {activeChannel ? (
               <Channel channel={activeChannel}>
                 <Window>
-                  <CustomChannelHeader />
+                  <CustomChannelHeader toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} />
                   {/* Pass highlightedMessageId so the chat auto-scrolls to the message
                       that was linked from the File Explorer "Jump to Message" button.
                       Stream's MessageList handles the scrolling automatically. */}

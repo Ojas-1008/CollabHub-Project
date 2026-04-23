@@ -52,9 +52,10 @@ export const summarizeMessages = async (req, res) => {
                     content:
                         "You are a helpful assistant that summarizes chat conversations. " +
                         "Provide a summary in 3-5 concise bullet points. " +
+                        "CRITICAL: You MUST format the output using standard Markdown lists (e.g. start each point with '- '). Do NOT use special bullet characters like '•'. " +
                         "Highlight key decisions, action items, and important topics discussed. " +
                         "Use a professional and encouraging tone. " +
-                        "Do NOT include any introductory or closing phrases — just the bullet points.",
+                        "Do NOT include any introductory or closing phrases — just the markdown list.",
                 },
                 {
                     role: "user",

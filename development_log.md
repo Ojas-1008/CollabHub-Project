@@ -449,6 +449,9 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 ### Refinement
 - **Audit Trail**: Every AI generation (Summarize/Refine) is now tracked in the `ActivityLog` database for usage monitoring and cost control.
 - **UX Styling**: Added "Liquid Glass" animations for AI drawers and specialized gradients (`indigo-500` to `fuchsia-500`) to differentiate AI features from standard chat actions.
+- **AI Formatting Integration**: Implemented strict Markdown rendering via `react-markdown` to neatly format AI summaries with properly styled lists, bold text, and paragraphs. Updated the backend AI prompt to enforce standard Markdown syntax.
+- **Consistent Glassmorphic Theming**: Overhauled `SummaryModal.jsx` from a dark theme to a bright, light glassmorphic theme to match other application drawers like `TaskListDrawer`.
+- **Collapsible Layout**: Added a collapsible state to the main left sidebar (`.sidebar-container`) to free up screen real estate. Integrated a floating `MenuIcon` toggle button neatly into the `CustomChannelHeader` to prevent overlap with channel titles.
 
 ### Fixed
 - **Stream SDK v13 Migration**: Rewrote `CustomMessageInput.jsx` to use the new `MessageComposer` API. Replaced deprecated `setText` and `handleChange` context hooks with `textComposer.handleChange()` and `useStateStore` for state management.

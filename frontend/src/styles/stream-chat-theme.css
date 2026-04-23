@@ -2309,3 +2309,15 @@ button.str-chat__load-more-button,
   background: transparent !important;
   padding: 0 !important;
 }
+
+.sidebar-container {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sidebar-container.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+}

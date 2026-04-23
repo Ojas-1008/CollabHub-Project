@@ -1,4 +1,4 @@
-import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon, FolderOpenIcon, PhoneIcon, SparklesIcon } from "lucide-react";
+import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon, FolderOpenIcon, PhoneIcon, SparklesIcon, MenuIcon } from "lucide-react";
 import { useChannelStateContext, useChatContext } from "stream-chat-react";
 import { useState } from "react";
 import { useUser } from "@clerk/react";
@@ -12,7 +12,7 @@ import FileExplorer from "./FileExplorer";
 import SummaryModal from "./SummaryModal";
 import { summarizeMessages } from "../../lib/api";
 
-const CustomChannelHeader = () => {
+const CustomChannelHeader = ({ toggleSidebar, isSidebarOpen }) => {
     const { channel } = useChannelStateContext();
     const { client } = useChatContext();
     const { user } = useUser();
@@ -132,6 +132,15 @@ const CustomChannelHeader = () => {
             <div className="h-16 border-b border-purple-500/10 flex items-center px-6 justify-between bg-white/70 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.02)] z-[50] relative">
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2.5">
+                        {toggleSidebar && (
+                            <button
+                                onClick={toggleSidebar}
+                                className="p-1.5 -ml-2 mr-1 rounded-xl hover:bg-gray-100 transition-colors text-gray-500 hover:text-purple-600 focus:outline-none"
+                                title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+                            >
+                                <MenuIcon className="size-5" />
+                            </button>
+                        )}
                         {channel.data?.private ? (
                             <div className="size-8 rounded-lg bg-violet-100 flex items-center justify-center border border-violet-200">
                                 <LockIcon className="size-4.5 text-violet-600" />
