@@ -1,13 +1,16 @@
-import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon, FolderOpenIcon, PhoneIcon } from "lucide-react";
+import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon, ListTodoIcon, FolderOpenIcon, PhoneIcon, SparklesIcon } from "lucide-react";
 import { useChannelStateContext, useChatContext } from "stream-chat-react";
 import { useState } from "react";
 import { useUser } from "@clerk/react";
+import toast from "react-hot-toast";
 
 import MembersModal from "./MembersModal";
 import PinnedMessagesModal from "./PinnedMessagesModal";
 import InviteModal from "./InviteModal";
 import TaskListDrawer from "./TaskListDrawer";
 import FileExplorer from "./FileExplorer";
+import SummaryModal from "./SummaryModal";
+import { summarizeMessages } from "../../lib/api";
 
 const CustomChannelHeader = () => {
     const { channel } = useChannelStateContext();
@@ -21,6 +24,11 @@ const CustomChannelHeader = () => {
     const [showPinnedMessages, setShowPinnedMessages] = useState(false);
     const [showTasks, setShowTasks] = useState(false);
     const [showFiles, setShowFiles] = useState(false);
+
+    // AI Summary State
+    const [showSummary, setShowSummary] = useState(false);
+    const [summaryText, setSummaryText] = useState("");
+    const [isSummarizing, setIsSummarizing] = useState(false);
 
     const [pinnedMessages, setPinnedMessages] = useState([]);
 
@@ -65,6 +73,57 @@ const CustomChannelHeader = () => {
             await channel.sendMessage({
                 text: `I've started a secure voice call. Join me here: ${callUrl}`,
             });
+        }
+    };
+
+    // ── AI SUMMARIZE HANDLER ──────────────────────────────────────────────
+    // Step 1: Grab the last 25 messages from the channel's local state.
+    // Step 2: Send them to our backend AI endpoint.
+    // Step 3: Display the result in the SummaryModal.
+    const handleSummarize = async () => {
+        // If the summary drawer is already open, just close it
+        if (showSummary) {
+            setShowSummary(false);
+            return;
+        }
+
+        try {
+            // Step 1: Get messages from the channel's local state
+            //         channel.state.messages is an array of all loaded messages
+            const allMessages = channel.state.messages || [];
+
+            // Take the last 25 messages (or fewer if the channel has less)
+            const recentMessages = allMessages.slice(-25);
+
+            // Filter out system messages and format for the API
+            const formatted = recentMessages
+                .filter((msg) => msg.text && msg.type !== "system")
+                .map((msg) => ({
+                    sender: msg.user?.name || msg.user?.id || "Unknown",
+                    text: msg.text,
+                }));
+
+            if (formatted.length === 0) {
+                toast.error("No messages to summarize in this channel.");
+                return;
+            }
+
+            // Step 2: Open the drawer and show loading state
+            setShowSummary(true);
+            setIsSummarizing(true);
+            setSummaryText("");
+
+            // Step 3: Call our backend API
+            const result = await summarizeMessages(formatted);
+
+            // Step 4: Display the result
+            setSummaryText(result.summary);
+        } catch (error) {
+            console.error("Summarization failed:", error);
+            toast.error("Failed to generate summary. Please try again.");
+            setSummaryText("");
+        } finally {
+            setIsSummarizing(false);
         }
     };
 
@@ -163,6 +222,15 @@ const CustomChannelHeader = () => {
                     >
                         <FolderOpenIcon className="size-4.5" />
                     </button>
+
+                    {/* AI Summarize Button — styled with a gradient to stand out */}
+                    <button
+                        className={`p-2 rounded-xl border transition-all duration-200 ${showSummary ? 'bg-gradient-to-r from-indigo-100 to-fuchsia-100 border-fuchsia-300 text-fuchsia-600 shadow-inner' : 'border-transparent hover:bg-gradient-to-r hover:from-indigo-50 hover:to-fuchsia-50 hover:border-fuchsia-200 hover:shadow-sm text-gray-500 hover:text-fuchsia-500'}`}
+                        onClick={handleSummarize}
+                        title={showSummary ? "Close AI summary" : "Summarize last messages"}
+                    >
+                        <SparklesIcon className="size-4.5" />
+                    </button>
                 </div>
             </div>
 
@@ -186,6 +254,14 @@ const CustomChannelHeader = () => {
             {showTasks && <TaskListDrawer onClose={() => setShowTasks(false)} />}
 
             {showFiles && <FileExplorer onClose={() => setShowFiles(false)} />}
+
+            {showSummary && (
+                <SummaryModal
+                    summary={summaryText}
+                    isLoading={isSummarizing}
+                    onClose={() => setShowSummary(false)}
+                />
+            )}
         </>
     );
 };

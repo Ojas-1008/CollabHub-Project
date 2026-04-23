@@ -15,6 +15,7 @@ import taskRoutes from "./routes/task.route.js";
 import userRoutes from "./routes/user.route.js";
 import webhookRoutes from "./routes/webhook.route.js";
 import activityLogRoutes from "./routes/activityLog.route.js";
+import aiRoutes from "./routes/ai.route.js";
 import { globalLimiter, apiLimiter } from "./middleware/rateLimiter.middleware.js";
 
 console.time("⏱️ Server Startup");
@@ -47,6 +48,7 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/webhooks", webhookRoutes);
 app.use("/api/activity", activityLogRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/debug-sentry", (req, res) => {
   throw new Error("My first Sentry error!");

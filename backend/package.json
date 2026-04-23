@@ -14,6 +14,7 @@
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
     "@clerk/express": "^2.1.1",
+    "@google/generative-ai": "^0.24.1",
     "@sentry/node": "^10.48.0",
     "cors": "2.8.5",
     "dotenv": "17.2.1",
@@ -22,6 +23,7 @@
     "helmet": "^8.1.0",
     "inngest": "^4.2.1",
     "mongoose": "8.16.5",
+    "openai": "^6.34.0",
     "resend": "^6.12.2",
     "stream-chat": "^9.41.0"
   }

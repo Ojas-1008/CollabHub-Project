@@ -432,6 +432,24 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - **Import Path Synchronization**: Fixed incorrect relative paths for `getStreamToken` and synchronized Clerk/Router imports across the page.
 - **Robustness**: Added environment variable guards for `VITE_STREAM_API_KEY` and optional chaining for async token data to prevent runtime crashes.
 
+## [2026-04-24] - AI-Powered Collaboration Tools (Cerebras Integration)
+
+### Added
+- **AI-Powered Feature Suite**:
+  - **Contextual Summarization**: Integrated **GPT-OSS-120B** via Cerebras Cloud to generate 3-5 point conversation summaries. Capable of analyzing the last 25 messages in any channel.
+  - **Smart Message Refinement**: Integrated **Llama 3.1-8B** to provide instant, professional polishing of draft messages.
+- **Backend AI Infrastructure**:
+  - **Cerebras Client** (`backend/src/config/ai.js`): Initialized using the OpenAI-compatible SDK with high-speed inference endpoints (`baseURL` override).
+  - **AI Controller & Routes**: Implemented `summarizeMessages` and `refineMessage` handlers with dedicated rate-limiting and audit logging.
+- **Frontend AI Components**:
+  - **`SummaryModal.jsx`**: A premium glassmorphic drawer that displays AI-generated summaries with custom loading animations and "Sparkle" branding.
+  - **`CustomMessageInput.jsx`**: A specialized wrapper for the Stream SDK input. Injects a "Magic Wand" (Refine) button and handles real-time text replacement.
+- **Enhanced Header**: Integrated a ✨ Summarize button into `CustomChannelHeader.jsx` with active-state tracking and error handling.
+
+### Refinement
+- **Audit Trail**: Every AI generation (Summarize/Refine) is now tracked in the `ActivityLog` database for usage monitoring and cost control.
+- **UX Styling**: Added "Liquid Glass" animations for AI drawers and specialized gradients (`indigo-500` to `fuchsia-500`) to differentiate AI features from standard chat actions.
+
 ### Task List
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
@@ -473,3 +491,4 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Implement Premium Voice Call feature with auto-camera disable.
 - [x] Implement backend security hardening with Helmet and tiered Rate Limiting.
 - [x] Implement database-driven Activity Audit Logging for core operations.
+- [x] Implement AI-powered Summarization (GPT-OSS-120B) and Refinement (Llama 3.1-8B).

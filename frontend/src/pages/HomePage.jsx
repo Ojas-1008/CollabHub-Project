@@ -22,6 +22,7 @@ import CustomChannelHeader from "../components/CustomChannelHeader";
 import UsersList from "../components/UsersList";
 import StatusInputPopover from "../components/StatusInputPopover";
 import EmptyStateIndicator from "../components/EmptyStateIndicator";
+import CustomMessageInput from "../components/CustomMessageInput";
 import useReactionUserDM from "../hooks/useReactionUserDM";
 
 // Icons and Styles
@@ -207,7 +208,7 @@ const HomePage = () => {
                     customMessageActions={customMessageActions}
                     highlightedMessageId={messageId}
                   />
-                  <MessageInput />
+                  <MessageInput Input={CustomMessageInput} />
                 </Window>
                 <Thread />
                 {/* TaskModal must be inside Channel so it can access Stream's channel context */}

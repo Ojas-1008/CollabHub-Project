@@ -43,3 +43,23 @@ export async function updateUserStatus(status) {
   const response = await axiosInstance.patch("/users/status", { status });
   return response.data;
 }
+
+
+/**
+ * 🤖 AI APIs
+ * Used to communicate with our backend AI endpoints (powered by Cerebras Cloud).
+ */
+
+// Sends up to 25 messages to the backend for AI-powered summarization.
+// Returns: { summary: "• Point 1\n• Point 2\n..." }
+export async function summarizeMessages(messages) {
+  const response = await axiosInstance.post("/ai/summarize", { messages });
+  return response.data;
+}
+
+// Sends a draft message to the backend for AI-powered refinement.
+// Returns: { refinedText: "Your polished message here..." }
+export async function refineMessage(text) {
+  const response = await axiosInstance.post("/ai/refine", { text });
+  return response.data;
+}
