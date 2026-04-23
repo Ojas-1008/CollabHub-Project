@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useMessageComposer, useMessageInputContext } from "stream-chat-react";
-import { useStateStore } from "stream-chat-react/dist/store";
+import { useStateStore, useMessageComposer, useMessageInputContext } from "stream-chat-react";
 import { WandSparklesIcon, Loader2Icon } from "lucide-react";
 import toast from "react-hot-toast";
 import { refineMessage } from "../../lib/api";

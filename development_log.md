@@ -452,6 +452,7 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 
 ### Fixed
 - **Stream SDK v13 Migration**: Rewrote `CustomMessageInput.jsx` to use the new `MessageComposer` API. Replaced deprecated `setText` and `handleChange` context hooks with `textComposer.handleChange()` and `useStateStore` for state management.
+- **Vite Export Resolution**: Fixed a build crash (`500 Internal Server Error`) by updating the import of `useStateStore` to use the root `stream-chat-react` export, complying with strict package export constraints in Vite.
 - **AI Model Compatibility**:
   - Switched summarization from `gpt-oss-120b` to `llama3.1-8b` due to API access tier restrictions.
   - Corrected Cerebras model ID formatting (`llama-3.1-8b` -> `llama3.1-8b`).
