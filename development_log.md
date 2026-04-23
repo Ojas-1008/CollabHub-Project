@@ -450,6 +450,13 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - **Audit Trail**: Every AI generation (Summarize/Refine) is now tracked in the `ActivityLog` database for usage monitoring and cost control.
 - **UX Styling**: Added "Liquid Glass" animations for AI drawers and specialized gradients (`indigo-500` to `fuchsia-500`) to differentiate AI features from standard chat actions.
 
+### Fixed
+- **Stream SDK v13 Migration**: Rewrote `CustomMessageInput.jsx` to use the new `MessageComposer` API. Replaced deprecated `setText` and `handleChange` context hooks with `textComposer.handleChange()` and `useStateStore` for state management.
+- **AI Model Compatibility**:
+  - Switched summarization from `gpt-oss-120b` to `llama3.1-8b` due to API access tier restrictions.
+  - Corrected Cerebras model ID formatting (`llama-3.1-8b` -> `llama3.1-8b`).
+  - Fixed OpenAI SDK incompatibility by changing `max_completion_tokens` to `max_tokens` as required by the Cerebras endpoint.
+
 ### Task List
 - [x] Implement MongoDB connection logic using Mongoose.
 - [x] Replace Vite boilerplate with authentication components.
@@ -491,4 +498,4 @@ This log tracks the progress, decisions, and changes made to the CollabHub proje
 - [x] Implement Premium Voice Call feature with auto-camera disable.
 - [x] Implement backend security hardening with Helmet and tiered Rate Limiting.
 - [x] Implement database-driven Activity Audit Logging for core operations.
-- [x] Implement AI-powered Summarization (GPT-OSS-120B) and Refinement (Llama 3.1-8B).
+- [x] Implement AI-powered Summarization and Refinement (Llama 3.1-8B).

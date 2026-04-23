@@ -7,7 +7,7 @@ import { logActivity } from "../utils/auditLog.js";
  * This file contains two AI-powered actions:
  *
  *  1. summarizeMessages — Takes the last N chat messages and produces
- *     a clean, bullet-point summary using GPT-OSS-120B.
+ *     a clean, bullet-point summary using Llama 3.1-8B.
  *
  *  2. refineMessage — Takes a rough draft message and polishes it
  *     using Llama 3.1-8B (ultra-fast for quick edits).
@@ -41,11 +41,11 @@ export const summarizeMessages = async (req, res) => {
             .map((msg) => `${msg.sender}: ${msg.text}`)
             .join("\n");
 
-        // Step 4: Send the conversation to Cerebras (GPT-OSS-120B)
+        // Step 4: Send the conversation to Cerebras (Llama 3.1-8B)
         //         We use a "system" prompt to tell the AI HOW to behave,
         //         and a "user" prompt to give it the actual conversation.
         const response = await cerebrasClient.chat.completions.create({
-            model: "gpt-oss-120b",
+            model: "llama3.1-8b",
             messages: [
                 {
                     role: "system",
@@ -61,8 +61,8 @@ export const summarizeMessages = async (req, res) => {
                     content: `Please summarize this conversation:\n\n${conversationText}`,
                 },
             ],
-            max_completion_tokens: 500, // Keep summaries focused
-            temperature: 0.3,           // Lower = more factual, less creative
+            max_tokens: 500,    // Keep summaries focused
+            temperature: 0.3,   // Lower = more factual, less creative
         });
 
         // Step 5: Extract the AI's reply from the response
@@ -106,7 +106,7 @@ export const refineMessage = async (req, res) => {
         //         Llama 3.1-8B is chosen here because it's extremely fast
         //         and great for simple language polishing tasks.
         const response = await cerebrasClient.chat.completions.create({
-            model: "llama-3.1-8b",
+            model: "llama3.1-8b",
             messages: [
                 {
                     role: "system",
@@ -123,8 +123,8 @@ export const refineMessage = async (req, res) => {
                     content: text,
                 },
             ],
-            max_completion_tokens: 300, // Keep it concise
-            temperature: 0.5,           // Balanced between creative and factual
+            max_tokens: 300,    // Keep it concise
+            temperature: 0.5,   // Balanced between creative and factual
         });
 
         // Step 4: Extract the AI's refined text

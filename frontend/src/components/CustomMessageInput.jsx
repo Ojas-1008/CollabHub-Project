@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { useMessageInputContext } from "stream-chat-react";
+import { useState } from "react";
+import { useMessageComposer, useMessageInputContext } from "stream-chat-react";
+import { useStateStore } from "stream-chat-react/dist/store";
 import { WandSparklesIcon, Loader2Icon } from "lucide-react";
 import toast from "react-hot-toast";
 import { refineMessage } from "../../lib/api";
@@ -7,54 +8,49 @@ import { refineMessage } from "../../lib/api";
 /**
  * ✏️ CUSTOM MESSAGE INPUT — Stream's Input + AI Refine Button
  *
- * HOW THIS WORKS:
- *  Stream Chat SDK gives us a <MessageInput> component that handles
- *  typing, sending, file uploads, emoji, and more. Instead of rebuilding
- *  all of that, we use Stream's "custom input" pattern:
+ * HOW THIS WORKS (Stream Chat React v13):
+ *  In v13, message text is managed by a "MessageComposer" class.
+ *  The old `setText` and `handleChange` from useMessageInputContext
+ *  no longer exist. Instead:
  *
- *  1. We render Stream's default textarea and send button (via the
- *     useMessageInputContext hook).
- *  2. We ADD our own "Refine" button (magic wand icon) next to the
- *     send button.
- *  3. When clicked, we grab the current text, send it to our AI backend,
- *     and replace the input text with the polished version.
+ *  1. useMessageComposer() → gives us the `messageComposer` object.
+ *  2. messageComposer.textComposer → manages the text state.
+ *  3. textComposer.handleChange({ text, selection }) → updates the text.
+ *  4. useMessageInputContext().handleSubmit → sends the message.
  *
- * WHY THIS APPROACH:
- *  - We get ALL of Stream's built-in features for free (attachments,
- *    emoji picker, mentions, etc.)
- *  - We only add ONE extra button — minimal code, maximum impact.
+ *  We read the current text via useStateStore(textComposer.state).
  */
 
+// This selector tells useStateStore which fields to watch
+const textSelector = (state) => ({ text: state.text });
+
 const CustomMessageInput = () => {
-    // Step 1: Get Stream's built-in input tools from context
-    //         These are provided by the <Channel> component higher up in the tree.
-    const {
-        text,            // The current text in the input field
-        setText,         // Function to update the input text
-        handleSubmit,    // Function to send the message
-        handleChange,    // Function to handle text changes (typing)
-    } = useMessageInputContext();
+    // Step 1: Get the message composer (v13 API)
+    const messageComposer = useMessageComposer();
+    const { textComposer } = messageComposer;
 
-    // Step 2: Local state for tracking the AI refinement loading state
+    // Step 2: Subscribe to the text state so the component re-renders on changes
+    const { text } = useStateStore(textComposer.state, textSelector);
+
+    // Step 3: Get handleSubmit from the input context (this still lives here in v13)
+    const { handleSubmit, textareaRef } = useMessageInputContext();
+
+    // Step 4: Local state for tracking the AI refinement loading state
     const [isRefining, setIsRefining] = useState(false);
-    const textareaRef = useRef(null);
 
-    // Step 2.5: Auto-resize textarea as user types
-    const adjustHeight = () => {
-        if (textareaRef.current) {
-            const el = textareaRef.current;
-            // Reset to inherit to correctly measure content height
-            el.style.height = "inherit";
-            const scrollHeight = el.scrollHeight;
-            el.style.height = `${Math.min(scrollHeight, 120)}px`;
-        }
+    // Step 5: Handle typing — call textComposer.handleChange with text + selection
+    const onTextChange = (e) => {
+        const newText = e.target.value;
+        textComposer.handleChange({
+            text: newText,
+            selection: {
+                start: e.target.selectionStart,
+                end: e.target.selectionEnd,
+            },
+        });
     };
 
-    useEffect(() => {
-        adjustHeight();
-    }, [text]);
-
-    // Step 3: The refine handler — sends text to AI and replaces input
+    // Step 6: The refine handler — sends text to AI and replaces input
     const handleRefine = async () => {
         // Guard: Don't refine empty messages
         if (!text || text.trim().length === 0) {
@@ -72,7 +68,12 @@ const CustomMessageInput = () => {
             const result = await refineMessage(text);
 
             // Replace the input text with the AI-polished version
-            setText(result.refinedText);
+            // In v13, we update text via textComposer.handleChange
+            const refined = result.refinedText;
+            textComposer.handleChange({
+                text: refined,
+                selection: { start: refined.length, end: refined.length },
+            });
 
             // Show a success toast so the user knows it worked
             toast.success("Message refined by AI ✨");
@@ -93,15 +94,13 @@ const CustomMessageInput = () => {
                     className="custom-message-textarea"
                     placeholder="Type a message..."
                     value={text}
-                    onChange={(e) => {
-                        handleChange(e);
-                        requestAnimationFrame(() => adjustHeight());
-                    }}
+                    onChange={onTextChange}
+                    rows={1}
                     onKeyDown={(e) => {
                         // Send on Enter (but not Shift+Enter for new lines)
-                        if (e.key === "Enter" && !e.shiftKey) {
+                        if (e.key === "Enter" && !e.shiftKey && messageComposer.hasSendableData) {
                             e.preventDefault();
-                            handleSubmit(e);
+                            handleSubmit();
                         }
                     }}
                 />
