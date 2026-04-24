@@ -32,6 +32,7 @@ const activityLogSchema = new mongoose.Schema(
                 "DELETE_TASK",
                 "UPDATE_TASK_STATUS",
                 "UPDATE_USER_STATUS",
+                "UPDATE_PROFILE",
             ],
         },
 

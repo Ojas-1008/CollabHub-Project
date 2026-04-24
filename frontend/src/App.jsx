@@ -6,6 +6,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
 import CallPage from "./pages/CallPage";
 import HomePage from "./pages/HomePage";
+import ProfilePage from "./pages/ProfilePage";
+
+// 2b. PROFILE STYLES
+import "./styles/profile.css";
 
 // 2. ERROR TRACKING
 // Sentry helps you find and fix bugs by tracking errors in your app.
@@ -39,6 +43,13 @@ const App = () => {
       <Route 
         path="/" 
         element={isSignedIn ? <HomePage /> : <Navigate to="/auth" replace />} 
+      />
+
+      {/* PROFILE PAGE:
+          Only signed-in users can view their profile. */}
+      <Route
+        path="/profile"
+        element={isSignedIn ? <ProfilePage /> : <Navigate to="/auth" replace />}
       />
 
       {/* AUTH PAGE: 

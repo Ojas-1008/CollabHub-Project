@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { UserButton } from "@clerk/react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useStreamChat } from "../hooks/useStreamChat";
 
 import {
@@ -26,7 +26,7 @@ import CustomMessageInput from "../components/CustomMessageInput";
 import useReactionUserDM from "../hooks/useReactionUserDM";
 
 // Icons and Styles
-import { HashIcon, PlusIcon, UsersIcon, MenuIcon } from "lucide-react";
+import { HashIcon, PlusIcon, UsersIcon, MenuIcon, UserCircleIcon } from "lucide-react";
 import "../styles/stream-chat-theme.css";
 
 /**
@@ -140,7 +140,16 @@ const HomePage = () => {
                       CollabHub
                     </span>
                   </div>
-                  <UserButton />
+                  <div className="flex items-center gap-1.5">
+                    <Link
+                      to="/profile"
+                      className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-all"
+                      title="My Profile"
+                    >
+                      <UserCircleIcon className="size-5" />
+                    </Link>
+                    <UserButton />
+                  </div>
                 </div>
                 {/* STATUS INPUT POPOVER */}
                 <div className="w-full border-t border-purple-500/20 pt-2 relative z-50">

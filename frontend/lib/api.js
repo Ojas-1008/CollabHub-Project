@@ -44,6 +44,20 @@ export async function updateUserStatus(status) {
   return response.data;
 }
 
+// Fetches the logged-in user's full profile, task stats, and recent activity.
+// Returns: { user: {...}, stats: {...}, recentActivity: [...] }
+export async function getUserProfile() {
+  const response = await axiosInstance.get("/users/me");
+  return response.data;
+}
+
+// Updates extended profile fields (bio, jobTitle, department, socialLinks, skills).
+// Only send the fields you want to change — the backend won't erase the rest.
+export async function updateProfile(profileData) {
+  const response = await axiosInstance.patch("/users/update", profileData);
+  return response.data;
+}
+
 
 /**
  * 🤖 AI APIs
